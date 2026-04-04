@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ trim((string) ($publicPage['contact_page_browser_title'] ?? 'Contact Us')) }} | {{ $schoolName }}</title>
+    @php
+        $faviconPath = data_get($school?->settings, 'branding.favicon');
+        $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
+    @endphp
+    @if($faviconPath)
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
+    @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    @php($theme = \App\Support\ThemePalette::fromPublicPage($publicPage))
     <script>
         tailwind.config = {
             theme: {
@@ -188,6 +194,48 @@
     .bg-white {
         background-color: var(--theme-surface, #FFFFFF) !important;
     }
+
+    .rich-text-content p + p,
+    .rich-text-content ul + p,
+    .rich-text-content ol + p,
+    .rich-text-content p + ul,
+    .rich-text-content p + ol,
+    .rich-text-content figure,
+    .rich-text-content blockquote {
+        margin-top: 0.75rem;
+    }
+    .rich-text-content ul,
+    .rich-text-content ol {
+        margin-left: 1.25rem;
+        list-style-position: outside;
+    }
+    .rich-text-content ul {
+        list-style-type: disc;
+    }
+    .rich-text-content ol {
+        list-style-type: decimal;
+    }
+    .rich-text-content blockquote {
+        border-left: 3px solid rgba(45, 29, 92, 0.24);
+        padding-left: 0.9rem;
+        font-style: italic;
+    }
+    .rich-text-content a {
+        color: var(--submenu-primary, #2D1D5C);
+        font-weight: 700;
+        text-decoration: underline;
+    }
+    .rich-text-content img {
+        display: block;
+        max-width: 100%;
+        border-radius: 1rem;
+        box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.45);
+    }
+    .rich-text-content figcaption {
+        margin-top: 0.6rem;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
 </style>
 </head>
 @php
@@ -206,15 +254,20 @@
                 ->values()
                 ->all();
 
-            $isContact = $id === 'contact';
+            $isContact   = $id === 'contact';
+            $firstSlug   = collect($items)->first()['slug'] ?? null;
+            $sectionLink = $isContact
+                ? route('public.contact')
+                : ($firstSlug ? route('public.submenu', ['section' => $id, 'slug' => $firstSlug]) : route('public.home'));
 
             return [
-                'id' => $id,
+                'id'    => $id,
                 'label' => $section['label'] ?? ucfirst(str_replace('-', ' ', $id)),
-                'link' => $isContact ? route('public.contact') : route('public.home') . "#{$id}",
+                'link'  => $sectionLink,
                 'items' => $isContact ? [] : $items,
             ];
         })
+        ->prepend(['id' => 'home', 'label' => 'Home', 'link' => route('public.home'), 'items' => []])
         ->values()
         ->all();
     $siteBackgroundColor = $theme['site_background'];
@@ -261,23 +314,25 @@
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
         <header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur" style="background-color: {{ $headerBgColor }};">
-            <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-                <a href="{{ route('public.home') }}" class="flex items-center gap-3 transition duration-200 hover:opacity-90">
+            <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
+                <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
-                        <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="{{ $schoolName }} Logo" class="h-10 w-10 rounded-full border border-slate-200 bg-white object-cover">
+                        <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="{{ $schoolName }} Logo" style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;object-fit:cover;border:1px solid rgba(255,255,255,0.2);background:#fff;">
+                    @else
+                        <div style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;letter-spacing:0.1em;color:#fff;">
+                            {{ \Illuminate\Support\Str::upper(collect(preg_split('/\s+/', trim($schoolName)))->filter()->take(2)->map(fn($w) => \Illuminate\Support\Str::substr($w,0,1))->implode('')) }}
+                        </div>
                     @endif
-                    <span class="font-display text-xl font-semibold tracking-tight text-white whitespace-nowrap">{{ $schoolName }}</span>
                 </a>
-
-                <nav class="hidden items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/90 p-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
                     @foreach($menuSections as $section)
                         @php
                             $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
                             $isCurrentSection = $section['id'] === $sectionKey;
                         @endphp
-                        <div class="relative" data-menu="{{ $section['id'] }}">
+                        <div class="relative shrink-0" data-menu="{{ $section['id'] }}">
                             @if(!empty($section['items']))
-                                <button type="button" data-menu-toggle aria-expanded="false" aria-controls="submenu-{{ $section['id'] }}" class="theme-nav-link inline-flex cursor-pointer items-center rounded-full px-4 py-2.5 transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 {{ $isCurrentSection ? 'theme-nav-link-active' : '' }}">
+                                <button type="button" data-menu-toggle aria-expanded="false" aria-controls="submenu-{{ $section['id'] }}" class="theme-nav-link inline-flex cursor-pointer items-center whitespace-nowrap rounded-xl px-3.5 py-2 text-[15px] font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 {{ $isCurrentSection ? 'theme-nav-link-active' : '' }}">
                                     {{ $section['label'] }}
                                 </button>
                                 <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
@@ -297,17 +352,16 @@
                                     </div>
                                 </div>
                             @else
-                                <a href="{{ $section['link'] }}" class="theme-nav-link inline-flex items-center rounded-full px-4 py-2.5 transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 {{ $isCurrentSection ? 'theme-nav-link-active' : '' }}">
+                                <a href="{{ $section['link'] }}" class="theme-nav-link inline-flex items-center whitespace-nowrap rounded-xl px-3.5 py-2 text-[15px] font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 {{ $isCurrentSection ? 'theme-nav-link-active' : '' }}">
                                     {{ $section['label'] }}
                                 </a>
                             @endif
                         </div>
                     @endforeach
                 </nav>
-
-                <div class="flex items-center gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
-                    <a href="{{ route('admission.apply') }}" class="theme-header-action-outline hidden rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">{{ $headerApplyText !== '' ? $headerApplyText : 'Apply' }}</a>
-                    <a href="{{ route('login') }}" class="theme-header-action-solid rounded-full px-3 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:px-4">{{ $headerPortalLoginText !== '' ? $headerPortalLoginText : 'Portal Login' }}</a>
+                <div class="flex items-center justify-end gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                    <a href="{{ route('admission.apply') }}" class="theme-header-action-outline hidden items-center whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">{{ $headerApplyText !== '' ? $headerApplyText : 'Apply' }}</a>
+                    <a href="{{ route('login') }}" class="theme-header-action-solid inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $headerPortalLoginText !== '' ? $headerPortalLoginText : 'Portal Login' }}</a>
                     <button type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/40 text-white transition duration-200 hover:bg-white/10 xl:hidden">
                         <svg data-mobile-menu-open-icon class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -363,13 +417,40 @@
         </header>
 
         <main class="relative z-0">
-            <section class="mx-auto max-w-7xl px-6 pb-14 pt-16 lg:px-8 lg:pt-20">
-                <div class="mb-8 max-w-3xl">
-                    <p class="inline-flex rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700">{{ $contactPageBadgeText !== '' ? $contactPageBadgeText : 'Contact Us' }}</p>
-                    <h1 class="mt-4 font-display text-3xl font-semibold leading-tight text-slate-900 sm:text-4xl">{{ $contactPageHeading !== '' ? $contactPageHeading : 'We are here to help you' }}</h1>
-                    <p class="mt-4 text-base leading-relaxed text-muted sm:text-lg">{{ $contactPageSubheading !== '' ? $contactPageSubheading : 'Send us a message and our admissions or support team will respond as soon as possible.' }}</p>
+            @php
+                $contactHeroImage = trim((string) ($publicPage['contact_hero_image'] ?? ''));
+            @endphp
+            {{-- ── Full-width hero ────────────────────────────────── --}}
+            <div class="relative w-full overflow-hidden" style="min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;">
+                @if($contactHeroImage !== '')
+                    <img src="{{ asset('storage/' . ltrim($contactHeroImage, '/')) }}"
+                        alt="{{ $contactPageHeading !== '' ? $contactPageHeading : 'Contact Us' }}"
+                        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.65) 100%);"></div>
+                @else
+                    <div style="position:absolute;inset:0;background:linear-gradient(135deg, {{ $submenuPrimaryColor }} 0%, rgba(45,29,92,0.85) 55%, {{ $submenuSecondaryColor }}44 100%);"></div>
+                    <div class="pointer-events-none" style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:38px 38px;"></div>
+                    <div class="pointer-events-none" style="position:absolute;inset:0;background:radial-gradient(circle at 80% 20%, {{ $submenuSecondaryColor }}22 0%, transparent 50%);"></div>
+                @endif
+                <div class="relative px-6 pb-16 pt-28 lg:px-8 lg:pb-20 lg:pt-36" style="max-width:80rem;margin:0 auto;width:100%;">
+                    <span class="inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.2em]"
+                        style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.28);color:#ffffff;backdrop-filter:blur(4px);">
+                        {{ $contactPageBadgeText !== '' ? $contactPageBadgeText : 'Contact Us' }}
+                    </span>
+                    <h1 class="mt-5 font-display font-bold leading-tight text-white"
+                        style="font-size:clamp(2rem,5vw,3.5rem);text-shadow:0 2px 20px rgba(0,0,0,0.4);max-width:44rem;">
+                        {{ $contactPageHeading !== '' ? $contactPageHeading : 'We are here to help you' }}
+                    </h1>
+                    @if($contactPageSubheading !== '')
+                        <div class="rich-text-content mt-4 max-w-2xl text-base font-medium leading-relaxed"
+                            style="color:rgba(255,255,255,0.82);text-shadow:0 1px 8px rgba(0,0,0,0.3);">
+                            {!! \App\Support\RichText::render($contactPageSubheading) !!}
+                        </div>
+                    @endif
                 </div>
+            </div>
 
+            <section class="mx-auto max-w-7xl px-6 pb-14 pt-10 lg:px-8">
                 @if(session('contact_success'))
                     <div class="mb-6 rounded-xl border border-secondary-200 bg-secondary-50 px-4 py-3 text-sm font-semibold text-secondary-700">
                         {{ session('contact_success') }}
@@ -448,7 +529,7 @@
                                     @foreach($contactItems as $contactItem)
                                         <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">
                                             <p class="text-sm font-semibold text-slate-900">{{ $contactItem['title'] }}</p>
-                                            <p class="mt-1 text-sm text-slate-600">{{ $contactItem['description'] }}</p>
+                                            <div class="rich-text-content mt-1 text-sm text-slate-600">{!! \App\Support\RichText::render($contactItem['description']) !!}</div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -669,3 +750,7 @@
     </script>
 </body>
 </html>
+
+
+
+

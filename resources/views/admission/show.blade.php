@@ -1,134 +1,372 @@
 @extends('layouts.app')
 
-@section('title', 'Application Details')
+@section('title', 'Application — ' . $admission->application_number)
 @section('header', 'Admission Application')
 
 @section('content')
-<div class="max-w-3xl">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-        <div class="flex justify-between items-start mb-6">
-            <div>
-                <h2 class="text-xl font-bold text-gray-900">{{ $admission->first_name }} {{ $admission->last_name }}</h2>
-                <p class="text-sm text-gray-500 mt-1">Application No: <span class="font-mono font-semibold text-gray-700">{{ $admission->application_number }}</span></p>
+@php
+    $sv = $admission->status->value;
+    $statusConfig = [
+        'pending'      => ['bg' => '#fef3c7', 'text' => '#92400e', 'dot' => '#f59e0b', 'label' => 'Pending'],
+        'under_review' => ['bg' => '#e0f2fe', 'text' => '#075985', 'dot' => '#0ea5e9', 'label' => 'Under Review'],
+        'screening'    => ['bg' => '#f3e8ff', 'text' => '#6b21a8', 'dot' => '#a855f7', 'label' => 'Screening'],
+        'approved'     => ['bg' => '#dcfce7', 'text' => '#14532d', 'dot' => '#22c55e', 'label' => 'Approved'],
+        'rejected'     => ['bg' => '#fee2e2', 'text' => '#7f1d1d', 'dot' => '#ef4444', 'label' => 'Rejected'],
+        'enrolled'     => ['bg' => '#dbeafe', 'text' => '#1e3a5f', 'dot' => '#3b82f6', 'label' => 'Enrolled'],
+    ];
+    $cfg      = $statusConfig[$sv] ?? ['bg' => '#f1f5f9', 'text' => '#475569', 'dot' => '#94a3b8', 'label' => ucfirst($sv)];
+    $isAdmin  = auth()->check() && in_array(auth()->user()->role->value, ['super_admin','school_admin','principal']);
+@endphp
+
+{{-- Flash --}}
+@if(session('success'))
+<div class="mb-6 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
+    <svg class="h-5 w-5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ session('success') }}
+</div>
+@endif
+
+{{-- Back link --}}
+<div class="mb-5">
+    <a href="{{ route('admission.index') }}"
+       class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-indigo-600 transition">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        All Applications
+    </a>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+    {{-- ── Left column (2/3) ────────────────────────────────────────── --}}
+    <div class="xl:col-span-2 space-y-5">
+
+        {{-- Application header card --}}
+        <div class="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+            <div class="h-1.5 w-full" style="background:linear-gradient(90deg,{{ $cfg['dot'] }},{{ $cfg['dot'] }}80);"></div>
+            <div class="p-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700 font-extrabold text-2xl">
+                        {{ strtoupper(substr($admission->first_name, 0, 1)) }}{{ strtoupper(substr($admission->last_name, 0, 1)) }}
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-900">{{ $admission->first_name }} {{ $admission->other_names ? $admission->other_names . ' ' : '' }}{{ $admission->last_name }}</h2>
+                        <p class="text-sm text-slate-400 mt-0.5">
+                            Application No: <span class="font-mono font-bold text-slate-600">{{ $admission->application_number }}</span>
+                        </p>
+                        @if($admission->admission_number)
+                        <p class="text-xs text-slate-400">Admission No: <span class="font-mono font-semibold text-blue-600">{{ $admission->admission_number }}</span></p>
+                        @endif
+                    </div>
+                </div>
+                <div class="flex flex-col items-start sm:items-end gap-2">
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold"
+                          style="background:{{ $cfg['bg'] }};color:{{ $cfg['text'] }};">
+                        <span class="h-2 w-2 rounded-full" style="background:{{ $cfg['dot'] }};"></span>
+                        {{ $cfg['label'] }}
+                    </span>
+                    <p class="text-xs text-slate-400">Applied {{ $admission->created_at->format('d M Y, g:ia') }}</p>
+                </div>
             </div>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold
-                {{ $admission->status->value === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                {{ $admission->status->value === 'approved' ? 'bg-green-100 text-green-800' : '' }}
-                {{ $admission->status->value === 'rejected' ? 'bg-red-100 text-red-800' : '' }}
-                {{ $admission->status->value === 'enrolled' ? 'bg-blue-100 text-blue-800' : '' }}
-                {{ $admission->status->value === 'screening' ? 'bg-purple-100 text-purple-800' : '' }}
-            ">
-                {{ ucfirst($admission->status->value) }}
-            </span>
         </div>
 
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-                <dt class="text-gray-500">Date of Birth</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->date_of_birth?->format('d M Y') }}</dd>
+        {{-- Student Details --}}
+        <div class="rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Student Information</h3>
             </div>
-            <div>
-                <dt class="text-gray-500">Gender</dt>
-                <dd class="font-medium text-gray-900">{{ ucfirst($admission->gender) }}</dd>
+            <div class="p-6">
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm">
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Date of Birth</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->date_of_birth?->format('d M Y') ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Gender</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->gender ? ucfirst($admission->gender) : '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Class Applied For</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->class_applied_for }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Academic Session</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->session?->name ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">State of Origin</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->state_of_origin ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">LGA</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->lga ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous School</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->previous_school ?? '—' }}</dd>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Home Address</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->address ?? '—' }}</dd>
+                    </div>
+                </dl>
             </div>
-            <div>
-                <dt class="text-gray-500">Class Applied For</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->class_applied_for }}</dd>
-            </div>
-            <div>
-                <dt class="text-gray-500">State of Origin</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->state_of_origin ?? 'N/A' }}</dd>
-            </div>
-            <div>
-                <dt class="text-gray-500">LGA</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->lga ?? 'N/A' }}</dd>
-            </div>
-            <div>
-                <dt class="text-gray-500">Previous School</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->previous_school ?? 'N/A' }}</dd>
-            </div>
-            <div class="md:col-span-2">
-                <dt class="text-gray-500">Address</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->address ?? 'N/A' }}</dd>
-            </div>
-        </dl>
-    </div>
+        </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-        <h3 class="font-semibold text-gray-800 mb-4">Parent / Guardian</h3>
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-                <dt class="text-gray-500">Name</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->parent_name }}</dd>
+        {{-- Parent / Guardian --}}
+        <div class="rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Parent / Guardian</h3>
             </div>
-            <div>
-                <dt class="text-gray-500">Phone</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->parent_phone }}</dd>
+            <div class="p-6">
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm">
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Full Name</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->parent_name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Phone</dt>
+                        <dd class="font-semibold text-slate-800">
+                            <a href="tel:{{ $admission->parent_phone }}" class="hover:text-indigo-600">{{ $admission->parent_phone }}</a>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email</dt>
+                        <dd class="font-semibold text-slate-800">
+                            @if($admission->parent_email)
+                            <a href="mailto:{{ $admission->parent_email }}" class="hover:text-indigo-600">{{ $admission->parent_email }}</a>
+                            @else
+                            —
+                            @endif
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Occupation</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->parent_occupation ?? '—' }}</dd>
+                    </div>
+                </dl>
             </div>
-            <div>
-                <dt class="text-gray-500">Email</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->parent_email ?? 'N/A' }}</dd>
-            </div>
-            <div>
-                <dt class="text-gray-500">Occupation</dt>
-                <dd class="font-medium text-gray-900">{{ $admission->parent_occupation ?? 'N/A' }}</dd>
-            </div>
-        </dl>
-    </div>
+        </div>
 
-    @auth
-    @if($admission->review_notes)
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-        <h3 class="font-semibold text-gray-800 mb-2">Review Notes</h3>
-        <p class="text-sm text-gray-700">{{ $admission->review_notes }}</p>
-        @if($admission->screening_score)
-        <p class="text-sm text-gray-500 mt-2">Screening Score: <strong>{{ $admission->screening_score }}%</strong></p>
+        {{-- Documents --}}
+        @php
+            $docs = [
+                'photo'              => ['label' => 'Passport Photo',    'icon' => 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                'birth_certificate'  => ['label' => 'Birth Certificate', 'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                'previous_result'    => ['label' => 'Previous Result',   'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+            ];
+            $hasAny = collect($docs)->keys()->some(fn($k) => $admission->$k);
+        @endphp
+        <div class="rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                </svg>
+                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Uploaded Documents</h3>
+            </div>
+            <div class="p-6">
+                @if($hasAny)
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    @foreach($docs as $field => $meta)
+                    @if($admission->$field)
+                    @php
+                        $path = $admission->$field;
+                        $ext  = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                        $isImg = in_array($ext, ['jpg','jpeg','png','webp']);
+                        $url   = asset('storage/' . ltrim($path, '/'));
+                    @endphp
+                    <a href="{{ $url }}" target="_blank"
+                       class="group flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        @if($isImg)
+                        <img src="{{ $url }}" alt="{{ $meta['label'] }}"
+                             class="h-24 w-full object-cover rounded-lg group-hover:opacity-90 transition">
+                        @else
+                        <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-white border border-slate-200 shadow-sm group-hover:border-indigo-300">
+                            <svg class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $meta['icon'] }}"/>
+                            </svg>
+                        </div>
+                        @endif
+                        <div class="text-center">
+                            <p class="text-xs font-semibold text-slate-600 group-hover:text-indigo-700">{{ $meta['label'] }}</p>
+                            <p class="text-[10px] text-slate-400 uppercase mt-0.5">{{ strtoupper($ext) }}</p>
+                        </div>
+                    </a>
+                    @endif
+                    @endforeach
+                </div>
+                @else
+                <p class="text-sm text-slate-400 text-center py-4">No documents uploaded.</p>
+                @endif
+            </div>
+        </div>
+
+        {{-- Review history --}}
+        @if($admission->review_notes || $admission->reviewed_at)
+        <div class="rounded-2xl border {{ $sv === 'approved' ? 'border-emerald-200 bg-emerald-50' : ($sv === 'rejected' ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50') }} p-6">
+            <div class="flex items-start gap-3">
+                <svg class="h-5 w-5 shrink-0 mt-0.5 {{ $sv === 'approved' ? 'text-emerald-600' : ($sv === 'rejected' ? 'text-red-500' : 'text-amber-500') }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <div class="flex-1">
+                    <p class="text-sm font-bold {{ $sv === 'approved' ? 'text-emerald-800' : ($sv === 'rejected' ? 'text-red-800' : 'text-amber-800') }} mb-1">Review Record</p>
+                    @if($admission->review_notes)
+                    <p class="text-sm {{ $sv === 'approved' ? 'text-emerald-700' : ($sv === 'rejected' ? 'text-red-700' : 'text-amber-700') }} leading-relaxed">{{ $admission->review_notes }}</p>
+                    @endif
+                    @if($admission->screening_score !== null)
+                    <p class="mt-2 text-xs font-semibold {{ $sv === 'approved' ? 'text-emerald-600' : ($sv === 'rejected' ? 'text-red-600' : 'text-amber-600') }}">
+                        Screening Score: {{ $admission->screening_score }}%
+                    </p>
+                    @endif
+                    <div class="mt-3 flex flex-wrap gap-3 text-xs text-slate-500">
+                        @if($admission->reviewer)
+                        <span>Reviewed by: <strong>{{ $admission->reviewer->first_name }} {{ $admission->reviewer->last_name }}</strong></span>
+                        @endif
+                        @if($admission->reviewed_at)
+                        <span>on {{ $admission->reviewed_at->format('d M Y, g:ia') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
         @endif
-    </div>
-    @endif
 
-    @if(in_array(auth()->user()->role->value, ['super_admin','school_admin','principal']))
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-        <h3 class="font-semibold text-gray-800 mb-4">Review Application</h3>
-        <form action="{{ route('admission.review', $admission) }}" method="POST" class="space-y-4">
-            @csrf
-            @method('PATCH')
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    </div>
+
+    {{-- ── Right column (1/3) ───────────────────────────────────────── --}}
+    <div class="space-y-5">
+
+        @if($isAdmin && $sv !== 'enrolled')
+        {{-- Review form --}}
+        <div class="rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Review Application</h3>
+            </div>
+            <form action="{{ route('admission.review', $admission) }}" method="POST" class="p-6 space-y-4">
+                @csrf
+                @method('PATCH')
+
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                        <option value="screening" {{ $admission->status->value === 'screening' ? 'selected' : '' }}>Screening</option>
-                        <option value="approved" {{ $admission->status->value === 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="rejected" {{ $admission->status->value === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Status <span class="text-red-500">*</span></label>
+                    <select name="status" required
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
+                        <option value="pending"      {{ $sv === 'pending'      ? 'selected' : '' }}>Pending</option>
+                        <option value="under_review" {{ $sv === 'under_review' ? 'selected' : '' }}>Under Review</option>
+                        <option value="screening"    {{ $sv === 'screening'    ? 'selected' : '' }}>Screening</option>
+                        <option value="approved"     {{ $sv === 'approved'     ? 'selected' : '' }}>Approved</option>
+                        <option value="rejected"     {{ $sv === 'rejected'     ? 'selected' : '' }}>Rejected</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Screening Score (%)</label>
-                    <input type="number" name="screening_score" min="0" max="100" value="{{ $admission->screening_score }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Screening Score (%)</label>
+                    <input type="number" name="screening_score" min="0" max="100"
+                        value="{{ old('screening_score', $admission->screening_score) }}"
+                        placeholder="0 – 100"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Review Notes</label>
+                    <textarea name="review_notes" rows="4"
+                        placeholder="Add notes about this application…"
+                        class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">{{ old('review_notes', $admission->review_notes) }}</textarea>
+                </div>
+
+                <button type="submit"
+                    class="w-full rounded-xl bg-indigo-600 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition">
+                    Save Review
+                </button>
+            </form>
+        </div>
+        @endif
+
+        {{-- Enroll button --}}
+        @if($isAdmin && $sv === 'approved')
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
+            <div class="flex items-start gap-3 mb-4">
+                <svg class="h-5 w-5 shrink-0 text-emerald-600 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <p class="text-sm font-bold text-emerald-800">Ready to Enroll</p>
+                    <p class="text-xs text-emerald-700 mt-0.5 leading-relaxed">Enrolling will create a student record, user account, and parent/guardian profile from this application data.</p>
                 </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Review Notes</label>
-                <textarea name="review_notes" rows="3"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">{{ $admission->review_notes }}</textarea>
-            </div>
-            <button type="submit" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700">
-                Update Review
-            </button>
-        </form>
-    </div>
+            <form action="{{ route('admission.enroll', $admission) }}" method="POST"
+                  onsubmit="return confirm('Enroll this student? A user account will be created with a temporary password.')">
+                @csrf
+                <button type="submit"
+                    class="w-full rounded-xl bg-emerald-600 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 transition">
+                    Enroll Student
+                </button>
+            </form>
+        </div>
+        @endif
 
-    @if($admission->status->value === 'approved')
-    <form action="{{ route('admission.enroll', $admission) }}" method="POST">
-        @csrf
-        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
-            onclick="return confirm('Enroll this student and create their account?')">
-            Enroll Student
-        </button>
-    </form>
-    @endif
-    @endif
-    @endauth
+        {{-- Enrolled notice --}}
+        @if($sv === 'enrolled')
+        <div class="rounded-2xl border border-blue-200 bg-blue-50 p-6 text-center">
+            <svg class="mx-auto h-10 w-10 text-blue-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <p class="text-sm font-bold text-blue-800">Student Enrolled</p>
+            @if($admission->admission_number)
+            <p class="text-xs text-blue-600 mt-1 font-mono">{{ $admission->admission_number }}</p>
+            @endif
+            <p class="text-xs text-blue-600 mt-1">This applicant has been successfully enrolled as a student.</p>
+        </div>
+        @endif
+
+        {{-- Application meta --}}
+        <div class="rounded-2xl border border-slate-100 bg-white shadow-sm p-6 space-y-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Application Info</h3>
+            <dl class="space-y-3 text-sm">
+                <div class="flex justify-between gap-2">
+                    <dt class="text-slate-500 shrink-0">Submitted</dt>
+                    <dd class="text-slate-800 font-semibold text-right">{{ $admission->created_at->format('d M Y') }}</dd>
+                </div>
+                <div class="flex justify-between gap-2">
+                    <dt class="text-slate-500 shrink-0">Last Updated</dt>
+                    <dd class="text-slate-800 font-semibold text-right">{{ $admission->updated_at->diffForHumans() }}</dd>
+                </div>
+                @if($admission->session)
+                <div class="flex justify-between gap-2">
+                    <dt class="text-slate-500 shrink-0">Session</dt>
+                    <dd class="text-slate-800 font-semibold text-right">{{ $admission->session->name }}</dd>
+                </div>
+                @endif
+            </dl>
+        </div>
+
+        {{-- Delete --}}
+        @if($isAdmin)
+        <div class="rounded-2xl border border-red-100 bg-red-50 p-5">
+            <p class="text-xs font-semibold text-red-700 mb-3 leading-relaxed">Permanently delete this application and all uploaded documents. This cannot be undone.</p>
+            <form action="{{ route('admission.destroy', $admission) }}" method="POST"
+                  onsubmit="return confirm('Delete this application permanently? All documents will also be removed.')">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="w-full rounded-xl border border-red-300 bg-white py-2 text-sm font-semibold text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 transition">
+                    Delete Application
+                </button>
+            </form>
+        </div>
+        @endif
+
+    </div>
 </div>
 @endsection

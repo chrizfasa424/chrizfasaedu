@@ -109,7 +109,7 @@
     </div>
 
     <div class="footer">
-        <p>This is a computer-generated report card | Powered by ChrizFasa EMS. | {{ $school->name }} &copy; {{ date('Y') }}</p>
+        <p>This is a computer-generated report card | Powered by ChrizFasa Academy. | {{ $school->name }} &copy; {{ date('Y') }}</p>
     </div>
 </body>
 </html>

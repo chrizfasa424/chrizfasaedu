@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $school?->name ?? 'ChrizFasa Academy' }} | {{ trim((string) ($publicPage['site_title_suffix'] ?? 'KG, Primary and Secondary School')) }}</title>
+    @php
+        $faviconPath = data_get($school?->settings, 'branding.favicon');
+    @endphp
+    @if($faviconPath)
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
+    @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    @php($theme = \App\Support\ThemePalette::fromPublicPage($publicPage))
+    @php
+        $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
+    @endphp
     <script>
         tailwind.config = {
             theme: {
@@ -221,9 +229,104 @@
     [x-cloak] {
         display: none !important;
     }
+
+    .rich-text-content p + p,
+    .rich-text-content ul + p,
+    .rich-text-content ol + p,
+    .rich-text-content p + ul,
+    .rich-text-content p + ol,
+    .rich-text-content figure,
+    .rich-text-content blockquote,
+    .rich-text-content h2 + p,
+    .rich-text-content h3 + p,
+    .rich-text-content h4 + p {
+        margin-top: 0.75rem;
+    }
+    .rich-text-content ul,
+    .rich-text-content ol {
+        margin-left: 1.25rem;
+        list-style-position: outside;
+    }
+    .rich-text-content ul {
+        list-style-type: disc;
+    }
+    .rich-text-content ol {
+        list-style-type: decimal;
+    }
+    .rich-text-content blockquote {
+        border-left: 3px solid rgba(45, 29, 92, 0.24);
+        margin-top: 0.75rem;
+        padding-left: 0.9rem;
+        font-style: italic;
+    }
+    .rich-text-content a {
+        color: var(--submenu-primary, #2D1D5C);
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.18em;
+    }
+    .rich-text-content img {
+        display: block;
+        max-width: 100%;
+        border-radius: 1rem;
+        box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.45);
+    }
+    .rich-text-content figure {
+        overflow: hidden;
+    }
+    .rich-text-content figcaption {
+        margin-top: 0.6rem;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+    .rich-text-content h2,
+    .rich-text-content h3,
+    .rich-text-content h4 {
+        color: var(--theme-heading, #0F172A);
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        line-height: 1.12;
+    }
+    .rich-text-display h2,
+    .rich-text-display h3,
+    .rich-text-display h4,
+    .rich-text-display p:first-child {
+        font-size: clamp(1.95rem, 4vw, 3rem);
+        font-weight: 600;
+        line-height: 1.08;
+    }
+    .rich-text-display p:not(:first-child) {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+    .rich-text-section-intro h2,
+    .rich-text-section-intro h3,
+    .rich-text-section-intro h4,
+    .rich-text-section-intro p:first-child {
+        font-size: clamp(1.9rem, 3vw, 2.4rem);
+        font-weight: 600;
+        line-height: 1.12;
+    }
+    .rich-text-section-intro p:not(:first-child) {
+        margin-top: 0.6rem;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--theme-body, #475569);
+    }
+    .rich-text-content-inverse blockquote {
+        border-left-color: rgba(223, 231, 83, 0.75);
+    }
+    .rich-text-content-inverse a,
+    .rich-text-content-inverse h2,
+    .rich-text-content-inverse h3,
+    .rich-text-content-inverse h4,
+    .rich-text-content-inverse figcaption {
+        color: #ffffff;
+    }
 </style>
 </head>
-@php
+<?php
     $schoolName = $school?->name ?? 'ChrizFasa Academy';
     $metrics = $publicPage['metrics'] ?? [];
     $whyChooseUs = $publicPage['why_choose_us'] ?? [];
@@ -458,14 +561,24 @@
         ->take(2)
         ->values();
 
+    // Returns the first-item submenu URL for a section, or null if the section has no items.
+    $firstSubmenuLink = function (string $section, array $items): ?string {
+        $first = collect($items)->first();
+        if ($first === null) { return null; }
+        $title = is_array($first) ? trim((string) data_get($first, 'title', '')) : trim((string) $first);
+        $slug  = \Illuminate\Support\Str::slug($title);
+        return $slug !== '' ? route('public.submenu', ['section' => $section, 'slug' => $slug]) : null;
+    };
+
     $menuSections = [
-        ['label' => ($programsLabel !== '' ? $programsLabel : 'Programs'), 'id' => 'programs', 'link' => '#programs', 'items' => collect($programs)->pluck('title')->filter()->values()->all()],
-        ['label' => ($admissionsLabel !== '' ? $admissionsLabel : 'Admissions'), 'id' => 'admissions', 'link' => '#admissions', 'items' => collect($admissions)->pluck('title')->filter()->values()->all()],
-        ['label' => ($academicsLabel !== '' ? $academicsLabel : 'Academics'), 'id' => 'academics', 'link' => '#academics', 'items' => collect($academics)->pluck('title')->filter()->values()->all()],
-        ['label' => ($facilitiesLabel !== '' ? $facilitiesLabel : 'Facilities'), 'id' => 'facilities', 'link' => '#facilities', 'items' => collect($facilities)->filter()->values()->all()],
-        ['label' => ($aboutLabel !== '' ? $aboutLabel : 'About Us'), 'id' => 'about', 'link' => '#about', 'items' => collect($aboutItems)->pluck('title')->filter()->values()->all()],
-        ['label' => ($studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life'), 'id' => 'student-life', 'link' => '#student-life', 'items' => collect($studentLifeItems)->pluck('title')->filter()->values()->all()],
-        ['label' => ($parentsLabel !== '' ? $parentsLabel : 'Parents'), 'id' => 'parents', 'link' => '#parents', 'items' => collect($parentsItems)->pluck('title')->filter()->values()->all()],
+        ['label' => 'Home', 'id' => 'home', 'link' => route('public.home'), 'items' => []],
+        ['label' => ($programsLabel !== '' ? $programsLabel : 'Programs'), 'id' => 'programs', 'link' => $firstSubmenuLink('programs', $programs) ?? route('public.home'), 'items' => collect($programs)->pluck('title')->filter()->values()->all()],
+        ['label' => ($admissionsLabel !== '' ? $admissionsLabel : 'Admissions'), 'id' => 'admissions', 'link' => $firstSubmenuLink('admissions', $admissions) ?? route('public.home'), 'items' => collect($admissions)->pluck('title')->filter()->values()->all()],
+        ['label' => ($academicsLabel !== '' ? $academicsLabel : 'Academics'), 'id' => 'academics', 'link' => $firstSubmenuLink('academics', $academics) ?? route('public.home'), 'items' => collect($academics)->pluck('title')->filter()->values()->all()],
+        ['label' => ($facilitiesLabel !== '' ? $facilitiesLabel : 'Facilities'), 'id' => 'facilities', 'link' => $firstSubmenuLink('facilities', $facilities) ?? route('public.home'), 'items' => collect($facilities)->filter()->values()->all()],
+        ['label' => ($aboutLabel !== '' ? $aboutLabel : 'About Us'), 'id' => 'about', 'link' => $firstSubmenuLink('about', $aboutItems) ?? route('public.home'), 'items' => collect($aboutItems)->pluck('title')->filter()->values()->all()],
+        ['label' => ($studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life'), 'id' => 'student-life', 'link' => $firstSubmenuLink('student-life', $studentLifeItems) ?? route('public.home'), 'items' => collect($studentLifeItems)->pluck('title')->filter()->values()->all()],
+        ['label' => ($parentsLabel !== '' ? $parentsLabel : 'Parents'), 'id' => 'parents', 'link' => $firstSubmenuLink('parents', $parentsItems) ?? route('public.home'), 'items' => collect($parentsItems)->pluck('title')->filter()->values()->all()],
         ['label' => ($contactLabel !== '' ? $contactLabel : 'Contact'), 'id' => 'contact', 'link' => route('public.contact'), 'items' => []],
     ];
     $siteBackgroundColor = $theme['site_background'];
@@ -478,21 +591,24 @@
     $themeSurfaceColor = $theme['surface'];
     $themeSoftSurfaceColor = $theme['soft_surface'];
     $themeStyle = $theme['theme_style'];
-@endphp
-<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }}; --theme-surface: {{ $themeSurfaceColor }}; --theme-soft-surface: {{ $themeSoftSurfaceColor }};">
+?>
+<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor ?? ($theme['site_background'] ?? '#F8FAFC') }}; color: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }}; --theme-heading: {{ $themeHeadingColor ?? ($theme['ink'] ?? '#0F172A') }}; --theme-body: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --theme-surface: {{ $themeSurfaceColor ?? ($theme['surface'] ?? '#FFFFFF') }}; --theme-soft-surface: {{ $themeSoftSurfaceColor ?? ($theme['soft_surface'] ?? '#EEF6FF') }};">
     <div class="relative overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
-        <header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur" style="background-color: {{ $headerBgColor }};">
+        <header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur" style="background-color: {{ $headerBgColor ?? ($theme['header'] ?? '#2D1D5C') }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
-                <a href="{{ route('public.home') }}" class="flex items-center gap-3 transition duration-200 hover:opacity-90">
+                <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
-                        <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="{{ $schoolName }} Logo" class="h-10 w-10 rounded-full object-cover border border-slate-200 bg-white">
+                        <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="{{ $schoolName }} Logo" style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;object-fit:cover;border:1px solid rgba(255,255,255,0.2);background:#fff;">
+                    @else
+                        <div style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;letter-spacing:0.1em;color:#fff;">
+                            {{ \Illuminate\Support\Str::upper(collect(preg_split('/\s+/', trim($schoolName)))->filter()->take(2)->map(fn($w) => \Illuminate\Support\Str::substr($w,0,1))->implode('')) }}
+                        </div>
                     @endif
-                    <span class="font-display text-xl font-semibold tracking-tight text-white whitespace-nowrap">{{ $schoolName }}</span>
                 </a>
-                <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
                     @foreach($menuSections as $section)
                         @php
                             $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
@@ -505,7 +621,7 @@
                                 <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
                                     <div
                                         class="theme-submenu-panel rounded-2xl border p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
-                                        style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};"
+                                        style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};"
                                     >
                                         <p class="theme-submenu-heading px-3 pb-1 text-xs font-bold uppercase tracking-[0.16em]">{{ $section['label'] }}</p>
                                         <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-submenu-link block rounded-lg px-3 py-2 text-sm font-semibold transition duration-200">
@@ -526,7 +642,7 @@
                         </div>
                     @endforeach
                 </nav>
-                <div class="flex items-center justify-end gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                <div class="flex items-center justify-end gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
                     <a href="{{ route('admission.apply') }}" class="theme-header-action-outline hidden items-center whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">{{ $headerApplyText !== '' ? $headerApplyText : 'Apply' }}</a>
                     <a href="{{ route('login') }}" class="theme-header-action-solid inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $headerPortalLoginText !== '' ? $headerPortalLoginText : 'Portal Login' }}</a>
                     <button type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/40 text-white transition duration-200 hover:bg-white/10 xl:hidden">
@@ -552,12 +668,12 @@
                     </button>
                 </div>
                 <div class="px-5 py-5">
-                    <div class="mb-4 flex flex-col gap-2" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                    <div class="mb-4 flex flex-col gap-2" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
                         <a href="{{ route('admission.apply') }}" class="theme-mobile-action-outline inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition duration-200">{{ $mobileApplyText !== '' ? $mobileApplyText : 'Apply Now' }}</a>
                         <a href="{{ route('login') }}" class="theme-mobile-action-solid inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200">{{ $mobilePortalLoginText !== '' ? $mobilePortalLoginText : 'Portal Login' }}</a>
                     </div>
 
-                    <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                    <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
                         @foreach($menuSections as $section)
                             <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
                                 @if(!empty($section['items']))
@@ -565,7 +681,7 @@
                                         <span>{{ $section['label'] }}</span>
                                         <span data-mobile-submenu-indicator class="text-lg font-medium leading-none text-slate-500">+</span>
                                     </button>
-                                    <div id="mobile-submenu-{{ $section['id'] }}" data-mobile-submenu-panel class="hidden px-4 pb-4" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                                    <div id="mobile-submenu-{{ $section['id'] }}" data-mobile-submenu-panel class="hidden px-4 pb-4" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
                                         <div class="space-y-1 border-l border-slate-200 pl-4">
                                             <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-mobile-submenu-link block rounded-lg px-3 py-2 text-sm font-semibold transition duration-200">{{ $section['label'] }} {{ $menuOverviewSuffix !== '' ? $menuOverviewSuffix : 'Overview' }}</a>
                                             @foreach($section['items'] as $menuItem)
@@ -590,7 +706,7 @@
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us' }}</h2>
                     @if($whyChooseUsIntro !== '')
-                        <p class="mt-2 max-w-3xl text-sm font-medium text-slate-600">{{ $whyChooseUsIntro }}</p>
+                        <div class="rich-text-content mt-2 max-w-3xl text-sm font-medium text-slate-600">{!! \App\Support\RichText::render($whyChooseUsIntro) !!}</div>
                     @endif
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         @foreach($whyChooseUsBanners as $item)
@@ -612,26 +728,9 @@
                                 <div class="relative flex h-full flex-col justify-end p-4">
                                     <h3 class="text-lg font-extrabold text-white">{{ $item['title'] ?: ($whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us') }}</h3>
                                     @if(!empty($item['description']))
-                                        <p class="mt-1 text-sm font-semibold leading-relaxed text-white/95">{{ $item['description'] }}</p>
+                                        <div class="rich-text-content rich-text-content-inverse mt-1 text-sm font-semibold leading-relaxed text-white/95">{!! \App\Support\RichText::render($item['description']) !!}</div>
                                     @endif
                                 </div>
-                            </article>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
-
-            <section id="programs" class="border-t border-slate-200 bg-white py-16">
-                <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="mb-10 max-w-3xl">
-                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $programsLabel !== '' ? $programsLabel : 'Programs' }}</p>
-                        <h2 class="mt-3 font-display text-3xl font-semibold text-slate-900">{{ $publicPage['programs_intro'] ?? 'Learning pathways for every stage.' }}</h2>
-                    </div>
-                    <div class="grid gap-6 lg:grid-cols-3">
-                        @foreach($programs as $item)
-                            <article id="programs-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('program-'.$loop->index)) }}" class="h-full rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:bg-white hover:shadow-md">
-                                <h3 class="font-display text-2xl font-semibold text-slate-900">{{ $item['title'] ?? '' }}</h3>
-                                <p class="mt-4 text-sm leading-relaxed text-slate-600">{{ $item['description'] ?? '' }}</p>
                             </article>
                         @endforeach
                     </div>
@@ -651,18 +750,14 @@
                                 <p class="text-base font-bold uppercase tracking-[0.24em] text-blue-700">
                                     {{ $academicsLabel !== '' ? $academicsLabel : 'Academic Excellence' }}
                                 </p>
-                                <h2 class="mt-2 font-[Georgia,serif] text-3xl font-semibold leading-tight text-slate-900 lg:text-[40px]">
-                                    {{ $publicPage['academics_intro'] ?? 'A Structured Learning Culture With Mentorship At The Center.' }}
-                                </h2>
-                                <p class="mt-3 text-base leading-relaxed text-slate-700">
-                                    {{ $academicsSupportText !== '' ? $academicsSupportText : 'Our school culture is built around consistent learning outcomes, high accountability, and teacher-student mentorship that develops confidence and character.' }}
-                                </p>
+                                <div class="rich-text-content rich-text-display mt-2 text-slate-900 font-[Georgia,serif]">{!! \App\Support\RichText::render($publicPage['academics_intro'] ?? 'A Structured Learning Culture With Mentorship At The Center.') !!}</div>
+                                <div class="rich-text-content mt-3 text-base leading-relaxed text-slate-700">{!! \App\Support\RichText::render($academicsSupportText !== '' ? $academicsSupportText : 'Our school culture is built around consistent learning outcomes, high accountability, and teacher-student mentorship that develops confidence and character.') !!}</div>
 
                                 <div class="mt-4 grid gap-3 sm:grid-cols-2">
                                     @foreach($academicHighlights as $item)
                                         <article id="academics-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('academic-highlight-'.$loop->index)) }}" class="rounded-2xl border border-slate-200 bg-slate-50 p-3.5">
                                             <h3 class="text-xl font-bold text-slate-900">{{ $item['title'] ?? '' }}</h3>
-                                            <p class="mt-1.5 text-base leading-relaxed text-slate-700">{{ $item['description'] ?? '' }}</p>
+                                            <div class="rich-text-content mt-1.5 text-base leading-relaxed text-slate-700">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
                                         </article>
                                     @endforeach
                                 </div>
@@ -697,13 +792,13 @@
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="mb-10 max-w-3xl">
                         <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life' }}</p>
-                        <h2 class="mt-3 font-display text-3xl font-semibold text-slate-900">{{ $publicPage['student_life_intro'] ?? '' }}</h2>
+                        <div class="rich-text-content rich-text-section-intro mt-3 text-slate-900">{!! \App\Support\RichText::render($publicPage['student_life_intro'] ?? '') !!}</div>
                     </div>
                     <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach($studentLifeItems as $item)
                             <div id="student-life-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('student-life-'.$loop->index)) }}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md">
                                 <h3 class="text-lg font-semibold text-slate-900">{{ $item['title'] ?? '' }}</h3>
-                                <p class="mt-2 text-sm text-slate-600">{{ $item['description'] ?? '' }}</p>
+                                <div class="rich-text-content mt-2 text-sm text-slate-600">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
                             </div>
                         @endforeach
                     </div>
@@ -789,14 +884,14 @@
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="mb-10 max-w-3xl">
                         <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $contactLabel !== '' ? $contactLabel : 'Contact' }}</p>
-                        <h2 class="mt-3 font-display text-3xl font-semibold text-slate-900">{{ $publicPage['contact_intro'] ?? '' }}</h2>
+                        <div class="rich-text-content rich-text-section-intro mt-3 text-slate-900">{!! \App\Support\RichText::render($publicPage['contact_intro'] ?? '') !!}</div>
                     </div>
                     <div class="grid gap-6 lg:grid-cols-2">
                         <div class="grid gap-4 sm:grid-cols-2">
                             @foreach($contactItems as $item)
                                 <div id="contact-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('contact-'.$loop->index)) }}" class="rounded-xl border border-slate-200 bg-white p-4 transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-sm">
                                     <h3 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $item['title'] ?? '' }}</h3>
-                                    <p class="mt-2 text-sm text-slate-600">{{ $item['description'] ?? '' }}</p>
+                                    <div class="rich-text-content mt-2 text-sm text-slate-600">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -1113,6 +1208,13 @@
     @endif
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 

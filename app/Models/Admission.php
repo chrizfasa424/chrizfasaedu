@@ -7,6 +7,7 @@ use App\Traits\BelongsToSchool;
 use App\Traits\HasAuditTrail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Admission extends Model
 {
@@ -56,8 +57,26 @@ class Admission extends Model
 
     public static function generateApplicationNumber(int $schoolId): string
     {
-        $year = date('Y');
-        $count = static::where('school_id', $schoolId)->whereYear('created_at', $year)->count() + 1;
-        return sprintf('APP/%s/%05d', $year, $count);
+        $year   = date('Y');
+        $prefix = "APP/{$year}/";
+
+        // Find the highest sequence already used this year for this school
+        $max = static::where('school_id', $schoolId)
+            ->where('application_number', 'like', $prefix . '%')
+            ->lockForUpdate()
+            ->max(DB::raw(
+                'CAST(SUBSTRING_INDEX(application_number, "/", -1) AS UNSIGNED)'
+            ));
+
+        $next = (int) $max + 1;
+
+        // Collision-safety loop (handles concurrent inserts)
+        $candidate = sprintf('%s%05d', $prefix, $next);
+        while (static::where('application_number', $candidate)->exists()) {
+            $next++;
+            $candidate = sprintf('%s%05d', $prefix, $next);
+        }
+
+        return $candidate;
     }
 }

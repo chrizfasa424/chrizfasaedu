@@ -144,6 +144,49 @@ class HeroSlideController extends Controller
             ->with('success', $isActive ? 'Hero slide activated.' : 'Hero slide deactivated.');
     }
 
+    public function reorder(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $validated = $request->validate([
+            'order' => ['required', 'array', 'min:1', 'max:4'],
+            'order.*' => ['required', 'integer'],
+        ]);
+
+        $slides = $this->scopedSlidesQuery()
+            ->whereIn('id', $validated['order'])
+            ->get()
+            ->keyBy('id');
+
+        if ($slides->count() !== count($validated['order'])) {
+            abort(422, 'Unable to reorder hero slides.');
+        }
+
+        collect($validated['order'])
+            ->values()
+            ->each(function (int $slideId, int $index) use ($slides): void {
+                $slide = $slides->get($slideId);
+
+                if (!$slide) {
+                    return;
+                }
+
+                $slide->timestamps = false;
+                $slide->order = $index + 1;
+                $slide->saveQuietly();
+            });
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Hero slide order updated successfully.',
+            ]);
+        }
+
+        return redirect()
+            ->route('system.hero-slides.index')
+            ->with('success', 'Hero slide order updated successfully.');
+    }
+
     private function validateSlide(Request $request, ?HeroSlide $slide): array
     {
         $imageRule = $slide ? 'nullable' : 'required';

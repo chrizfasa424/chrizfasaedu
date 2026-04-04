@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Result;
+use App\Support\PublicPageContent;
 
 class ParentPortalController extends Controller
 {
@@ -21,6 +22,8 @@ class ParentPortalController extends Controller
             ];
         });
 
-        return view('portal.parent.dashboard', compact('parent', 'childrenData'));
+        $publicPage = PublicPageContent::forSchool(auth()->user()->school);
+
+        return view('portal.parent.dashboard', compact('parent', 'childrenData', 'publicPage'));
     }
 }

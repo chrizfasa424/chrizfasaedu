@@ -4,7 +4,10 @@ namespace App\Http\Controllers\System;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Support\DomainHelper;
 use App\Support\PublicPageContent;
+use App\Support\SchoolContext;
+use App\Support\RichText;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Crypt;
@@ -12,14 +15,127 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
+use Illuminate\Validation\Rule;
 
 class SettingsController extends Controller
 {
-    public function index()
+    private const SETTINGS_PAGE_META = [
+        'site-settings' => [
+            'title' => 'Site Settings',
+            'description' => 'Manage the school identity, contact details, logo, favicon, domain, and shared navigation text.',
+            'partial' => 'system.settings.partials.site-settings',
+        ],
+        'hero-header' => [
+            'title' => 'Hero Header',
+            'description' => 'Control the hero heading, call-to-action buttons, homepage metrics, and first-impression content.',
+            'partial' => 'system.settings.partials.hero-header',
+        ],
+        'site-theme' => [
+            'title' => 'Site Theme',
+            'description' => 'Adjust the school brand palette, header color, footer color, and overall visual theme.',
+            'partial' => 'system.settings.partials.site-theme',
+        ],
+        'programs' => [
+            'title' => 'Programs',
+            'description' => 'Edit the Programs menu label, section intro, and card content shown on the public site.',
+            'partial' => 'system.settings.partials.programs',
+        ],
+        'admissions' => [
+            'title' => 'Admissions',
+            'description' => 'Update admission wording, steps, labels, and admission-related actions for new families.',
+            'partial' => 'system.settings.partials.admissions',
+        ],
+        'academics' => [
+            'title' => 'Academic Excellence',
+            'description' => 'Manage the academics headline, supporting content, highlight cards, and academic visual assets.',
+            'partial' => 'system.settings.partials.academics',
+        ],
+        'facilities' => [
+            'title' => 'Facilities',
+            'description' => 'Control the facilities label, intro text, and facilities list displayed on the website.',
+            'partial' => 'system.settings.partials.facilities',
+        ],
+        'about-us' => [
+            'title' => 'About Us',
+            'description' => 'Update the About Us section copy, cards, and the supporting Why Choose Us banner content.',
+            'partial' => 'system.settings.partials.about-us',
+        ],
+        'student-life' => [
+            'title' => 'Student Life',
+            'description' => 'Edit the Student Life label, intro, and supporting student experience content.',
+            'partial' => 'system.settings.partials.student-life',
+        ],
+        'parents' => [
+            'title' => 'Parents',
+            'description' => 'Manage parent-facing content, portal button text, and homepage parent cards.',
+            'partial' => 'system.settings.partials.parents',
+        ],
+        'contact-us' => [
+            'title' => 'Contact Us',
+            'description' => 'Manage contact page headings, form labels, contact details, submenu helper text, and map content.',
+            'partial' => 'system.settings.partials.contact-us',
+        ],
+        'testimonials' => [
+            'title' => 'Testimonials',
+            'description' => 'Control testimonial section labels, form wording, and testimonial slider copy.',
+            'partial' => 'system.settings.partials.testimonials',
+        ],
+        'footer' => [
+            'title' => 'Footer',
+            'description' => 'Edit footer branding, footer description, quick links, resources, social links, and footer contact details.',
+            'partial' => 'system.settings.partials.footer',
+        ],
+        'faqs' => [
+            'title' => 'FAQs',
+            'description' => 'Manage frequently asked questions displayed on the public Admissions FAQs page. Add, edit, or remove questions and categories.',
+            'partial' => 'system.settings.partials.faqs',
+        ],
+        'system-preferences' => [
+            'title' => 'System Preferences',
+            'description' => 'Configure grading, communication, SMTP delivery, and operational preferences.',
+            'partial' => 'system.settings.partials.system-preferences',
+        ],
+    ];
+
+    public function index(Request $request)
     {
         $this->ensureAdminAccess();
 
-        $school = auth()->user()->school;
+        $page = $this->normalizeSettingsPage((string) $request->query('section', 'site-settings')) ?? 'site-settings';
+
+        return redirect()->route('settings.page', ['page' => $page]);
+    }
+
+    public function showPage(string $page)
+    {
+        $this->ensureAdminAccess();
+
+        $page = $this->normalizeSettingsPage($page);
+        abort_unless($page !== null, 404);
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        return view('system.settings.page', array_merge(
+            $this->settingsViewData($school),
+            [
+                'school' => $school,
+                'settingsPage' => $page,
+                'pageMeta' => self::SETTINGS_PAGE_META[$page],
+                'settingsPages' => collect(self::SETTINGS_PAGE_META)
+                    ->map(function (array $meta, string $key) {
+                        return [
+                            'key' => $key,
+                            'title' => $meta['title'],
+                            'route' => route('settings.page', ['page' => $key]),
+                        ];
+                    })
+                    ->values(),
+            ]
+        ));
+    }
+
+    private function settingsViewData($school): array
+    {
         $publicPage = PublicPageContent::forSchool($school);
         $normalizeBannerItems = function (array $items) {
             return collect($items)
@@ -111,9 +227,10 @@ class SettingsController extends Controller
             })
             ->all();
 
-        return view('system.settings', [
+        return [
             'school' => $school,
             'publicPage' => $publicPage,
+            'faviconPath' => data_get($school->settings, 'branding.favicon'),
             'whyChooseUsText' => implode(PHP_EOL, $publicPage['why_choose_us'] ?? []),
             'facilitiesText' => implode(PHP_EOL, $publicPage['facilities'] ?? []),
             'admissionStepsText' => implode(PHP_EOL, $publicPage['admission_steps'] ?? []),
@@ -131,23 +248,31 @@ class SettingsController extends Controller
             'whyChooseUsBannerSlots' => $whyChooseUsBannerSlots,
             'aboutBannerSlots' => $aboutBannerSlots,
             'academicsVisualSlots' => $academicsVisualSlots,
-        ]);
+        ];
     }
 
     public function update(Request $request)
     {
         $this->ensureAdminAccess();
 
-        $school = auth()->user()->school;
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $request->merge([
+            'domain' => DomainHelper::normalize($request->input('domain')),
+        ]);
+
         $validated = $request->validate([
             'name' => 'required|string',
             'email' => 'required|email',
             'phone' => 'required|string',
             'address' => 'required|string',
+            'domain' => ['nullable', 'string', 'max:190', 'regex:/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i', Rule::unique('schools', 'domain')->ignore($school->id)],
             'motto' => 'nullable|string',
             'website' => 'nullable|url',
             'logo' => 'nullable|image|max:2048',
             'remove_logo' => 'nullable|boolean',
+            'favicon' => 'nullable|file|mimes:ico,png,jpg,jpeg,webp|max:1024',
+            'remove_favicon' => 'nullable|boolean',
         ]);
 
         if ($request->boolean('remove_logo') && $school->logo) {
@@ -162,7 +287,29 @@ class SettingsController extends Controller
             $validated['logo'] = $request->file('logo')->store('schools/logos', 'public');
         }
 
+        $settings = $school->settings ?? [];
+        $branding = (array) ($settings['branding'] ?? []);
+        $existingFavicon = trim((string) ($branding['favicon'] ?? ''));
+
+        if ($request->boolean('remove_favicon') && $existingFavicon !== '') {
+            Storage::disk('public')->delete($existingFavicon);
+            $existingFavicon = '';
+        }
+
+        if ($request->hasFile('favicon')) {
+            if ($existingFavicon !== '') {
+                Storage::disk('public')->delete($existingFavicon);
+            }
+
+            $existingFavicon = $request->file('favicon')->store('schools/favicons', 'public');
+        }
+
+        $branding['favicon'] = $existingFavicon !== '' ? $existingFavicon : null;
+        $settings['branding'] = $branding;
+
+        unset($validated['favicon'], $validated['remove_favicon']);
         $school->update($validated);
+        $school->update(['settings' => $settings]);
 
         return back()->with('success', 'Settings updated.');
     }
@@ -171,7 +318,7 @@ class SettingsController extends Controller
     {
         $this->ensureAdminAccess();
 
-        $school = auth()->user()->school;
+        $school = auth()->user()->school ?? SchoolContext::current();
         $settings = $school->settings ?? [];
         $validated = $request->validate([
             'grading_system' => 'nullable|in:waec,custom',
@@ -222,11 +369,198 @@ class SettingsController extends Controller
         return back()->with('success', 'System settings updated.');
     }
 
+    public function uploadSubmenuImage(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $validated = $request->validate([
+            'section' => 'required|string|alpha_dash|max:60',
+            'slug' => 'required|string|max:120|regex:/^[a-z0-9\-]+$/',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:6144',
+        ]);
+
+        $settings = $school->settings ?? [];
+        $publicPage = (array) ($settings['public_page'] ?? []);
+        $submenuImages = (array) ($publicPage['submenu_images'] ?? []);
+        $sectionImages = (array) ($submenuImages[$validated['section']] ?? []);
+
+        $existingPath = trim((string) ($sectionImages[$validated['slug']] ?? ''));
+        if ($existingPath !== '') {
+            Storage::disk('public')->delete($existingPath);
+        }
+
+        $path = $validated['image']->store('schools/submenu-images/' . $school->id, 'public');
+
+        $sectionImages[$validated['slug']] = $path;
+        $submenuImages[$validated['section']] = $sectionImages;
+        $publicPage['submenu_images'] = $submenuImages;
+        $settings['public_page'] = $publicPage;
+        $school->update(['settings' => $settings]);
+
+        return back()->with('success', 'Submenu image uploaded.');
+    }
+
+    public function removeSubmenuImage(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $validated = $request->validate([
+            'section' => 'required|string|alpha_dash|max:60',
+            'slug' => 'required|string|max:120|regex:/^[a-z0-9\-]+$/',
+        ]);
+
+        $settings = $school->settings ?? [];
+        $publicPage = (array) ($settings['public_page'] ?? []);
+        $submenuImages = (array) ($publicPage['submenu_images'] ?? []);
+        $sectionImages = (array) ($submenuImages[$validated['section']] ?? []);
+
+        $existingPath = trim((string) ($sectionImages[$validated['slug']] ?? ''));
+        if ($existingPath !== '') {
+            Storage::disk('public')->delete($existingPath);
+        }
+
+        unset($sectionImages[$validated['slug']]);
+        $submenuImages[$validated['section']] = $sectionImages;
+        $publicPage['submenu_images'] = $submenuImages;
+        $settings['public_page'] = $publicPage;
+        $school->update(['settings' => $settings]);
+
+        return back()->with('success', 'Submenu image removed.');
+    }
+
+    public function saveSubmenuContent(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $validated = $request->validate([
+            'section'             => 'required|string|alpha_dash|max:60',
+            'slug'                => 'required|string|max:120|regex:/^[a-z0-9\-]+$/',
+            'description'         => 'nullable|string|max:8000',
+            'highlight_one_title' => 'nullable|string|max:120',
+            'highlight_one_text'  => 'nullable|string|max:2000',
+            'highlight_two_title' => 'nullable|string|max:120',
+            'highlight_two_text'  => 'nullable|string|max:2000',
+        ]);
+
+        $settings = $school->settings ?? [];
+        $publicPage = (array) ($settings['public_page'] ?? []);
+        $submenuContent = (array) ($publicPage['submenu_content'] ?? []);
+        $sectionContent = (array) ($submenuContent[$validated['section']] ?? []);
+
+        $existing = (array) ($sectionContent[$validated['slug']] ?? []);
+        $sectionContent[$validated['slug']] = array_merge($existing, [
+            'description'         => RichText::sanitize($validated['description'] ?? ''),
+            'highlight_one_title' => trim((string) ($validated['highlight_one_title'] ?? '')),
+            'highlight_one_text'  => RichText::sanitize($validated['highlight_one_text'] ?? ''),
+            'highlight_two_title' => trim((string) ($validated['highlight_two_title'] ?? '')),
+            'highlight_two_text'  => RichText::sanitize($validated['highlight_two_text'] ?? ''),
+        ]);
+
+        $submenuContent[$validated['section']] = $sectionContent;
+        $publicPage['submenu_content'] = $submenuContent;
+        $settings['public_page'] = $publicPage;
+        $school->update(['settings' => $settings]);
+
+        return back()->with('success', 'Content saved.');
+    }
+
+    public function uploadSubmenuContentImage(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $validated = $request->validate([
+            'section' => 'required|string|alpha_dash|max:60',
+            'slug'    => 'required|string|max:120|regex:/^[a-z0-9\-]+$/',
+            'slot'    => 'required|in:image_one,image_two',
+            'image'   => 'required|image|mimes:jpg,jpeg,png,webp|max:6144',
+        ]);
+
+        $settings = $school->settings ?? [];
+        $publicPage = (array) ($settings['public_page'] ?? []);
+        $submenuContent = (array) ($publicPage['submenu_content'] ?? []);
+        $sectionContent = (array) ($submenuContent[$validated['section']] ?? []);
+        $itemContent = (array) ($sectionContent[$validated['slug']] ?? []);
+
+        $existingPath = trim((string) ($itemContent[$validated['slot']] ?? ''));
+        if ($existingPath !== '') {
+            Storage::disk('public')->delete($existingPath);
+        }
+
+        $path = $validated['image']->store('schools/submenu-images/' . $school->id, 'public');
+
+        $itemContent[$validated['slot']] = $path;
+        $sectionContent[$validated['slug']] = $itemContent;
+        $submenuContent[$validated['section']] = $sectionContent;
+        $publicPage['submenu_content'] = $submenuContent;
+        $settings['public_page'] = $publicPage;
+        $school->update(['settings' => $settings]);
+
+        return back()->with('success', 'Page image uploaded.');
+    }
+
+    public function removeSubmenuContentImage(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $validated = $request->validate([
+            'section' => 'required|string|alpha_dash|max:60',
+            'slug'    => 'required|string|max:120|regex:/^[a-z0-9\-]+$/',
+            'slot'    => 'required|in:image_one,image_two',
+        ]);
+
+        $settings = $school->settings ?? [];
+        $publicPage = (array) ($settings['public_page'] ?? []);
+        $submenuContent = (array) ($publicPage['submenu_content'] ?? []);
+        $sectionContent = (array) ($submenuContent[$validated['section']] ?? []);
+        $itemContent = (array) ($sectionContent[$validated['slug']] ?? []);
+
+        $existingPath = trim((string) ($itemContent[$validated['slot']] ?? ''));
+        if ($existingPath !== '') {
+            Storage::disk('public')->delete($existingPath);
+        }
+
+        unset($itemContent[$validated['slot']]);
+        $sectionContent[$validated['slug']] = $itemContent;
+        $submenuContent[$validated['section']] = $sectionContent;
+        $publicPage['submenu_content'] = $submenuContent;
+        $settings['public_page'] = $publicPage;
+        $school->update(['settings' => $settings]);
+
+        return back()->with('success', 'Page image removed.');
+    }
+
+    public function uploadRichTextImage(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $validated = $request->validate([
+            'upload' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+
+        $path = $validated['upload']->store('schools/public/editor/' . ($school?->id ?? 'shared'), 'public');
+
+        return response()->json([
+            'url' => asset('storage/' . ltrim($path, '/')),
+        ]);
+    }
+
     public function sendSmtpTest(Request $request)
     {
         $this->ensureAdminAccess();
 
-        $school = auth()->user()->school;
+        $school = auth()->user()->school ?? SchoolContext::current();
         $settings = $school->settings ?? [];
         $smtp = (array) ($settings['smtp'] ?? []);
 
@@ -275,14 +609,16 @@ class SettingsController extends Controller
     {
         $this->ensureAdminAccess();
 
-        $school = auth()->user()->school;
+        $school = auth()->user()->school ?? SchoolContext::current();
         $settings = $school->settings ?? [];
         $publicPage = PublicPageContent::forSchool($school);
+
+        $this->mergeMissingPublicPageInputs($request, $publicPage);
 
         $validated = $request->validate([
             'hero_badge_text' => 'nullable|string|max:120',
             'hero_title' => 'required|string|max:220',
-            'hero_subtitle' => 'nullable|string|max:1200',
+            'hero_subtitle' => 'nullable|string|max:4000',
             'cta_primary_text' => 'nullable|string|max:60',
             'cta_secondary_text' => 'nullable|string|max:60',
             'site_background_color' => ['nullable', 'regex:/^#[A-Fa-f0-9]{6}$/'],
@@ -299,21 +635,21 @@ class SettingsController extends Controller
             'admission_session_text' => 'nullable|string|max:120',
             'footer_note' => 'nullable|string|max:255',
 
-            'programs_intro' => 'nullable|string|max:400',
-            'admissions_intro' => 'nullable|string|max:400',
-            'academics_intro' => 'nullable|string|max:400',
-            'academics_support_text' => 'nullable|string|max:700',
+            'programs_intro' => 'nullable|string|max:4000',
+            'admissions_intro' => 'nullable|string|max:4000',
+            'academics_intro' => 'nullable|string|max:4000',
+            'academics_support_text' => 'nullable|string|max:4000',
             'academic_highlight_1_title' => 'nullable|string|max:120',
-            'academic_highlight_1_description' => 'nullable|string|max:260',
+            'academic_highlight_1_description' => 'nullable|string|max:1500',
             'academic_highlight_2_title' => 'nullable|string|max:120',
-            'academic_highlight_2_description' => 'nullable|string|max:260',
-            'facilities_intro' => 'nullable|string|max:400',
-            'about_intro' => 'nullable|string|max:400',
-            'student_life_intro' => 'nullable|string|max:400',
-            'parents_intro' => 'nullable|string|max:400',
-            'contact_intro' => 'nullable|string|max:400',
+            'academic_highlight_2_description' => 'nullable|string|max:1500',
+            'facilities_intro' => 'nullable|string|max:4000',
+            'about_intro' => 'nullable|string|max:4000',
+            'student_life_intro' => 'nullable|string|max:4000',
+            'parents_intro' => 'nullable|string|max:4000',
+            'contact_intro' => 'nullable|string|max:4000',
             'why_choose_us_label' => 'nullable|string|max:120',
-            'why_choose_us_intro' => 'nullable|string|max:400',
+            'why_choose_us_intro' => 'nullable|string|max:4000',
             'programs_label' => 'nullable|string|max:120',
             'admissions_label' => 'nullable|string|max:120',
             'admissions_process_label' => 'nullable|string|max:120',
@@ -361,7 +697,7 @@ class SettingsController extends Controller
             'contact_page_browser_title' => 'nullable|string|max:120',
             'contact_page_badge_text' => 'nullable|string|max:120',
             'contact_page_heading' => 'nullable|string|max:180',
-            'contact_page_subheading' => 'nullable|string|max:320',
+            'contact_page_subheading' => 'nullable|string|max:4000',
             'contact_form_title' => 'nullable|string|max:120',
             'contact_form_full_name_label' => 'nullable|string|max:120',
             'contact_form_full_name_placeholder' => 'nullable|string|max:160',
@@ -384,9 +720,9 @@ class SettingsController extends Controller
             'contact_status_send_error_text' => 'nullable|string|max:220',
             'contact_status_success_text' => 'nullable|string|max:220',
             'submenu_highlight_one_title' => 'nullable|string|max:120',
-            'submenu_highlight_one_text' => 'nullable|string|max:320',
+            'submenu_highlight_one_text' => 'nullable|string|max:1500',
             'submenu_highlight_two_title' => 'nullable|string|max:120',
-            'submenu_highlight_two_text' => 'nullable|string|max:320',
+            'submenu_highlight_two_text' => 'nullable|string|max:1500',
             'submenu_primary_button_text' => 'nullable|string|max:120',
             'submenu_back_button_prefix' => 'nullable|string|max:120',
             'submenu_more_in_prefix' => 'nullable|string|max:120',
@@ -441,12 +777,12 @@ class SettingsController extends Controller
             'parent_banner_4_title' => 'nullable|string|max:120',
             'parent_banner_5_title' => 'nullable|string|max:120',
             'parent_banner_6_title' => 'nullable|string|max:120',
-            'parent_banner_1_description' => 'nullable|string|max:260',
-            'parent_banner_2_description' => 'nullable|string|max:260',
-            'parent_banner_3_description' => 'nullable|string|max:260',
-            'parent_banner_4_description' => 'nullable|string|max:260',
-            'parent_banner_5_description' => 'nullable|string|max:260',
-            'parent_banner_6_description' => 'nullable|string|max:260',
+            'parent_banner_1_description' => 'nullable|string|max:1500',
+            'parent_banner_2_description' => 'nullable|string|max:1500',
+            'parent_banner_3_description' => 'nullable|string|max:1500',
+            'parent_banner_4_description' => 'nullable|string|max:1500',
+            'parent_banner_5_description' => 'nullable|string|max:1500',
+            'parent_banner_6_description' => 'nullable|string|max:1500',
             'remove_parent_banner_1' => 'nullable|boolean',
             'remove_parent_banner_2' => 'nullable|boolean',
             'remove_parent_banner_3' => 'nullable|boolean',
@@ -461,10 +797,10 @@ class SettingsController extends Controller
             'why_banner_2_title' => 'nullable|string|max:120',
             'why_banner_3_title' => 'nullable|string|max:120',
             'why_banner_4_title' => 'nullable|string|max:120',
-            'why_banner_1_description' => 'nullable|string|max:260',
-            'why_banner_2_description' => 'nullable|string|max:260',
-            'why_banner_3_description' => 'nullable|string|max:260',
-            'why_banner_4_description' => 'nullable|string|max:260',
+            'why_banner_1_description' => 'nullable|string|max:1500',
+            'why_banner_2_description' => 'nullable|string|max:1500',
+            'why_banner_3_description' => 'nullable|string|max:1500',
+            'why_banner_4_description' => 'nullable|string|max:1500',
             'remove_why_banner_1' => 'nullable|boolean',
             'remove_why_banner_2' => 'nullable|boolean',
             'remove_why_banner_3' => 'nullable|boolean',
@@ -481,12 +817,12 @@ class SettingsController extends Controller
             'about_banner_4_title' => 'nullable|string|max:120',
             'about_banner_5_title' => 'nullable|string|max:120',
             'about_banner_6_title' => 'nullable|string|max:120',
-            'about_banner_1_description' => 'nullable|string|max:260',
-            'about_banner_2_description' => 'nullable|string|max:260',
-            'about_banner_3_description' => 'nullable|string|max:260',
-            'about_banner_4_description' => 'nullable|string|max:260',
-            'about_banner_5_description' => 'nullable|string|max:260',
-            'about_banner_6_description' => 'nullable|string|max:260',
+            'about_banner_1_description' => 'nullable|string|max:1500',
+            'about_banner_2_description' => 'nullable|string|max:1500',
+            'about_banner_3_description' => 'nullable|string|max:1500',
+            'about_banner_4_description' => 'nullable|string|max:1500',
+            'about_banner_5_description' => 'nullable|string|max:1500',
+            'about_banner_6_description' => 'nullable|string|max:1500',
             'remove_about_banner_1' => 'nullable|boolean',
             'remove_about_banner_2' => 'nullable|boolean',
             'remove_about_banner_3' => 'nullable|boolean',
@@ -494,7 +830,7 @@ class SettingsController extends Controller
             'remove_about_banner_5' => 'nullable|boolean',
             'remove_about_banner_6' => 'nullable|boolean',
 
-            'footer_description' => 'nullable|string|max:700',
+            'footer_description' => 'nullable|string|max:4000',
             'footer_contact_address' => 'nullable|string|max:255',
             'footer_contact_phone' => 'nullable|string|max:80',
             'footer_contact_email' => 'nullable|email|max:190',
@@ -503,7 +839,40 @@ class SettingsController extends Controller
             'footer_social_links_text' => 'nullable|string',
             'footer_logo' => 'nullable|image|max:4096',
             'remove_footer_logo' => 'nullable|boolean',
+            'contact_hero_image' => 'nullable|image|max:6144',
+            'remove_contact_hero_image' => 'nullable|boolean',
         ]);
+
+        foreach ([
+            'hero_subtitle',
+            'programs_intro',
+            'admissions_intro',
+            'academics_intro',
+            'academics_support_text',
+            'facilities_intro',
+            'about_intro',
+            'student_life_intro',
+            'parents_intro',
+            'contact_intro',
+            'why_choose_us_intro',
+            'contact_page_subheading',
+            'submenu_highlight_one_text',
+            'submenu_highlight_two_text',
+            'academic_highlight_1_description',
+            'academic_highlight_2_description',
+            'footer_description',
+        ] as $richField) {
+            $validated[$richField] = RichText::sanitize($validated[$richField] ?? '');
+        }
+
+        foreach (range(1, 6) as $index) {
+            $validated["parent_banner_{$index}_description"] = RichText::sanitize($validated["parent_banner_{$index}_description"] ?? '');
+            $validated["about_banner_{$index}_description"] = RichText::sanitize($validated["about_banner_{$index}_description"] ?? '');
+        }
+
+        foreach (range(1, 4) as $index) {
+            $validated["why_banner_{$index}_description"] = RichText::sanitize($validated["why_banner_{$index}_description"] ?? '');
+        }
 
         $publicPage['hero_badge_text'] = $validated['hero_badge_text'] ?? '';
         $publicPage['hero_title'] = $validated['hero_title'];
@@ -928,6 +1297,19 @@ class SettingsController extends Controller
         }
         $publicPage['footer_logo'] = $existingFooterLogo;
 
+        $existingContactHero = trim((string) ($publicPage['contact_hero_image'] ?? ''));
+        if ($request->boolean('remove_contact_hero_image') && $existingContactHero !== '') {
+            Storage::disk('public')->delete($existingContactHero);
+            $existingContactHero = '';
+        }
+        if ($request->hasFile('contact_hero_image')) {
+            if ($existingContactHero !== '') {
+                Storage::disk('public')->delete($existingContactHero);
+            }
+            $existingContactHero = $request->file('contact_hero_image')->store('schools/public/contact-hero', 'public');
+        }
+        $publicPage['contact_hero_image'] = $existingContactHero;
+
         $settings['public_page'] = $publicPage;
 
         $school->update(['settings' => $settings]);
@@ -939,7 +1321,7 @@ class SettingsController extends Controller
     {
         $this->ensureAdminAccess();
 
-        $school = auth()->user()->school;
+        $school = auth()->user()->school ?? SchoolContext::current();
         $settings = $school->settings ?? [];
         $publicPage = PublicPageContent::forSchool($school);
         $defaults = PublicPageContent::defaults($school);
@@ -962,11 +1344,212 @@ class SettingsController extends Controller
         return back()->with('success', 'Theme colors reset to default values.');
     }
 
+    public function saveFaqs(Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $school = auth()->user()->school ?? SchoolContext::current();
+
+        $validated = $request->validate([
+            'categories'                  => 'nullable|array|max:20',
+            'categories.*.id'             => 'required|string|max:80|regex:/^[a-z0-9\-]+$/',
+            'categories.*.label'          => 'required|string|max:120',
+            'categories.*.items'          => 'nullable|array|max:50',
+            'categories.*.items.*.q'      => 'required|string|max:400',
+            'categories.*.items.*.a'      => 'required|string|max:3000',
+        ]);
+
+        $faqs = collect($validated['categories'] ?? [])
+            ->map(function (array $cat) {
+                $id    = trim((string) ($cat['id'] ?? ''));
+                $label = trim((string) ($cat['label'] ?? ''));
+                if ($id === '' || $label === '') {
+                    return null;
+                }
+                $items = collect($cat['items'] ?? [])
+                    ->map(function (array $item) {
+                        $q = trim(strip_tags((string) ($item['q'] ?? '')));
+                        $a = trim((string) ($item['a'] ?? ''));
+                        return ($q !== '' && $a !== '') ? compact('q', 'a') : null;
+                    })
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                return ['id' => $id, 'label' => $label, 'items' => $items];
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        $settings = $school->settings ?? [];
+        $publicPage = (array) ($settings['public_page'] ?? []);
+        $publicPage['faqs'] = $faqs;
+        $settings['public_page'] = $publicPage;
+        $school->update(['settings' => $settings]);
+
+        return back()->with('success', 'FAQs saved successfully.');
+    }
+
     private function ensureAdminAccess(): void
     {
         $role = auth()->user()?->role?->value;
 
         abort_unless(in_array($role, [UserRole::SUPER_ADMIN->value, UserRole::SCHOOL_ADMIN->value], true), 403);
+    }
+
+    private function normalizeSettingsPage(string $page): ?string
+    {
+        return array_key_exists($page, self::SETTINGS_PAGE_META) ? $page : null;
+    }
+
+    private function mergeMissingPublicPageInputs(Request $request, array $publicPage): void
+    {
+        $defaults = [
+            'hero_badge_text' => $publicPage['hero_badge_text'] ?? '',
+            'hero_title' => $publicPage['hero_title'] ?? '',
+            'hero_subtitle' => $publicPage['hero_subtitle'] ?? '',
+            'cta_primary_text' => $publicPage['cta_primary_text'] ?? '',
+            'cta_secondary_text' => $publicPage['cta_secondary_text'] ?? '',
+            'site_background_color' => $publicPage['site_background_color'] ?? '#F8FAFC',
+            'primary_color' => $publicPage['primary_color'] ?? '#2D1D5C',
+            'secondary_color' => $publicPage['secondary_color'] ?? '#DFE753',
+            'heading_text_color' => $publicPage['heading_text_color'] ?? '#0F172A',
+            'body_text_color' => $publicPage['body_text_color'] ?? '#475569',
+            'surface_color' => $publicPage['surface_color'] ?? '#FFFFFF',
+            'soft_surface_color' => $publicPage['soft_surface_color'] ?? '#EEF6FF',
+            'theme_style' => $publicPage['theme_style'] ?? 'modern-grid',
+            'header_bg_color' => $publicPage['header_bg_color'] ?? '#2D1D5C',
+            'footer_bg_color' => $publicPage['footer_bg_color'] ?? '#2D1D5C',
+            'footer_separator_color' => $publicPage['footer_separator_color'] ?? '#DFE753',
+            'admission_session_text' => $publicPage['admission_session_text'] ?? '',
+            'footer_note' => $publicPage['footer_note'] ?? '',
+            'programs_intro' => $publicPage['programs_intro'] ?? '',
+            'admissions_intro' => $publicPage['admissions_intro'] ?? '',
+            'academics_intro' => $publicPage['academics_intro'] ?? '',
+            'academics_support_text' => $publicPage['academics_support_text'] ?? '',
+            'academic_highlight_1_title' => data_get($publicPage, 'academic_highlights.0.title', 'STEM-First Curriculum'),
+            'academic_highlight_1_description' => data_get($publicPage, 'academic_highlights.0.description', 'Coding, robotics, and science labs integrated into junior and senior classes.'),
+            'academic_highlight_2_title' => data_get($publicPage, 'academic_highlights.1.title', 'Student Leadership'),
+            'academic_highlight_2_description' => data_get($publicPage, 'academic_highlights.1.description', 'Public speaking, media, and entrepreneurship clubs with measurable outcomes.'),
+            'facilities_intro' => $publicPage['facilities_intro'] ?? '',
+            'about_intro' => $publicPage['about_intro'] ?? '',
+            'student_life_intro' => $publicPage['student_life_intro'] ?? '',
+            'parents_intro' => $publicPage['parents_intro'] ?? '',
+            'contact_intro' => $publicPage['contact_intro'] ?? '',
+            'why_choose_us_label' => $publicPage['why_choose_us_label'] ?? 'Why Choose Us',
+            'why_choose_us_intro' => $publicPage['why_choose_us_intro'] ?? '',
+            'programs_label' => $publicPage['programs_label'] ?? 'Programs',
+            'admissions_label' => $publicPage['admissions_label'] ?? 'Admissions',
+            'admissions_process_label' => $publicPage['admissions_process_label'] ?? 'Admissions Process',
+            'academics_label' => $publicPage['academics_label'] ?? 'Academic Excellence',
+            'facilities_label' => $publicPage['facilities_label'] ?? 'Facilities',
+            'about_label' => $publicPage['about_label'] ?? 'About Us',
+            'student_life_label' => $publicPage['student_life_label'] ?? 'Student Life',
+            'parents_label' => $publicPage['parents_label'] ?? 'Parents',
+            'contact_label' => $publicPage['contact_label'] ?? 'Contact',
+            'header_apply_text' => $publicPage['header_apply_text'] ?? 'Apply',
+            'header_portal_login_text' => $publicPage['header_portal_login_text'] ?? 'Portal Login',
+            'mobile_apply_text' => $publicPage['mobile_apply_text'] ?? 'Apply Now',
+            'mobile_portal_login_text' => $publicPage['mobile_portal_login_text'] ?? 'Portal Login',
+            'hero_slider_placeholder_text' => $publicPage['hero_slider_placeholder_text'] ?? 'Upload hero slider images from Admin Settings to personalize this section.',
+            'parents_portal_button_text' => $publicPage['parents_portal_button_text'] ?? 'Parent Portal Login',
+            'testimonials_badge_text' => $publicPage['testimonials_badge_text'] ?? 'Testimonials',
+            'testimonials_heading' => $publicPage['testimonials_heading'] ?? 'What Parents and Student Say',
+            'testimonials_subheading' => $publicPage['testimonials_subheading'] ?? 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.',
+            'testimonials_form_title' => $publicPage['testimonials_form_title'] ?? 'Share Your Testimonial',
+            'testimonials_form_name_label' => $publicPage['testimonials_form_name_label'] ?? 'Full Name',
+            'testimonials_form_name_placeholder' => $publicPage['testimonials_form_name_placeholder'] ?? 'Enter your full name',
+            'testimonials_form_role_label' => $publicPage['testimonials_form_role_label'] ?? 'Role or Context',
+            'testimonials_form_role_placeholder' => $publicPage['testimonials_form_role_placeholder'] ?? 'Parent, student, alumni, guardian, etc.',
+            'testimonials_form_rating_label' => $publicPage['testimonials_form_rating_label'] ?? 'Rating',
+            'testimonials_form_message_label' => $publicPage['testimonials_form_message_label'] ?? 'Your Testimonial',
+            'testimonials_form_message_placeholder' => $publicPage['testimonials_form_message_placeholder'] ?? 'Write your experience with the school...',
+            'testimonials_form_submit_text' => $publicPage['testimonials_form_submit_text'] ?? 'Submit Testimonial',
+            'testimonials_slider_title' => $publicPage['testimonials_slider_title'] ?? 'Approved Testimonials',
+            'testimonials_empty_text' => $publicPage['testimonials_empty_text'] ?? 'No testimonials have been approved yet. Be the first to share your experience.',
+            'testimonials_success_text' => $publicPage['testimonials_success_text'] ?? 'Thank you for your testimonial. It has been submitted for admin review.',
+            'testimonials_error_text' => $publicPage['testimonials_error_text'] ?? 'Unable to submit testimonial. Please try again.',
+            'quick_contact_label' => $publicPage['quick_contact_label'] ?? 'Quick Contact',
+            'contact_phone_label' => $publicPage['contact_phone_label'] ?? 'Phone',
+            'contact_whatsapp_label' => $publicPage['contact_whatsapp_label'] ?? 'WhatsApp',
+            'contact_email_label' => $publicPage['contact_email_label'] ?? 'Email',
+            'contact_address_label' => $publicPage['contact_address_label'] ?? 'Address',
+            'visit_booking_button_text' => $publicPage['visit_booking_button_text'] ?? 'Visit Booking',
+            'quick_apply_button_text' => $publicPage['quick_apply_button_text'] ?? 'Apply Now',
+            'menu_overview_suffix' => $publicPage['menu_overview_suffix'] ?? 'Overview',
+            'site_title_suffix' => $publicPage['site_title_suffix'] ?? 'KG, Primary and Secondary School',
+            'mobile_menu_title' => $publicPage['mobile_menu_title'] ?? 'Menu',
+            'footer_quick_links_title' => $publicPage['footer_quick_links_title'] ?? 'Quick Links',
+            'footer_resources_title' => $publicPage['footer_resources_title'] ?? 'Resources',
+            'footer_contact_title' => $publicPage['footer_contact_title'] ?? 'Contact',
+            'contact_page_browser_title' => $publicPage['contact_page_browser_title'] ?? 'Contact Us',
+            'contact_page_badge_text' => $publicPage['contact_page_badge_text'] ?? 'Contact Us',
+            'contact_page_heading' => $publicPage['contact_page_heading'] ?? 'We are here to help you',
+            'contact_page_subheading' => $publicPage['contact_page_subheading'] ?? 'Send us a message and our admissions or support team will respond as soon as possible.',
+            'contact_form_title' => $publicPage['contact_form_title'] ?? 'Contact Us Form',
+            'contact_form_full_name_label' => $publicPage['contact_form_full_name_label'] ?? 'Full Name',
+            'contact_form_full_name_placeholder' => $publicPage['contact_form_full_name_placeholder'] ?? 'Enter your full name',
+            'contact_form_email_label' => $publicPage['contact_form_email_label'] ?? 'Email',
+            'contact_form_email_placeholder' => $publicPage['contact_form_email_placeholder'] ?? 'you@example.com',
+            'contact_form_phone_label' => $publicPage['contact_form_phone_label'] ?? 'Phone Number',
+            'contact_form_phone_placeholder' => $publicPage['contact_form_phone_placeholder'] ?? '+234...',
+            'contact_form_subject_label' => $publicPage['contact_form_subject_label'] ?? 'Subject',
+            'contact_form_subject_placeholder' => $publicPage['contact_form_subject_placeholder'] ?? 'How can we help?',
+            'contact_form_message_label' => $publicPage['contact_form_message_label'] ?? 'Message',
+            'contact_form_message_placeholder' => $publicPage['contact_form_message_placeholder'] ?? 'Write your message...',
+            'contact_form_submit_text' => $publicPage['contact_form_submit_text'] ?? 'Send Message',
+            'contact_info_title' => $publicPage['contact_info_title'] ?? 'Contact Information',
+            'contact_not_provided_text' => $publicPage['contact_not_provided_text'] ?? 'Not provided yet',
+            'contact_more_details_title' => $publicPage['contact_more_details_title'] ?? 'More Contact Details',
+            'map_embed_title_text' => $publicPage['map_embed_title_text'] ?? 'School map',
+            'submenu_description_fallback_template' => $publicPage['submenu_description_fallback_template'] ?? 'The {title} area gives learners and families structured support, practical guidance, and a balanced learning experience.',
+            'contact_status_unavailable_text' => $publicPage['contact_status_unavailable_text'] ?? 'Contact form is currently unavailable. Please try again later.',
+            'contact_status_recipient_missing_text' => $publicPage['contact_status_recipient_missing_text'] ?? 'Contact recipient is not configured by admin yet.',
+            'contact_status_send_error_text' => $publicPage['contact_status_send_error_text'] ?? 'Message could not be sent right now. Please try again shortly.',
+            'contact_status_success_text' => $publicPage['contact_status_success_text'] ?? 'Thank you. Your message has been received. Our team will contact you shortly.',
+            'submenu_highlight_one_title' => $publicPage['submenu_highlight_one_title'] ?? 'What Students Gain',
+            'submenu_highlight_one_text' => $publicPage['submenu_highlight_one_text'] ?? 'Learners receive practical support, clear expectations, and measurable progress across this focus area.',
+            'submenu_highlight_two_title' => $publicPage['submenu_highlight_two_title'] ?? 'How We Deliver',
+            'submenu_highlight_two_text' => $publicPage['submenu_highlight_two_text'] ?? 'Delivery is structured to be balanced and moderate, so parents and students can follow the process with confidence.',
+            'submenu_primary_button_text' => $publicPage['submenu_primary_button_text'] ?? 'Start Admission',
+            'submenu_back_button_prefix' => $publicPage['submenu_back_button_prefix'] ?? 'Back to',
+            'submenu_more_in_prefix' => $publicPage['submenu_more_in_prefix'] ?? 'More In',
+            'whatsapp' => $publicPage['whatsapp'] ?? '',
+            'visit_booking_url' => $publicPage['visit_booking_url'] ?? '',
+            'map_embed_url' => $publicPage['map_embed_url'] ?? '',
+            'footer_description' => $publicPage['footer_description'] ?? '',
+            'footer_contact_address' => $publicPage['footer_contact_address'] ?? '',
+            'footer_contact_phone' => $publicPage['footer_contact_phone'] ?? '',
+            'footer_contact_email' => $publicPage['footer_contact_email'] ?? '',
+            'metric_1_value' => data_get($publicPage, 'metrics.0.value', ''),
+            'metric_1_label' => data_get($publicPage, 'metrics.0.label', ''),
+            'metric_2_value' => data_get($publicPage, 'metrics.1.value', ''),
+            'metric_2_label' => data_get($publicPage, 'metrics.1.label', ''),
+            'metric_3_value' => data_get($publicPage, 'metrics.2.value', ''),
+            'metric_3_label' => data_get($publicPage, 'metrics.2.label', ''),
+            'metric_4_value' => data_get($publicPage, 'metrics.3.value', ''),
+            'metric_4_label' => data_get($publicPage, 'metrics.3.label', ''),
+            'program_items_text' => PublicPageContent::itemsToLines($publicPage['programs'] ?? []),
+            'admissions_items_text' => PublicPageContent::itemsToLines($publicPage['admissions'] ?? []),
+            'academics_items_text' => PublicPageContent::itemsToLines($publicPage['academics'] ?? []),
+            'about_items_text' => PublicPageContent::itemsToLines($publicPage['about'] ?? []),
+            'student_life_items_text' => PublicPageContent::itemsToLines($publicPage['student_life'] ?? []),
+            'parents_items_text' => PublicPageContent::itemsToLines($publicPage['parents'] ?? []),
+            'contact_items_text' => PublicPageContent::itemsToLines($publicPage['contact_items'] ?? []),
+            'footer_quick_links_text' => PublicPageContent::itemsToLines($publicPage['footer_quick_links'] ?? []),
+            'footer_resources_text' => PublicPageContent::itemsToLines($publicPage['footer_resources'] ?? []),
+            'footer_social_links_text' => PublicPageContent::itemsToLines($publicPage['footer_social_links'] ?? []),
+            'why_choose_us' => PublicPageContent::arrayToLines($publicPage['why_choose_us'] ?? []),
+            'facilities' => PublicPageContent::arrayToLines($publicPage['facilities'] ?? []),
+            'admission_steps' => PublicPageContent::arrayToLines($publicPage['admission_steps'] ?? []),
+        ];
+
+        foreach ($defaults as $key => $value) {
+            if (!$request->exists($key)) {
+                $request->merge([$key => $value]);
+            }
+        }
     }
 
     private function configureSmtpMailer(array $smtp, string $fallbackFromName): void
@@ -1006,5 +1589,9 @@ class SettingsController extends Controller
         app('mail.manager')->purge('smtp');
     }
 }
+
+
+
+
 
 

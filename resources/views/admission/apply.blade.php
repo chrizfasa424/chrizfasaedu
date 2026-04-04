@@ -3,197 +3,634 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apply for Admission - ChrizFasa EMS</title>
+    <meta name="robots" content="noindex">
+    <title>Apply for Admission — {{ $school?->name ?? 'Our School' }}</title>
+    @if($faviconPath)
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
+    @endif
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    @include('public.partials.nav-styles')
     <style>
+        * { font-family: 'Manrope', sans-serif; box-sizing: border-box; }
+        :root {
+            --primary: {{ $primary }};
+            --secondary: {{ $secondary }};
+            --hover-text: {{ data_get($theme, 'primary_text_on_secondary', '#2D1D5C') }};
+        }
+        .field-input {
+            width: 100%;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 0.875rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            color: #1e293b;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .field-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent); }
+        .field-input.error { border-color: #ef4444; background: #fff5f5; }
+        .field-label { display: block; font-size: 0.8125rem; font-weight: 700; color: #475569; margin-bottom: 0.375rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .step-panel { display: none; }
+        .step-panel.active { display: block; }
+        .step-circle { width: 2.25rem; height: 2.25rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; border: 2px solid #e2e8f0; color: #94a3b8; background: #fff; transition: all 0.3s; flex-shrink: 0; }
+        .step-circle.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .step-circle.done { background: #22c55e; border-color: #22c55e; color: #fff; }
+        .step-line { flex: 1; height: 2px; background: #e2e8f0; transition: background 0.3s; }
+        .step-line.done { background: #22c55e; }
+        .btn-primary { background: var(--primary); color: #fff; border: none; border-radius: 9999px; padding: 0.75rem 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-outline { background: #fff; color: #475569; border: 1.5px solid #e2e8f0; border-radius: 9999px; padding: 0.75rem 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+        .review-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
+        @media(max-width:640px) { .review-row { grid-template-columns: 1fr; } }
+        .file-drop { border: 2px dashed #cbd5e1; border-radius: 1rem; padding: 1.5rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+        .file-drop:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 4%, transparent); }
+        .error-msg { display: none; color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; font-weight: 600; }
+        .error-msg.show { display: block; }
+
+        /* Grid pattern background */
         body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .theme-cta-solid {
-            background-color: var(--submenu-primary, #2D1D5C);
-            border: 1px solid var(--submenu-primary, #2D1D5C);
-            color: #ffffff;
-        }
-
-        .theme-cta-solid:hover,
-        .theme-cta-solid:focus-visible {
-            background-color: var(--submenu-secondary, #DFE753);
-            border-color: var(--submenu-secondary, #DFE753);
-            color: var(--submenu-hover-text, #2D1D5C);
-        }
-            .text-gray-900 {
-            color: var(--theme-heading, #0F172A) !important;
-        }
-
-        .text-gray-500 {
-            color: var(--theme-body, #475569) !important;
+            background-color: {{ $bg }};
+            background-image:
+                linear-gradient({{ $primary }}18 1px, transparent 1px),
+                linear-gradient(90deg, {{ $primary }}18 1px, transparent 1px);
+            background-size: 32px 32px;
         }
     </style>
 </head>
-@php
-    $schoolName = $school?->name ?? 'ChrizFasa EMS';
-    $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
-    $siteBackgroundColor = $theme['site_background'];
-    $headerBgColor = $theme['header'];
-    $submenuPrimaryColor = $theme['primary']['500'];
-    $submenuSecondaryColor = $theme['secondary']['500'];
-    $submenuHoverTextColor = $theme['primary_text_on_secondary'];
-    $themeHeadingColor = $theme['ink'];
-    $themeBodyColor = $theme['muted'];
-@endphp
-<body class="min-h-screen" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }};">
+<body style="min-height:100vh;color:{{ $muted }};">
 
-    <!-- Header -->
-    <nav class="shadow-sm border-b border-white/10" style="background-color: {{ $headerBgColor }};">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-xl font-bold text-white">{{ $schoolName }}</a>
-            <a href="{{ route('login') }}" class="text-sm text-white hover:underline font-medium">Already applied? Login</a>
+@include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
+
+<div class="max-w-3xl mx-auto px-4 py-10">
+
+    {{-- Page header --}}
+    <div class="text-center mb-8">
+        <span class="inline-block rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white mb-4" style="background:{{ $primary }};">Online Admission</span>
+        <h1 class="text-3xl font-extrabold" style="color:{{ $ink }};">Apply for Admission</h1>
+        <p class="mt-2 text-sm" style="color:{{ $muted }};">Complete all sections carefully. Fields marked <span class="text-red-500 font-bold">*</span> are required.</p>
+    </div>
+
+    {{-- Server-side errors --}}
+    @if($errors->any())
+    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4">
+        <p class="text-sm font-bold text-red-700 mb-2">Please fix the following errors:</p>
+        <ul class="list-disc list-inside space-y-1">
+            @foreach($errors->all() as $error)
+            <li class="text-sm text-red-600">{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    {{-- Step indicator --}}
+    <div class="mb-8 flex items-center px-2" id="step-indicator">
+        @php $stepLabels = ['Student','Parent','Location','Documents','Review']; @endphp
+        @foreach($stepLabels as $i => $label)
+            <div class="flex flex-col items-center gap-1" style="flex:0 0 auto;">
+                <div class="step-circle {{ $i === 0 ? 'active' : '' }}" id="circle-{{ $i + 1 }}">
+                    <span id="circle-label-{{ $i + 1 }}">{{ $i + 1 }}</span>
+                </div>
+                <span class="text-[10px] font-bold uppercase tracking-wide hidden sm:block" style="color:{{ $muted }};">{{ $label }}</span>
+            </div>
+            @if(!$loop->last)
+            <div class="step-line" id="line-{{ $i + 1 }}"></div>
+            @endif
+        @endforeach
+    </div>
+
+    {{-- Step progress text --}}
+    <p class="text-xs font-semibold text-center mb-6" style="color:{{ $muted }};" id="step-label-text">Step 1 of 5 — Student Information</p>
+
+    {{-- FORM --}}
+    <form id="admission-form" action="{{ route('admission.apply.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+        @csrf
+        <input type="hidden" name="school_id" value="{{ $school?->id }}">
+        {{-- Honeypot (MUST stay empty — bots fill this) --}}
+        <div aria-hidden="true" style="position:absolute;left:-9999px;overflow:hidden;height:0;opacity:0;pointer-events:none;">
+            <input type="text" name="hp_website" id="hp_website" value="" autocomplete="off" tabindex="-1">
         </div>
-    </nav>
 
-    <div class="max-w-4xl mx-auto px-4 py-10">
-
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Online Admission Application</h1>
-            <p class="text-gray-500 mt-2">Fill in the details below to apply for admission</p>
-        </div>
-
-        @if($errors->any())
-        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-            <ul class="list-disc list-inside text-sm">
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
-
-        <form action="{{ route('admission.apply.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
-            @csrf
-
-            <!-- Student Information -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-5 pb-3 border-b">Student Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {{-- ═══════════════════════════════════════════════
+             STEP 1 — Student Information
+        ════════════════════════════════════════════════ --}}
+        <div class="step-panel active" id="panel-1">
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white text-sm font-bold" style="background:{{ $primary }};">1</span>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="first_name" value="{{ old('first_name') }}" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <h2 class="text-base font-bold" style="color:{{ $ink }};">Student Information</h2>
+                        <p class="text-xs mt-0.5" style="color:{{ $muted }};">Personal details of the applicant</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="field-label">First Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="first_name" id="f_first_name" value="{{ old('first_name') }}" class="field-input" placeholder="e.g. Chisom" autocomplete="given-name" required>
+                        <span class="error-msg" id="err-first_name">First name is required</span>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="last_name" value="{{ old('last_name') }}" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <label class="field-label">Last Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="last_name" id="f_last_name" value="{{ old('last_name') }}" class="field-input" placeholder="e.g. Okafor" autocomplete="family-name" required>
+                        <span class="error-msg" id="err-last_name">Last name is required</span>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="field-label">Other Names</label>
+                        <input type="text" name="other_names" value="{{ old('other_names') }}" class="field-input" placeholder="Middle name or other names (optional)" autocomplete="additional-name">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Other Names</label>
-                        <input type="text" name="other_names" value="{{ old('other_names') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <label class="field-label">Gender <span class="text-red-500">*</span></label>
+                        <select name="gender" id="f_gender" class="field-input" required>
+                            <option value="">— Select Gender —</option>
+                            <option value="male"   {{ old('gender') === 'male'   ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                        <span class="error-msg" id="err-gender">Please select gender</span>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Gender <span class="text-red-500">*</span></label>
-                        <select name="gender" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            <option value="">-- Select --</option>
-                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                        <label class="field-label">Date of Birth <span class="text-red-500">*</span></label>
+                        <input type="date" name="date_of_birth" id="f_date_of_birth" value="{{ old('date_of_birth') }}" max="{{ date('Y-m-d', strtotime('-1 year')) }}" class="field-input" required>
+                        <span class="error-msg" id="err-date_of_birth">Date of birth is required</span>
+                    </div>
+                    <div>
+                        <label class="field-label">Class Applying For <span class="text-red-500">*</span></label>
+                        <input type="text" name="class_applied_for" id="f_class_applied_for" value="{{ old('class_applied_for') }}" class="field-input" placeholder="e.g. JSS 1, Primary 3, KG 2" required>
+                        <span class="error-msg" id="err-class_applied_for">Class is required</span>
+                    </div>
+                    <div>
+                        <label class="field-label">Previous School</label>
+                        <input type="text" name="previous_school" value="{{ old('previous_school') }}" class="field-input" placeholder="Name of last school attended (optional)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ═══════════════════════════════════════════════
+             STEP 2 — Parent / Guardian
+        ════════════════════════════════════════════════ --}}
+        <div class="step-panel" id="panel-2">
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white text-sm font-bold" style="background:{{ $primary }};">2</span>
+                    <div>
+                        <h2 class="text-base font-bold" style="color:{{ $ink }};">Parent / Guardian Information</h2>
+                        <p class="text-xs mt-0.5" style="color:{{ $muted }};">Contact details of parent or guardian</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="sm:col-span-2">
+                        <label class="field-label">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="parent_name" id="f_parent_name" value="{{ old('parent_name') }}" class="field-input" placeholder="e.g. Mr. Emmanuel Okafor" autocomplete="name" required>
+                        <span class="error-msg" id="err-parent_name">Parent/guardian name is required</span>
+                    </div>
+                    <div>
+                        <label class="field-label">Phone Number <span class="text-red-500">*</span></label>
+                        <input type="tel" name="parent_phone" id="f_parent_phone" value="{{ old('parent_phone') }}" class="field-input" placeholder="e.g. 08012345678" autocomplete="tel" required>
+                        <span class="error-msg" id="err-parent_phone">A valid phone number is required</span>
+                    </div>
+                    <div>
+                        <label class="field-label">Email Address <span class="text-red-500">*</span></label>
+                        <input type="email" name="parent_email" id="f_parent_email" value="{{ old('parent_email') }}" class="field-input" placeholder="e.g. parent@example.com" autocomplete="email" required>
+                        <span class="error-msg" id="err-parent_email">A valid email address is required</span>
+                        <p class="text-xs mt-1.5" style="color:{{ $muted }};">
+                            <svg class="inline h-3 w-3 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Admission status updates will be sent to this email
+                        </p>
+                    </div>
+                    <div>
+                        <label class="field-label">Relationship to Student</label>
+                        <select name="parent_relationship" class="field-input">
+                            <option value="">— Select —</option>
+                            <option value="Father" {{ old('parent_relationship') === 'Father' ? 'selected' : '' }}>Father</option>
+                            <option value="Mother" {{ old('parent_relationship') === 'Mother' ? 'selected' : '' }}>Mother</option>
+                            <option value="Guardian" {{ old('parent_relationship') === 'Guardian' ? 'selected' : '' }}>Guardian</option>
+                            <option value="Other" {{ old('parent_relationship') === 'Other' ? 'selected' : '' }}>Other</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-red-500">*</span></label>
-                        <input type="date" name="date_of_birth" value="{{ old('date_of_birth') }}" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Class Applying For <span class="text-red-500">*</span></label>
-                        <input type="text" name="class_applied_for" value="{{ old('class_applied_for') }}" placeholder="e.g. JSS 1, SSS 2" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">State of Origin</label>
-                        <input type="text" name="state_of_origin" value="{{ old('state_of_origin') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">LGA</label>
-                        <input type="text" name="lga" value="{{ old('lga') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Previous School</label>
-                        <input type="text" name="previous_school" value="{{ old('previous_school') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    </div>
-                    <div class="md:col-span-3">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Home Address</label>
-                        <textarea name="address" rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">{{ old('address') }}</textarea>
+                        <label class="field-label">Occupation</label>
+                        <input type="text" name="parent_occupation" value="{{ old('parent_occupation') }}" class="field-input" placeholder="e.g. Business Owner, Teacher">
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Parent / Guardian Information -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-5 pb-3 border-b">Parent / Guardian Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {{-- ═══════════════════════════════════════════════
+             STEP 3 — Location & Origin
+        ════════════════════════════════════════════════ --}}
+        <div class="step-panel" id="panel-3">
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white text-sm font-bold" style="background:{{ $primary }};">3</span>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="parent_name" value="{{ old('parent_name') }}" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <h2 class="text-base font-bold" style="color:{{ $ink }};">Location &amp; State of Origin</h2>
+                        <p class="text-xs mt-0.5" style="color:{{ $muted }};">Residential and origin information</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="field-label">State of Origin <span class="text-red-500">*</span></label>
+                        <select name="state_of_origin" id="f_state_of_origin" class="field-input" required onchange="populateLgas(this.value)">
+                            <option value="">— Select State —</option>
+                            @foreach(array_keys($states) as $st)
+                            <option value="{{ $st }}" {{ old('state_of_origin') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                            @endforeach
+                        </select>
+                        <span class="error-msg" id="err-state_of_origin">Please select a state</span>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
-                        <input type="tel" name="parent_phone" value="{{ old('parent_phone') }}" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <label class="field-label">Local Government Area <span class="text-red-500">*</span></label>
+                        <select name="lga" id="f_lga" class="field-input" required disabled>
+                            <option value="">— Select State First —</option>
+                            @if(old('state_of_origin') && old('lga'))
+                                @foreach(\App\Support\NigeriaData::lgasFor(old('state_of_origin')) as $l)
+                                <option value="{{ $l }}" {{ old('lga') === $l ? 'selected' : '' }}>{{ $l }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <span class="error-msg" id="err-lga">Please select a local government area</span>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" name="parent_email" value="{{ old('parent_email') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <label class="field-label">Nationality</label>
+                        <input type="text" name="nationality" value="{{ old('nationality', 'Nigerian') }}" class="field-input" placeholder="e.g. Nigerian">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
-                        <input type="text" name="parent_occupation" value="{{ old('parent_occupation') }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <label class="field-label">City / Town</label>
+                        <input type="text" name="city" value="{{ old('city') }}" class="field-input" placeholder="e.g. Lagos, Enugu">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="field-label">Home Address</label>
+                        <textarea name="address" rows="3" class="field-input" placeholder="Full residential address of parent/guardian" style="resize:vertical;">{{ old('address') }}</textarea>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Documents -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-5 pb-3 border-b">Documents (Optional)</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {{-- ═══════════════════════════════════════════════
+             STEP 4 — Documents
+        ════════════════════════════════════════════════ --}}
+        <div class="step-panel" id="panel-4">
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white text-sm font-bold" style="background:{{ $primary }};">4</span>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Passport Photo</label>
-                        <input type="file" name="photo" accept="image/*"
-                            class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                        <p class="text-xs text-gray-400 mt-1">Max 2MB, JPG/PNG</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Birth Certificate</label>
-                        <input type="file" name="birth_certificate" accept=".pdf,image/*"
-                            class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                        <p class="text-xs text-gray-400 mt-1">Max 5MB, PDF/Image</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Previous School Result</label>
-                        <input type="file" name="previous_result" accept=".pdf,image/*"
-                            class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                        <p class="text-xs text-gray-400 mt-1">Max 5MB, PDF/Image</p>
+                        <h2 class="text-base font-bold" style="color:{{ $ink }};">Supporting Documents</h2>
+                        <p class="text-xs mt-0.5" style="color:{{ $muted }};">All files are optional. Max sizes: photos 2MB, documents 5MB</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex justify-end">
-                <button type="submit"
-                    class="theme-cta-solid px-8 py-3 rounded-lg font-medium transition text-sm">
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800 font-medium mb-6">
+                    <strong>Accepted formats:</strong> JPG, PNG, WEBP for photos · PDF or image for documents
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    @foreach([['photo','Passport Photograph','image/*','image/jpeg,image/png,image/webp','2MB'],['birth_certificate','Birth Certificate','.pdf,image/*','.pdf,image/jpeg,image/png','5MB'],['previous_result','Previous School Result','.pdf,image/*','.pdf,image/jpeg,image/png','5MB']] as [$name,$label,$accept,$mimes,$size])
+                    <div>
+                        <label class="field-label mb-2">{{ $label }}</label>
+                        <div class="file-drop" onclick="document.getElementById('file_{{ $name }}').click()">
+                            <svg class="mx-auto mb-2 h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 5.75 5.75 0 011.988 11.095H6.75z"/>
+                            </svg>
+                            <p class="text-xs font-semibold text-slate-500" id="file_label_{{ $name }}">Click to upload</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Max {{ $size }}</p>
+                        </div>
+                        <input type="file" id="file_{{ $name }}" name="{{ $name }}" accept="{{ $accept }}" class="hidden"
+                               onchange="updateFileLabel('{{ $name }}', this)">
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- ═══════════════════════════════════════════════
+             STEP 5 — Review & Submit
+        ════════════════════════════════════════════════ --}}
+        <div class="step-panel" id="panel-5">
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white text-sm font-bold" style="background:{{ $primary }};">5</span>
+                    <div>
+                        <h2 class="text-base font-bold" style="color:{{ $ink }};">Review &amp; Submit</h2>
+                        <p class="text-xs mt-0.5" style="color:{{ $muted }};">Confirm all details before submitting</p>
+                    </div>
+                </div>
+
+                {{-- Student summary --}}
+                <div class="mb-5 rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Student</h3>
+                        <button type="button" onclick="goTo(1)" class="text-xs font-semibold hover:underline" style="color:{{ $primary }};">Edit</button>
+                    </div>
+                    <div class="review-row text-sm">
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Full Name</p><p class="font-semibold text-slate-800" id="rv-name">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Gender</p><p class="font-semibold text-slate-800" id="rv-gender">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Date of Birth</p><p class="font-semibold text-slate-800" id="rv-dob">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Class</p><p class="font-semibold text-slate-800" id="rv-class">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Previous School</p><p class="font-semibold text-slate-800" id="rv-prev-school">—</p></div>
+                    </div>
+                </div>
+
+                {{-- Parent summary --}}
+                <div class="mb-5 rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Parent / Guardian</h3>
+                        <button type="button" onclick="goTo(2)" class="text-xs font-semibold hover:underline" style="color:{{ $primary }};">Edit</button>
+                    </div>
+                    <div class="review-row text-sm">
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Name</p><p class="font-semibold text-slate-800" id="rv-parent-name">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Phone</p><p class="font-semibold text-slate-800" id="rv-parent-phone">—</p></div>
+                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Email</p><p class="font-semibold text-slate-800" id="rv-parent-email">—</p></div>
+                    </div>
+                </div>
+
+                {{-- Location summary --}}
+                <div class="mb-5 rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Location</h3>
+                        <button type="button" onclick="goTo(3)" class="text-xs font-semibold hover:underline" style="color:{{ $primary }};">Edit</button>
+                    </div>
+                    <div class="review-row text-sm">
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">State of Origin</p><p class="font-semibold text-slate-800" id="rv-state">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">LGA</p><p class="font-semibold text-slate-800" id="rv-lga">—</p></div>
+                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Address</p><p class="font-semibold text-slate-800" id="rv-address">—</p></div>
+                    </div>
+                </div>
+
+                {{-- Documents summary --}}
+                <div class="mb-6 rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Documents</h3>
+                        <button type="button" onclick="goTo(4)" class="text-xs font-semibold hover:underline" style="color:{{ $primary }};">Edit</button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-sm" id="rv-docs">
+                        <span class="text-slate-400 text-xs">No documents selected</span>
+                    </div>
+                </div>
+
+                {{-- Declaration --}}
+                <div class="rounded-2xl border border-slate-200 bg-white px-5 py-4 mb-6">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" id="declaration" class="mt-1 h-4 w-4 rounded border-slate-300 accent-[--primary]" required>
+                        <span class="text-sm text-slate-600 leading-relaxed">
+                            I certify that all information provided in this application is <strong>true and accurate</strong> to the best of my knowledge. I understand that providing false information may result in the cancellation of the application.
+                        </span>
+                    </label>
+                    <span class="error-msg show hidden" id="err-declaration">You must accept the declaration to submit</span>
+                </div>
+
+                {{-- reCAPTCHA notice (design only) --}}
+                <p class="text-xs text-slate-400 text-center mb-4">
+                    This form is protected against automated submissions.
+                </p>
+            </div>
+        </div>
+
+        {{-- Navigation buttons --}}
+        <div class="mt-6 flex items-center justify-between">
+            <button type="button" id="btn-back" onclick="navStep(-1)" class="btn-outline hidden">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Back
+            </button>
+            <div></div>
+            <div class="flex gap-3">
+                <button type="button" id="btn-next" onclick="navStep(1)" class="btn-primary">
+                    Next Step
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button type="submit" id="btn-submit" class="btn-primary hidden" onclick="return checkDeclaration()">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
                     Submit Application
                 </button>
             </div>
-        </form>
-    </div>
-    @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
+        </div>
+    </form>
+</div>
 
+@include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
+
+<script>
+const lgaMap = @json($states);
+
+const stepLabels = [
+    'Student Information',
+    'Parent / Guardian',
+    'Location & Origin',
+    'Supporting Documents',
+    'Review & Submit',
+];
+
+let currentStep = 1;
+const totalSteps = 5;
+
+// ── Navigation ──────────────────────────────────────────────────
+function navStep(dir) {
+    const next = currentStep + dir;
+    if (dir > 0 && !validateStep(currentStep)) return;
+    if (next < 1 || next > totalSteps) return;
+    goTo(next);
+}
+
+function goTo(step) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + step).classList.add('active');
+
+    // Update circles
+    for (let i = 1; i <= totalSteps; i++) {
+        const c = document.getElementById('circle-' + i);
+        const lbl = document.getElementById('circle-label-' + i);
+        c.className = 'step-circle';
+        if (i < step) {
+            c.classList.add('done');
+            lbl.innerHTML = '&#10003;';
+        } else if (i === step) {
+            c.classList.add('active');
+            lbl.textContent = i;
+        } else {
+            lbl.textContent = i;
+        }
+    }
+
+    // Update lines
+    for (let i = 1; i < totalSteps; i++) {
+        const line = document.getElementById('line-' + i);
+        line.className = 'step-line' + (i < step ? ' done' : '');
+    }
+
+    document.getElementById('step-label-text').textContent =
+        'Step ' + step + ' of ' + totalSteps + ' — ' + stepLabels[step - 1];
+
+    document.getElementById('btn-back').classList.toggle('hidden', step === 1);
+    document.getElementById('btn-next').classList.toggle('hidden', step === totalSteps);
+    document.getElementById('btn-submit').classList.toggle('hidden', step !== totalSteps);
+
+    if (step === totalSteps) buildReview();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    currentStep = step;
+}
+
+// ── Validation ──────────────────────────────────────────────────
+const stepRequired = {
+    1: ['first_name','last_name','gender','date_of_birth','class_applied_for'],
+    2: ['parent_name','parent_phone','parent_email'],
+    3: ['state_of_origin','lga'],
+    4: [],
+    5: [],
+};
+
+function validateStep(step) {
+    let valid = true;
+    const fields = stepRequired[step] || [];
+
+    fields.forEach(name => {
+        const el = document.querySelector('[name="' + name + '"]');
+        const err = document.getElementById('err-' + name);
+        if (!el) return;
+
+        const isEmpty = !el.value.trim();
+        const isInvalidEmail = name === 'parent_email' && el.value && !isValidEmail(el.value);
+        const isInvalidPhone = name === 'parent_phone' && el.value && !isValidPhone(el.value);
+
+        const bad = isEmpty || isInvalidEmail || isInvalidPhone;
+        el.classList.toggle('error', bad);
+        if (err) {
+            if (isInvalidEmail) err.textContent = 'Please enter a valid email address';
+            else if (isInvalidPhone) err.textContent = 'Please enter a valid phone number';
+            err.classList.toggle('show', bad);
+        }
+        if (bad) valid = false;
+    });
+
+    return valid;
+}
+
+function isValidEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+}
+
+function isValidPhone(v) {
+    return /^[0-9\+\-\s\(\)]{7,20}$/.test(v.trim());
+}
+
+function checkDeclaration() {
+    const cb = document.getElementById('declaration');
+    const err = document.getElementById('err-declaration');
+    if (!cb.checked) {
+        err.classList.remove('hidden');
+        err.classList.add('show');
+        return false;
+    }
+    err.classList.add('hidden');
+    return true;
+}
+
+// ── State / LGA ────────────────────────────────────────────────
+function populateLgas(state) {
+    const sel = document.getElementById('f_lga');
+    sel.innerHTML = '<option value="">— Select LGA —</option>';
+    sel.disabled = !state;
+    if (state && lgaMap[state]) {
+        lgaMap[state].forEach(lga => {
+            const opt = document.createElement('option');
+            opt.value = opt.textContent = lga;
+            sel.add(opt);
+        });
+    }
+}
+
+// Pre-populate LGA if old value exists (server-side re-render)
+(function initLga() {
+    const stateEl = document.getElementById('f_state_of_origin');
+    const lgaEl   = document.getElementById('f_lga');
+    if (stateEl && stateEl.value) {
+        populateLgas(stateEl.value);
+        if (lgaEl && '{{ old('lga') }}') {
+            lgaEl.value = '{{ old('lga') }}';
+        }
+    }
+})();
+
+// ── File labels ────────────────────────────────────────────────
+function updateFileLabel(name, input) {
+    const lbl = document.getElementById('file_label_' + name);
+    if (input.files && input.files[0]) {
+        lbl.textContent = input.files[0].name;
+        lbl.style.color = '#22c55e';
+    }
+}
+
+// ── Review builder ─────────────────────────────────────────────
+function buildReview() {
+    const g = id => (document.getElementById(id) || { textContent: '—' });
+    const v = name => {
+        const el = document.querySelector('[name="' + name + '"]');
+        return el && el.value.trim() ? el.value.trim() : '—';
+    };
+
+    const fn = v('first_name'), ln = v('last_name'), on = v('other_names');
+    g('rv-name').textContent = [fn, on !== '—' ? on : '', ln].filter(Boolean).join(' ');
+    g('rv-gender').textContent = v('gender') !== '—' ? v('gender').charAt(0).toUpperCase() + v('gender').slice(1) : '—';
+    g('rv-dob').textContent = v('date_of_birth');
+    g('rv-class').textContent = v('class_applied_for');
+    g('rv-prev-school').textContent = v('previous_school');
+    g('rv-parent-name').textContent = v('parent_name');
+    g('rv-parent-phone').textContent = v('parent_phone');
+    g('rv-parent-email').textContent = v('parent_email');
+    g('rv-state').textContent = v('state_of_origin');
+    g('rv-lga').textContent = v('lga');
+    g('rv-address').textContent = v('address');
+
+    const docsEl = document.getElementById('rv-docs');
+    const docNames = ['photo','birth_certificate','previous_result'];
+    const docLabels = {'photo':'Passport Photo','birth_certificate':'Birth Certificate','previous_result':'Previous Result'};
+    const attached = docNames.filter(n => {
+        const el = document.getElementById('file_' + n);
+        return el && el.files && el.files[0];
+    });
+    if (attached.length) {
+        docsEl.innerHTML = attached.map(n =>
+            `<span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-white" style="background:var(--primary)">
+                &#10003; ${docLabels[n]}
+            </span>`
+        ).join('');
+    } else {
+        docsEl.innerHTML = '<span class="text-slate-400 text-xs">No documents selected (optional)</span>';
+    }
+}
+
+// ── Clear errors on input ──────────────────────────────────────
+document.querySelectorAll('.field-input').forEach(el => {
+    el.addEventListener('input', function () {
+        this.classList.remove('error');
+        const err = document.getElementById('err-' + this.name);
+        if (err) err.classList.remove('show');
+    });
+});
+
+// Show errors for old() (server re-render after validation fail)
+@if($errors->any())
+    // Force the page to show the correct step on server-side errors
+    const failedFields = @json($errors->keys());
+    const stepMap = {
+        'first_name':1,'last_name':1,'gender':1,'date_of_birth':1,'class_applied_for':1,
+        'parent_name':2,'parent_phone':2,'parent_email':2,
+        'state_of_origin':3,'lga':3,
+        'photo':4,'birth_certificate':4,'previous_result':4,
+    };
+    let targetStep = 1;
+    if (failedFields.length > 0 && stepMap[failedFields[0]]) {
+        targetStep = stepMap[failedFields[0]];
+    }
+    goTo(targetStep);
+    failedFields.forEach(name => {
+        const el = document.querySelector('[name="' + name + '"]');
+        const err = document.getElementById('err-' + name);
+        if (el) el.classList.add('error');
+        if (err) err.classList.add('show');
+    });
+@endif
+</script>
 </body>
 </html>

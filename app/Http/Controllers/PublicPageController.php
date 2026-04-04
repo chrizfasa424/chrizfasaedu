@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\School;
 use App\Models\Testimonial;
+use App\Support\DomainHelper;
 use App\Support\PublicPageContent;
+use App\Support\SchoolContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
@@ -258,11 +260,29 @@ class PublicPageController extends Controller
 
     private function resolveSchool(Request $request): ?School
     {
+        if (SchoolContext::isSingleSchoolMode()) {
+            return SchoolContext::current($request);
+        }
+
         $host = $request->getHost();
+        $normalizedHost = DomainHelper::normalize($host);
+
+        if ($normalizedHost) {
+            $matchedSchool = School::query()
+                ->where('is_active', true)
+                ->where('domain', $normalizedHost)
+                ->first();
+
+            if ($matchedSchool) {
+                return $matchedSchool;
+            }
+        }
 
         return School::query()
             ->where('is_active', true)
-            ->orderByRaw('CASE WHEN domain = ? THEN 0 ELSE 1 END', [$host])
+            ->where(function ($query) {
+                $query->whereNull('domain')->orWhere('domain', '');
+            })
             ->orderBy('id')
             ->first();
     }
@@ -317,8 +337,12 @@ class PublicPageController extends Controller
             : 'The {title} area gives learners and families structured support, practical guidance, and a balanced learning experience.';
 
         $catalog = [];
+        $submenuImages = (array) ($publicPage['submenu_images'] ?? []);
+        $submenuContent = (array) ($publicPage['submenu_content'] ?? []);
 
         foreach ($sectionSources as $key => $source) {
+            $sectionImages = (array) ($submenuImages[$key] ?? []);
+            $sectionContent = (array) ($submenuContent[$key] ?? []);
             $items = [];
             foreach ($source['items'] as $rawItem) {
                 $title = '';
@@ -335,17 +359,27 @@ class PublicPageController extends Controller
                     continue;
                 }
 
+                $slug = Str::slug($title);
                 $normalized = preg_replace('/\s+/', ' ', $description ?? '');
                 $normalized = is_string($normalized) ? trim($normalized) : '';
 
                 $fallbackDescription = str_replace('{title}', $title, $submenuDescriptionFallbackTemplate);
+                $perItemContent = (array) ($sectionContent[$slug] ?? []);
 
                 $items[] = [
                     'title' => $title,
-                    'slug' => Str::slug($title),
+                    'slug' => $slug,
                     'description' => $normalized !== ''
                         ? Str::limit($normalized, 340)
                         : $fallbackDescription,
+                    'image' => trim((string) ($sectionImages[$slug] ?? '')),
+                    'rich_description' => trim((string) ($perItemContent['description'] ?? '')),
+                    'highlight_one_title' => trim((string) ($perItemContent['highlight_one_title'] ?? '')),
+                    'highlight_one_text' => trim((string) ($perItemContent['highlight_one_text'] ?? '')),
+                    'highlight_two_title' => trim((string) ($perItemContent['highlight_two_title'] ?? '')),
+                    'highlight_two_text' => trim((string) ($perItemContent['highlight_two_text'] ?? '')),
+                    'image_one' => trim((string) ($perItemContent['image_one'] ?? '')),
+                    'image_two' => trim((string) ($perItemContent['image_two'] ?? '')),
                 ];
             }
 

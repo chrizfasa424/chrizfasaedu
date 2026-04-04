@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="space-y-8">
-    <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <section id="site-settings" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="text-lg font-semibold text-gray-900">School Identity and Contact</h3>
         <p class="text-sm text-gray-500 mt-1">This information is used on the public website and across the portal.</p>
 
@@ -31,6 +31,24 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
                 <input type="url" name="website" value="{{ old('website', $school->website) }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="https://example.com">
+            </div>
+
+            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">School Website Domain</label>
+                    <input type="text" name="domain" value="{{ old('domain', $school->domain) }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="schoolname.com">
+                    <p class="mt-1 text-xs text-gray-500">Enter the main school domain only. No <span class="font-medium">http://</span> or path. Example: <span class="font-medium">chrizfasaedu.test</span></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Public Link</label>
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
+                        @if($school->domain)
+                            <a href="http://{{ $school->domain }}" target="_blank" rel="noopener" class="font-medium text-emerald-700 hover:underline">http://{{ $school->domain }}</a>
+                        @else
+                            <span class="text-gray-500">No custom domain saved yet.</span>
+                        @endif
+                    </div>
+                </div>
             </div>
 
             <div class="md:col-span-2">
@@ -64,6 +82,28 @@
                 </div>
             </div>
 
+            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Site Favicon</label>
+                    <input type="file" name="favicon" accept=".ico,image/png,image/jpeg,image/webp" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
+                    <p class="mt-2 text-xs text-gray-500">Recommended: square png or ico icon used in the browser tab and bookmarks.</p>
+                    <label class="inline-flex items-center mt-3 text-sm text-red-600">
+                        <input type="checkbox" name="remove_favicon" value="1" class="rounded border-gray-300 mr-2">
+                        Remove current favicon
+                    </label>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Current Favicon Preview</p>
+                    @if($faviconPath)
+                        <img src="{{ asset('storage/' . ltrim($faviconPath, '/')) }}" alt="Site Favicon" class="h-16 w-16 object-cover rounded-xl border border-gray-200 bg-white p-1">
+                    @else
+                        <div class="h-16 w-16 rounded-xl border border-dashed border-gray-300 flex items-center justify-center text-[11px] text-gray-400 bg-gray-50">
+                            No icon
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <div class="md:col-span-2">
                 <button type="submit" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold transition duration-200 hover:-translate-y-0.5 hover:bg-emerald-700">
                     Save Identity Settings
@@ -80,7 +120,7 @@
             @csrf
             @method('PUT')
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div id="hero-header" class="scroll-mt-28 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Hero Badge Text</label>
                     <input type="text" name="hero_badge_text" value="{{ old('hero_badge_text', $publicPage['hero_badge_text'] ?? '') }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
@@ -112,9 +152,9 @@
                 </div>
             </div>
 
-            <div class="rounded-xl border border-gray-200 p-4 bg-gray-50">
+            <div id="site-theme" class="scroll-mt-28 rounded-xl border border-gray-200 p-4 bg-gray-50">
                 <h4 class="text-sm font-semibold text-gray-900">Brand Theme Manager</h4>
-                <p class="text-xs text-gray-500 mt-1">Each school can control its own public colors and visual style here. These settings are saved per school and applied automatically on that school domain.</p>
+                <p class="text-xs text-gray-500 mt-1">Control the public colors and visual style for this school brand here. These settings apply across the main website and public pages.</p>
                 <div class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Theme Style</label>
@@ -250,7 +290,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Quick Apply Button Text</label>
                         <input type="text" name="quick_apply_button_text" value="{{ old('quick_apply_button_text', $publicPage['quick_apply_button_text'] ?? 'Apply Now') }}" class="w-full rounded-lg border-gray-300">
                     </div>
-                    <div>
+                    <div id="testimonials" class="scroll-mt-28">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Testimonials Badge</label>
                         <input type="text" name="testimonials_badge_text" value="{{ old('testimonials_badge_text', $publicPage['testimonials_badge_text'] ?? 'Testimonials') }}" class="w-full rounded-lg border-gray-300">
                     </div>
@@ -343,7 +383,7 @@
                     </div>
                 </div>
             </div>
-            <div class="rounded-xl border border-gray-200 p-4 bg-gray-50">
+            <div id="contact-us" class="scroll-mt-28 rounded-xl border border-gray-200 p-4 bg-gray-50">
                 <h4 class="text-sm font-semibold text-gray-900">Contact, Submenu and Footer Microcopy</h4>
                 <p class="text-xs text-gray-500 mt-1">Control all remaining public labels and helper text shown on contact, submenu, navbar and footer.</p>
                 <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -491,20 +531,23 @@
                     </div>
                 </div>
             </div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="programs" class="scroll-mt-28">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Programs Intro</label>
                     <input type="text" name="programs_intro" value="{{ old('programs_intro', $publicPage['programs_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
                     <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Programs Items</label>
                     <textarea name="program_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('program_items_text', $programItemsText) }}</textarea>
                 </div>
 
-                <div>
+                <div id="admissions" class="scroll-mt-28">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Admissions Intro</label>
                     <input type="text" name="admissions_intro" value="{{ old('admissions_intro', $publicPage['admissions_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
                     <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Admissions Items</label>
                     <textarea name="admissions_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('admissions_items_text', $admissionsItemsText) }}</textarea>
-                </div>                <div>
+                </div>
+
+                <div id="academics" class="scroll-mt-28">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Academics Intro</label>
                     <input type="text" name="academics_intro" value="{{ old('academics_intro', $publicPage['academics_intro'] ?? 'A Structured Learning Culture With Mentorship At The Center.') }}" class="w-full rounded-lg border-gray-300">
                     <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Academics Context Text</label>
@@ -529,14 +572,14 @@
                     <textarea name="academics_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('academics_items_text', $academicsItemsText) }}</textarea>
                 </div>
 
-                <div>
+                <div id="facilities" class="scroll-mt-28">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Facilities Intro</label>
                     <input type="text" name="facilities_intro" value="{{ old('facilities_intro', $publicPage['facilities_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
                     <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Facilities Items (one item per line)</label>
                     <textarea name="facilities" rows="8" class="w-full rounded-lg border-gray-300">{{ old('facilities', $facilitiesText) }}</textarea>
                 </div>
 
-                <div>
+                <div id="about-us" class="scroll-mt-28">
                     <label class="block text-sm font-medium text-gray-700 mb-1">About Us Intro</label>
                     <input type="text" name="about_intro" value="{{ old('about_intro', $publicPage['about_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
                     <p class="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
@@ -544,14 +587,14 @@
                     </p>
                 </div>
 
-                <div>
+                <div id="student-life" class="scroll-mt-28">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Student Life Intro</label>
                     <input type="text" name="student_life_intro" value="{{ old('student_life_intro', $publicPage['student_life_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
                     <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Student Life Items</label>
                     <textarea name="student_life_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('student_life_items_text', $studentLifeItemsText) }}</textarea>
                 </div>
 
-                <div>
+                <div id="parents" class="scroll-mt-28">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Parents Intro</label>
                     <input type="text" name="parents_intro" value="{{ old('parents_intro', $publicPage['parents_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
                     <p class="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
@@ -628,181 +671,83 @@
             </div>
             <div class="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-4">
                 <h4 class="text-sm font-semibold text-gray-900">Academic Visual Manager</h4>
-                <p class="text-xs text-gray-500">Upload the two right-side images used in the Academic Excellence section on the homepage.</p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @for($i = 1; $i <= 2; $i++)
-                        @php $slot = $academicsVisualSlots[$i - 1] ?? ['image' => null]; @endphp
-                        <div class="rounded-xl border border-gray-200 bg-white p-4">
-                            <h5 class="text-sm font-semibold text-gray-900 mb-3">Academic Image {{ $i }}</h5>
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Image</label>
-                            <input type="file" name="academic_image_{{ $i }}" accept="image/*" class="w-full rounded-lg border-gray-300 mb-3">
-
-                            <label class="inline-flex items-center text-xs text-red-600">
-                                <input type="checkbox" name="remove_academic_image_{{ $i }}" value="1" class="rounded border-gray-300 mr-2">
-                                Remove this image
-                            </label>
-
-                            <div class="mt-3">
-                                <p class="text-xs text-gray-500 mb-1">Current preview</p>
-                                @if(!empty($slot['image']))
-                                    <img src="{{ asset('storage/' . ltrim($slot['image'], '/')) }}" alt="Academic Image {{ $i }}" class="h-32 w-full rounded-lg object-cover border border-gray-200">
-                                @else
-                                    <div class="h-32 w-full rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">
-                                        No image
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endfor
+                <p class="text-xs text-gray-500">Upload the two right-side images used in the Academic Excellence section on the homepage.</p>            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="programs" class="scroll-mt-28">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Programs Intro</label>
+                    <input type="text" name="programs_intro" value="{{ old('programs_intro', $publicPage['programs_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
+                    <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Programs Items</label>
+                    <textarea name="program_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('program_items_text', $programItemsText) }}</textarea>
                 </div>
-            </div>
 
-            <div class="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-4">
-                <h4 class="text-sm font-semibold text-gray-900">Why Choose Us Banner Manager</h4>
-                <p class="text-xs text-gray-500">Upload full-size image banners and provide title + context text for the Why Choose Us section.</p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    @for($i = 1; $i <= 4; $i++)
-                        @php $banner = $whyChooseUsBannerSlots[$i - 1] ?? ['image' => null, 'title' => '', 'description' => '']; @endphp
-                        <div class="rounded-xl border border-gray-200 bg-white p-4">
-                            <h5 class="text-sm font-semibold text-gray-900 mb-3">Why Banner {{ $i }}</h5>
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Image</label>
-                            <input type="file" name="why_banner_{{ $i }}_image" accept="image/*" class="w-full rounded-lg border-gray-300 mb-3">
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Banner Title (Bold)</label>
-                            <input type="text" name="why_banner_{{ $i }}_title" value="{{ old('why_banner_' . $i . '_title', $banner['title'] ?? '') }}" class="w-full rounded-lg border-gray-300 mb-3">
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Banner Context Text</label>
-                            <textarea name="why_banner_{{ $i }}_description" rows="3" class="w-full rounded-lg border-gray-300 mb-3">{{ old('why_banner_' . $i . '_description', $banner['description'] ?? '') }}</textarea>
-
-                            <label class="inline-flex items-center text-xs text-red-600">
-                                <input type="checkbox" name="remove_why_banner_{{ $i }}" value="1" class="rounded border-gray-300 mr-2">
-                                Remove this banner image
-                            </label>
-
-                            <div class="mt-3">
-                                <p class="text-xs text-gray-500 mb-1">Current preview</p>
-                                @if(!empty($banner['image']))
-                                    <img src="{{ asset('storage/' . ltrim($banner['image'], '/')) }}" alt="Why Banner {{ $i }}" class="h-24 w-full rounded-lg object-cover border border-gray-200">
-                                @else
-                                    <div class="h-24 w-full rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">
-                                        No image
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endfor
+                <div id="admissions" class="scroll-mt-28">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Admissions Intro</label>
+                    <input type="text" name="admissions_intro" value="{{ old('admissions_intro', $publicPage['admissions_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
+                    <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Admissions Items</label>
+                    <textarea name="admissions_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('admissions_items_text', $admissionsItemsText) }}</textarea>
                 </div>
-            </div>
 
-            <div class="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-4">
-                <h4 class="text-sm font-semibold text-gray-900">About Us Banner Manager</h4>
-                <p class="text-xs text-gray-500">Upload full-size image banners and provide title + context text for the About Us section.</p>
+                <div id="academics" class="scroll-mt-28">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Academics Intro</label>
+                    <input type="text" name="academics_intro" value="{{ old('academics_intro', $publicPage['academics_intro'] ?? 'A Structured Learning Culture With Mentorship At The Center.') }}" class="w-full rounded-lg border-gray-300">
+                    <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Academics Context Text</label>
+                    <textarea name="academics_support_text" rows="4" class="w-full rounded-lg border-gray-300">{{ old('academics_support_text', $publicPage['academics_support_text'] ?? 'Our school culture is built around consistent learning outcomes, high accountability, and teacher-student mentorship that develops confidence and character.') }}</textarea>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @for($i = 1; $i <= 6; $i++)
-                        @php $banner = $aboutBannerSlots[$i - 1] ?? ['image' => null, 'title' => '', 'description' => '']; @endphp
-                        <div class="rounded-xl border border-gray-200 bg-white p-4">
-                            <h5 class="text-sm font-semibold text-gray-900 mb-3">About Banner {{ $i }}</h5>
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Image</label>
-                            <input type="file" name="about_banner_{{ $i }}_image" accept="image/*" class="w-full rounded-lg border-gray-300 mb-3">
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Banner Title (Bold)</label>
-                            <input type="text" name="about_banner_{{ $i }}_title" value="{{ old('about_banner_' . $i . '_title', $banner['title'] ?? '') }}" class="w-full rounded-lg border-gray-300 mb-3">
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Banner Context Text</label>
-                            <textarea name="about_banner_{{ $i }}_description" rows="3" class="w-full rounded-lg border-gray-300 mb-3">{{ old('about_banner_' . $i . '_description', $banner['description'] ?? '') }}</textarea>
-
-                            <label class="inline-flex items-center text-xs text-red-600">
-                                <input type="checkbox" name="remove_about_banner_{{ $i }}" value="1" class="rounded border-gray-300 mr-2">
-                                Remove this banner image
-                            </label>
-
-                            <div class="mt-3">
-                                <p class="text-xs text-gray-500 mb-1">Current preview</p>
-                                @if(!empty($banner['image']))
-                                    <img src="{{ asset('storage/' . ltrim($banner['image'], '/')) }}" alt="About Banner {{ $i }}" class="h-24 w-full rounded-lg object-cover border border-gray-200">
-                                @else
-                                    <div class="h-24 w-full rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">
-                                        No image
-                                    </div>
-                                @endif
-                            </div>
+                    <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Highlight Card 1 Title</label>
+                            <input type="text" name="academic_highlight_1_title" value="{{ old('academic_highlight_1_title', $publicPage['academic_highlights'][0]['title'] ?? 'STEM-First Curriculum') }}" class="w-full rounded-lg border-gray-300 mb-2">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Highlight Card 1 Context</label>
+                            <textarea name="academic_highlight_1_description" rows="3" class="w-full rounded-lg border-gray-300">{{ old('academic_highlight_1_description', $publicPage['academic_highlights'][0]['description'] ?? 'Coding, robotics, and science labs integrated into junior and senior classes.') }}</textarea>
                         </div>
-                    @endfor
-                </div>
-            </div>
-            <div class="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-4">
-                <h4 class="text-sm font-semibold text-gray-900">Parents Banner Manager</h4>
-                <p class="text-xs text-gray-500">Upload banner images and add bold title + context text for the Parents section on the homepage.</p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @for($i = 1; $i <= 6; $i++)
-                        @php $banner = $parentsBannerSlots[$i - 1] ?? ['image' => null, 'title' => '', 'description' => '']; @endphp
-                        <div class="rounded-xl border border-gray-200 bg-white p-4">
-                            <h5 class="text-sm font-semibold text-gray-900 mb-3">Parents Banner {{ $i }}</h5>
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Image</label>
-                            <input type="file" name="parent_banner_{{ $i }}_image" accept="image/*" class="w-full rounded-lg border-gray-300 mb-3">
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Banner Title (Bold)</label>
-                            <input type="text" name="parent_banner_{{ $i }}_title" value="{{ old('parent_banner_' . $i . '_title', $banner['title'] ?? '') }}" class="w-full rounded-lg border-gray-300 mb-3">
-
-                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Banner Context Text</label>
-                            <textarea name="parent_banner_{{ $i }}_description" rows="3" class="w-full rounded-lg border-gray-300 mb-3">{{ old('parent_banner_' . $i . '_description', $banner['description'] ?? '') }}</textarea>
-
-                            <label class="inline-flex items-center text-xs text-red-600">
-                                <input type="checkbox" name="remove_parent_banner_{{ $i }}" value="1" class="rounded border-gray-300 mr-2">
-                                Remove this banner image
-                            </label>
-
-                            <div class="mt-3">
-                                <p class="text-xs text-gray-500 mb-1">Current preview</p>
-                                @if(!empty($banner['image']))
-                                    <img src="{{ asset('storage/' . ltrim($banner['image'], '/')) }}" alt="Parents Banner {{ $i }}" class="h-24 w-full rounded-lg object-cover border border-gray-200">
-                                @else
-                                    <div class="h-24 w-full rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">
-                                        No image
-                                    </div>
-                                @endif
-                            </div>
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Highlight Card 2 Title</label>
+                            <input type="text" name="academic_highlight_2_title" value="{{ old('academic_highlight_2_title', $publicPage['academic_highlights'][1]['title'] ?? 'Student Leadership') }}" class="w-full rounded-lg border-gray-300 mb-2">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Highlight Card 2 Context</label>
+                            <textarea name="academic_highlight_2_description" rows="3" class="w-full rounded-lg border-gray-300">{{ old('academic_highlight_2_description', $publicPage['academic_highlights'][1]['description'] ?? 'Public speaking, media, and entrepreneurship clubs with measurable outcomes.') }}</textarea>
                         </div>
-                    @endfor
-                </div>
-            </div>
-            <div class="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-4">
-                <h4 class="text-sm font-semibold text-gray-900">Footer Content Manager</h4>
-                <p class="text-xs text-gray-500">All footer content is controlled here. Links format: <span class="font-medium">Label | URL</span>.</p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Footer Logo</label>
-                        <input type="file" name="footer_logo" accept="image/*" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
-                        <label class="inline-flex items-center mt-2 text-sm text-red-600">
-                            <input type="checkbox" name="remove_footer_logo" value="1" class="rounded border-gray-300 mr-2">
-                            Remove footer logo
-                        </label>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-700 mb-1">Footer Logo Preview</p>
-                        @if(!empty($publicPage['footer_logo']))
-                            <img src="{{ asset('storage/' . ltrim($publicPage['footer_logo'], '/')) }}" alt="Footer Logo" class="h-20 w-20 rounded-lg object-cover border border-gray-200 bg-white">
-                        @elseif(!empty($school->logo))
-                            <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="School Logo" class="h-20 w-20 rounded-lg object-cover border border-gray-200 bg-white">
-                        @else
-                            <div class="h-20 w-20 rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">No logo</div>
-                        @endif
-                    </div>
+
+                    <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Academics Items (Legacy)</label>
+                    <textarea name="academics_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('academics_items_text', $academicsItemsText) }}</textarea>
+                </div>
+
+                <div id="facilities" class="scroll-mt-28">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Facilities Intro</label>
+                    <input type="text" name="facilities_intro" value="{{ old('facilities_intro', $publicPage['facilities_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
+                    <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Facilities Items (one item per line)</label>
+                    <textarea name="facilities" rows="8" class="w-full rounded-lg border-gray-300">{{ old('facilities', $facilitiesText) }}</textarea>
+                </div>
+
+                <div id="about-us" class="scroll-mt-28">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">About Us Intro</label>
+                    <input type="text" name="about_intro" value="{{ old('about_intro', $publicPage['about_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
+                    <p class="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
+                        About cards now use the banner manager below (full image + bold text overlay). Legacy items are preserved automatically.
+                    </p>
+                </div>
+
+                <div id="student-life" class="scroll-mt-28">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Student Life Intro</label>
+                    <input type="text" name="student_life_intro" value="{{ old('student_life_intro', $publicPage['student_life_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
+                    <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Student Life Items</label>
+                    <textarea name="student_life_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('student_life_items_text', $studentLifeItemsText) }}</textarea>
+                </div>
+
+                <div id="parents" class="scroll-mt-28">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Parents Intro</label>
+                    <input type="text" name="parents_intro" value="{{ old('parents_intro', $publicPage['parents_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
+                    <p class="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
+                        Parents cards now use the banner manager below (image + bold title + context text). Existing legacy text items are preserved automatically.
+                    </p>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Footer Description</label>
-                    <textarea name="footer_description" rows="3" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">{{ old('footer_description', $publicPage['footer_description'] ?? '') }}</textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Intro</label>
+                    <input type="text" name="contact_intro" value="{{ old('contact_intro', $publicPage['contact_intro'] ?? '') }}" class="w-full rounded-lg border-gray-300">
+                    <label class="block text-sm font-medium text-gray-700 mt-3 mb-1">Contact Items</label>
+                    <textarea name="contact_items_text" rows="8" class="w-full rounded-lg border-gray-300">{{ old('contact_items_text', $contactItemsText) }}</textarea>
                 </div>
+            </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -858,7 +803,7 @@
         </form>
     </section>
 
-    <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <section id="system-preferences" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 class="text-lg font-semibold text-gray-900">System Preferences</h3>
         <p class="text-sm text-gray-500 mt-1">Operational settings for results and communication.</p>
 
@@ -992,7 +937,45 @@
         </form>
     </section>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const section = new URLSearchParams(window.location.search).get('section');
+        if (!section) return;
+        const map = {
+            'site-settings': '#site-settings',
+            'hero-header': 'input[name="hero_title"]',
+            'site-theme': 'select[name="theme_style"]',
+            'programs': 'input[name="programs_intro"]',
+            'admissions': 'input[name="admissions_intro"]',
+            'academics': 'input[name="academics_intro"]',
+            'facilities': 'input[name="facilities_intro"]',
+            'about-us': 'input[name="about_intro"]',
+            'student-life': 'input[name="student_life_intro"]',
+            'parents': 'input[name="parents_intro"]',
+            'contact-us': 'input[name="contact_page_heading"]',
+            'testimonials': 'input[name="testimonials_badge_text"]',
+            'footer': 'textarea[name="footer_description"]',
+            'system-preferences': 'select[name="grading_system"]'
+        };
+        const selector = map[section];
+        if (!selector) return;
+        const target = document.querySelector(selector);
+        if (!target) return;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+</script>
 @endsection
+
+
+
+
+
+
+
+
+
+
+
 
 
 

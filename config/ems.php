@@ -3,11 +3,11 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | ChrizFasa EMS Configuration
+    | ChrizFasa Academy Configuration
     |--------------------------------------------------------------------------
     */
 
-    'name' => env('APP_NAME', 'ChrizFasa EMS'),
+    'name' => env('APP_NAME', 'ChrizFasa Academy'),
     'country' => env('SCHOOL_COUNTRY', 'Nigeria'),
     'currency' => env('SCHOOL_CURRENCY', 'NGN'),
     'currency_symbol' => env('SCHOOL_CURRENCY_SYMBOL', '₦'),

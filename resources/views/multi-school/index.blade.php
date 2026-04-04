@@ -25,6 +25,13 @@
         </div>
     </section>
 
+    <section class="flex flex-wrap items-center gap-3">
+        <a href="{{ route('multi-school.domains') }}" class="inline-flex items-center rounded-full bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
+            Open Domain Manager
+        </a>
+        <p class="text-sm text-slate-500">Use this workspace to assign and update custom domains for each school.</p>
+    </section>
+
     <section class="grid gap-6 xl:grid-cols-[1.1fr,1.6fr]">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-6">
@@ -53,6 +60,13 @@
                         <input id="phone" name="phone" type="text" value="{{ old('phone') }}" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100" required>
                     </div>
                     <div>
+                        <label for="domain" class="mb-2 block text-sm font-medium text-slate-700">School Domain</label>
+                        <input id="domain" name="domain" type="text" value="{{ old('domain') }}" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100" placeholder="schoolname.com">
+                    </div>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
                         <label for="school_type" class="mb-2 block text-sm font-medium text-slate-700">School type</label>
                         <select id="school_type" name="school_type" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100" required>
                             <option value="">Select type</option>
@@ -60,6 +74,9 @@
                             <option value="secondary" @selected(old('school_type') === 'secondary')>Secondary</option>
                             <option value="combined" @selected(old('school_type') === 'combined')>Combined</option>
                         </select>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                        Enter the domain only. Example: <span class="font-semibold text-slate-800">chrizfasaedu.test</span>
                     </div>
                 </div>
 
@@ -128,6 +145,7 @@
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">School</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Type</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Domain</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Students</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Staff</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Plan</th>
@@ -144,6 +162,13 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-5 text-sm text-slate-600">{{ ucfirst($school->school_type ?? 'n/a') }}</td>
+                                <td class="px-6 py-5 text-sm text-slate-600">
+                                    @if($school->domain)
+                                        <span class="font-medium text-slate-800">{{ $school->domain }}</span>
+                                    @else
+                                        <span class="text-slate-400">Not set</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-5 text-sm font-medium text-slate-900">{{ number_format($school->students_count) }}</td>
                                 <td class="px-6 py-5 text-sm font-medium text-slate-900">{{ number_format($school->staff_count) }}</td>
                                 <td class="px-6 py-5 text-sm text-slate-600">{{ ucfirst($school->subscription_plan ?? 'n/a') }}</td>
@@ -155,7 +180,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-10 text-center text-sm text-slate-500">
+                                <td colspan="7" class="px-6 py-10 text-center text-sm text-slate-500">
                                     No schools have been onboarded yet.
                                 </td>
                             </tr>
@@ -171,3 +196,4 @@
     </section>
 </div>
 @endsection
+

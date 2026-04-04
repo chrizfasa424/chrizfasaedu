@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\SchoolContext;
 use App\Services\InvoiceService;
 use App\Services\PaystackService;
 use App\Services\ResultService;
@@ -20,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        if (auth()->check()) {
+            SchoolContext::ensureUserSchool(auth()->user());
+        }
     }
 }

@@ -30,7 +30,7 @@ trait HasAuditTrail
                 'action' => $action,
                 'model_type' => get_class($model),
                 'model_id' => $model->getKey(),
-                'changes' => !empty($changes) ? json_encode($changes) : null,
+                'changes' => !empty($changes) ? $changes : null,
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ]);

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes - ChrizFasa EMS
+| API Routes - ChrizFasa Academy
 |--------------------------------------------------------------------------
 | Mobile app and third-party integration endpoints.
 | All routes are prefixed with /api and use Sanctum authentication.
@@ -110,3 +110,4 @@ Route::prefix('v1')->group(function () {
         return response()->json(['status' => 'ok']);
     });
 });
+

@@ -1,0 +1,87 @@
+<form action="{{ route('settings.public-page') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+    @csrf
+    @method('PUT')
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div>
+            <label class="mb-2 block text-sm font-semibold text-slate-700">About Us Label</label>
+            <input type="text" name="about_label" value="{{ old('about_label', $publicPage['about_label'] ?? 'About Us') }}" class="w-full rounded-2xl border-slate-300">
+        </div>
+        <div class="lg:col-span-2">
+            <label class="mb-2 block text-sm font-semibold text-slate-700">About Us Intro</label>
+            <textarea name="about_intro" rows="4" class="js-ck-editor w-full rounded-2xl border-slate-300">{{ old('about_intro', $publicPage['about_intro'] ?? '') }}</textarea>
+        </div>
+    </div>
+
+    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <h2 class="text-base font-bold text-slate-900">About Us Banner Manager</h2>
+        <p class="mt-1 text-sm text-slate-500">Each card supports an image, bold title, and moderate supporting context.</p>
+        <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            @for($i = 1; $i <= 6; $i++)
+                @php $item = $aboutBannerSlots[$i - 1] ?? ['image' => null, 'title' => '', 'description' => '']; @endphp
+                <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p class="text-sm font-bold text-slate-900">About Card {{ $i }}</p>
+                    <input type="file" name="about_banner_{{ $i }}_image" accept="image/*" class="mt-3 w-full rounded-2xl border-slate-300">
+                    <input type="text" name="about_banner_{{ $i }}_title" value="{{ old('about_banner_' . $i . '_title', $item['title'] ?? '') }}" class="mt-3 w-full rounded-2xl border-slate-300" placeholder="Card title">
+                    <textarea name="about_banner_{{ $i }}_description" rows="4" class="js-ck-editor mt-3 w-full rounded-2xl border-slate-300" placeholder="Card context">{{ old('about_banner_' . $i . '_description', $item['description'] ?? '') }}</textarea>
+                    <label class="mt-3 inline-flex items-center text-sm font-medium text-red-600">
+                        <input type="checkbox" name="remove_about_banner_{{ $i }}" value="1" class="mr-2 rounded border-slate-300">
+                        Remove current card image
+                    </label>
+                    <div class="mt-4">
+                        @if(!empty($item['image']))
+                            <img src="{{ asset('storage/' . ltrim($item['image'], '/')) }}" alt="About card {{ $i }}" class="h-40 w-full rounded-2xl border border-slate-200 object-cover">
+                        @else
+                            <div class="flex h-40 w-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-400">No image uploaded</div>
+                        @endif
+                    </div>
+                </div>
+            @endfor
+        </div>
+    </div>
+
+    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <h2 class="text-base font-bold text-slate-900">Why Choose Us Section</h2>
+        <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-slate-700">Section Label</label>
+                <input type="text" name="why_choose_us_label" value="{{ old('why_choose_us_label', $publicPage['why_choose_us_label'] ?? 'Why Choose Us') }}" class="w-full rounded-2xl border-slate-300">
+            </div>
+            <div class="lg:col-span-2">
+                <label class="mb-2 block text-sm font-semibold text-slate-700">Intro Text</label>
+                <textarea name="why_choose_us_intro" rows="4" class="js-ck-editor w-full rounded-2xl border-slate-300">{{ old('why_choose_us_intro', $publicPage['why_choose_us_intro'] ?? '') }}</textarea>
+            </div>
+        </div>
+        <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+            @for($i = 1; $i <= 4; $i++)
+                @php $item = $whyChooseUsBannerSlots[$i - 1] ?? ['image' => null, 'title' => '', 'description' => '']; @endphp
+                <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p class="text-sm font-bold text-slate-900">Why Choose Us Card {{ $i }}</p>
+                    <input type="file" name="why_banner_{{ $i }}_image" accept="image/*" class="mt-3 w-full rounded-2xl border-slate-300">
+                    <input type="text" name="why_banner_{{ $i }}_title" value="{{ old('why_banner_' . $i . '_title', $item['title'] ?? '') }}" class="mt-3 w-full rounded-2xl border-slate-300" placeholder="Card title">
+                    <textarea name="why_banner_{{ $i }}_description" rows="4" class="js-ck-editor mt-3 w-full rounded-2xl border-slate-300" placeholder="Card context">{{ old('why_banner_' . $i . '_description', $item['description'] ?? '') }}</textarea>
+                    <label class="mt-3 inline-flex items-center text-sm font-medium text-red-600">
+                        <input type="checkbox" name="remove_why_banner_{{ $i }}" value="1" class="mr-2 rounded border-slate-300">
+                        Remove current card image
+                    </label>
+                    <div class="mt-4">
+                        @if(!empty($item['image']))
+                            <img src="{{ asset('storage/' . ltrim($item['image'], '/')) }}" alt="Why choose us card {{ $i }}" class="h-32 w-full rounded-2xl border border-slate-200 object-cover">
+                        @else
+                            <div class="flex h-32 w-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-400">No image uploaded</div>
+                        @endif
+                    </div>
+                </div>
+            @endfor
+        </div>
+    </div>
+
+    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">Save About Us Page</button>
+</form>
+
+@include('system.settings.partials._submenu-item-editor', [
+    '_section'      => 'about',
+    '_sectionLabel' => trim((string) ($publicPage['about_label'] ?? 'About Us')),
+    '_items'        => $publicPage['about'] ?? [],
+    '_publicPage'   => $publicPage,
+])

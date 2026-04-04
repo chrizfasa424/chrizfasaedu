@@ -263,7 +263,7 @@ class PublicPageContent
             ],
             'footer_resources' => [
                 ['title' => 'Apply Online', 'description' => '/apply'],
-                ['title' => 'Parent Portal', 'description' => '/login'],
+                ['title' => 'Parent Portal', 'description' => '/admin-access'],
                 ['title' => 'Student Life', 'description' => '/#student-life'],
                 ['title' => 'About School', 'description' => '/#about'],
             ],
@@ -274,6 +274,72 @@ class PublicPageContent
             ],
             'footer_note' => 'All rights reserved.',
             'hero_slides' => [],
+            'submenu_images' => [],
+            'submenu_content' => [],
+            'contact_hero_image' => '',
+            'faqs' => [
+                [
+                    'id' => 'admissions',
+                    'label' => 'Admissions',
+                    'items' => [
+                        ['q' => 'How do I apply for admission into the school?', 'a' => 'You can apply online through our admissions portal or visit our front office in person. Complete the application form, provide all required documents, and our admissions team will contact you to schedule a screening date.'],
+                        ['q' => 'What documents are required for enrollment?', 'a' => 'Required documents include: birth certificate (original + photocopy), passport-size photographs (4 copies), last school report card or terminal result, transfer letter (for students from other schools), immunisation record (for KG/Primary applicants), and a Parent/Guardian ID card.'],
+                        ['q' => 'What is the minimum age for entry into each level?', 'a' => 'Our age requirements are: KG1 — 3 years+, Primary 1 — 5 years+, JSS 1 — completion of Primary 6 or age 10+, SSS 1 — JSS 3 completion with BECE or equivalent.'],
+                        ['q' => 'Is there an entrance examination?', 'a' => 'Yes. All applicants from Primary 3 upwards take a short assessment covering English Language and Mathematics. KG and Primary 1 applicants undergo an informal readiness assessment.'],
+                        ['q' => 'When does the school year begin and how many terms are there?', 'a' => 'The academic session runs from September to July and is divided into three terms: First Term (Sept–Dec), Second Term (Jan–Apr), and Third Term (Apr–Jul).'],
+                        ['q' => 'Can a student join mid-session?', 'a' => 'Yes, we accept mid-session transfers subject to availability of space in the desired class. Contact the admissions office for availability.'],
+                    ],
+                ],
+                [
+                    'id' => 'fees',
+                    'label' => 'Fees & Payment',
+                    'items' => [
+                        ['q' => 'How is the school fees structured?', 'a' => 'Fees are charged on a termly basis and vary by class level (KG, Primary, Junior Secondary, Senior Secondary). A detailed breakdown is provided during the enrollment process or on request from the school office.'],
+                        ['q' => 'What payment channels are accepted?', 'a' => 'We accept payments via direct bank transfer to our official school account, online payment through the parent/student portal, and POS at the school bursary. Always collect an official receipt.'],
+                        ['q' => 'Is it possible to pay fees in instalments?', 'a' => 'Yes, an instalment plan is available for families who apply in advance. A minimum of 60% of the term\'s fee must be paid before resumption, with the balance cleared by mid-term.'],
+                        ['q' => 'Are there any scholarships or bursaries available?', 'a' => 'The school offers a limited number of merit-based and need-based bursaries. Eligibility criteria include outstanding academic performance and demonstrated financial need. Contact the admin office for details.'],
+                        ['q' => 'What happens if fees are not paid by the due date?', 'a' => 'Students with outstanding fees beyond the stated deadline may be asked to remain at home until the account is settled. The school will always communicate with parents before any such action.'],
+                    ],
+                ],
+                [
+                    'id' => 'academics',
+                    'label' => 'Academics & Programs',
+                    'items' => [
+                        ['q' => 'What curriculum does the school follow?', 'a' => 'We follow the Nigerian National Curriculum as set by the Federal Ministry of Education, enriched with STEM-integrated learning, digital literacy, and character development programs. Senior Secondary students are prepared for WAEC, NECO, and JAMB examinations.'],
+                        ['q' => 'What class levels are available?', 'a' => 'We offer: Kindergarten (KG1–KG3), Primary (Primary 1–6), Junior Secondary (JSS 1–3), and Senior Secondary (SSS 1–3). Each level has dedicated teachers, learning resources, and assessment structures.'],
+                        ['q' => 'Does the school offer after-school support?', 'a' => 'Yes. Our After-School Program runs from 2:30 PM to 5:00 PM and includes supervised homework sessions, reading clinics, subject support classes, and co-curricular clubs.'],
+                        ['q' => 'Are there special provisions for gifted or struggling students?', 'a' => 'Yes. We offer academic enrichment for high-achieving students and remedial support for those who need extra help. Class teachers and our academic coordinator work together to develop personalised support plans.'],
+                    ],
+                ],
+                [
+                    'id' => 'school-life',
+                    'label' => 'School Life',
+                    'items' => [
+                        ['q' => 'What are the school hours?', 'a' => 'School hours are 7:45 AM to 2:30 PM Monday through Friday. Morning assembly begins at 8:00 AM sharp. Students remaining for after-school activities are dismissed at 5:00 PM.'],
+                        ['q' => 'Does the school provide transport?', 'a' => 'Yes, we operate a school bus service covering select routes. The transport service is available at an additional termly fee. Contact the admin office for the current routes and pickup schedule.'],
+                        ['q' => 'Does the school have extracurricular clubs and activities?', 'a' => 'Yes! We run a wide range of clubs including: Debate Club, Science Club, Drama & Arts, Football & Athletics, Leadership Council, Music Ensemble, and Chess Club. Participation is encouraged from Primary 4 upwards.'],
+                        ['q' => 'What is the school uniform policy?', 'a' => 'All students are required to wear the approved school uniform. The full uniform guide including weekday, sports, and formal event attire is available from the school shop. Uniforms must be clean, ironed, and properly worn at all times.'],
+                    ],
+                ],
+                [
+                    'id' => 'results',
+                    'label' => 'Results & Exams',
+                    'items' => [
+                        ['q' => 'How is student performance assessed?', 'a' => 'Assessment follows the Nigerian WAEC/NECO grading system: Continuous Assessment (CA) scores are collected throughout the term, and an End-of-Term Examination contributes to the final score. The combined result determines the final grade (A1–F9).'],
+                        ['q' => 'When are report cards issued?', 'a' => 'Report cards are issued at the end of each term during the closing ceremony. Parents can also view results digitally via the Parent Portal. Results are released only after all outstanding fees are cleared.'],
+                        ['q' => 'What happens if a student fails a subject?', 'a' => 'Students who fail to meet promotion requirements after all three terms receive a Retention Notice. Parents are invited for a meeting to discuss support options, including holiday tutoring and a re-assessment.'],
+                    ],
+                ],
+                [
+                    'id' => 'general',
+                    'label' => 'General',
+                    'items' => [
+                        ['q' => 'How can parents communicate with the school?', 'a' => 'Parents can reach us through the Parent Portal, our official school email and phone line, scheduled Parent-Teacher Meetings (PTMs) each term, or walk-in visits during school hours. We respond to all enquiries within 24–48 working hours.'],
+                        ['q' => 'Does the school have a health/medical facility?', 'a' => 'Yes, our sick bay is staffed by a qualified school nurse during school hours. In the event of illness or injury, parents are notified immediately. Students with known medical conditions must declare this during enrollment.'],
+                        ['q' => 'What is the school\'s policy on bullying and student safety?', 'a' => 'The school operates a zero-tolerance policy on bullying, harassment, and any form of violence. Incidents are investigated promptly and handled in line with our Student Code of Conduct.'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -312,6 +378,14 @@ class PublicPageContent
             ->all();
     }
 
+    public static function arrayToLines(array $items): string
+    {
+        return collect($items)
+            ->map(fn ($item) => trim((string) $item))
+            ->filter()
+            ->implode(PHP_EOL);
+    }
+
     public static function itemsToLines(array $items): string
     {
         return collect($items)
@@ -329,5 +403,3 @@ class PublicPageContent
             ->implode(PHP_EOL);
     }
 }
-
-

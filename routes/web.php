@@ -34,13 +34,14 @@ Route::get('/contact', [PublicPageController::class, 'contactPage'])->name('publ
 Route::post('/contact', [PublicPageController::class, 'submitContact'])->name('public.contact.submit');
 Route::get('/menu/{section}/{slug}', [PublicPageController::class, 'submenuPage'])->name('public.submenu');
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::get('/admin-access', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/admin-access', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Online Admission (public)
 Route::get('/apply', [AdmissionController::class, 'applyOnline'])->name('admission.apply');
-Route::post('/apply', [AdmissionController::class, 'store'])->name('admission.apply.store');
+Route::get('/apply/success', [AdmissionController::class, 'success'])->name('admission.success');
+Route::post('/apply', [AdmissionController::class, 'store'])->name('admission.apply.store')->middleware('throttle:5,10');
 
 // ── Authenticated Routes ───────────────────────────────────
 Route::middleware(['auth'])->group(function () {
@@ -84,11 +85,10 @@ Route::middleware(['auth'])->group(function () {
     // ── Admission Module ───────────────────────────────────
     Route::prefix('admission')->name('admission.')->group(function () {
         Route::get('/', [AdmissionController::class, 'index'])->name('index');
-        Route::get('/create', [AdmissionController::class, 'create'])->name('create');
-        Route::post('/', [AdmissionController::class, 'store'])->name('store');
         Route::get('/{admission}', [AdmissionController::class, 'show'])->name('show');
-        Route::post('/{admission}/review', [AdmissionController::class, 'review'])->name('review');
+        Route::patch('/{admission}/review', [AdmissionController::class, 'review'])->name('review');
         Route::post('/{admission}/enroll', [AdmissionController::class, 'enroll'])->name('enroll');
+        Route::delete('/{admission}', [AdmissionController::class, 'destroy'])->name('destroy');
     });
 
     // ── Financial Module ───────────────────────────────────
@@ -157,14 +157,25 @@ Route::middleware(['auth'])->group(function () {
 
     // ── Settings ───────────────────────────────────────────
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::get('settings/{page}', [SettingsController::class, 'showPage'])->name('settings.page');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::put('settings/system', [SettingsController::class, 'updateSettings'])->name('settings.system');
+    Route::post('settings/rich-text/upload', [SettingsController::class, 'uploadRichTextImage'])
+        ->middleware('throttle:20,1')
+        ->name('settings.rich-text.upload');
     Route::post('settings/system/test-smtp', [SettingsController::class, 'sendSmtpTest'])->name('settings.smtp-test');
     Route::post('settings/public-page/reset-theme', [SettingsController::class, 'resetThemeDefaults'])->name('settings.public-page.reset-theme');
     Route::put('settings/public-page', [SettingsController::class, 'updatePublicPage'])->name('settings.public-page');
+    Route::post('settings/submenu-image/upload', [SettingsController::class, 'uploadSubmenuImage'])->name('settings.submenu-image.upload');
+    Route::post('settings/submenu-image/remove', [SettingsController::class, 'removeSubmenuImage'])->name('settings.submenu-image.remove');
+    Route::post('settings/submenu-content/save', [SettingsController::class, 'saveSubmenuContent'])->name('settings.submenu-content.save');
+    Route::post('settings/submenu-content-image/upload', [SettingsController::class, 'uploadSubmenuContentImage'])->name('settings.submenu-content-image.upload');
+    Route::post('settings/submenu-content-image/remove', [SettingsController::class, 'removeSubmenuContentImage'])->name('settings.submenu-content-image.remove');
+    Route::post('settings/faqs/save', [SettingsController::class, 'saveFaqs'])->name('settings.faqs.save');
     Route::prefix('system')->name('system.')->group(function () {
         Route::resource('hero-slides', HeroSlideController::class)->except('show');
         Route::patch('hero-slides/{heroSlide}/toggle', [HeroSlideController::class, 'toggle'])->name('hero-slides.toggle');
+        Route::patch('hero-slides/reorder', [HeroSlideController::class, 'reorder'])->name('hero-slides.reorder');
         Route::get('testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
         Route::patch('testimonials/{testimonial}/approve', [TestimonialController::class, 'approve'])->name('testimonials.approve');
         Route::patch('testimonials/{testimonial}/reject', [TestimonialController::class, 'reject'])->name('testimonials.reject');
@@ -173,7 +184,11 @@ Route::middleware(['auth'])->group(function () {
     // ── Multi-School / SaaS (Super Admin only) ─────────────
     Route::prefix('admin')->name('multi-school.')->group(function () {
         Route::get('/dashboard', [TenantController::class, 'index'])->name('index');
+        Route::get('/domains', [TenantController::class, 'domains'])->name('domains');
         Route::post('/onboard', [TenantController::class, 'onboard'])->name('onboard');
+        Route::post('/domains/clear-cache', [TenantController::class, 'clearDomainCache'])->name('domains.clear-cache');
+        Route::put('/domains/{school}', [TenantController::class, 'updateDomain'])->name('domains.update');
     });
 });
+
 

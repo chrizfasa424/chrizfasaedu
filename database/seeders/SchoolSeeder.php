@@ -11,18 +11,18 @@ class SchoolSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create demo school
+        // Create the main school brand
         $school = School::create([
-            'name' => 'Greenfield International Academy',
-            'slug' => 'greenfield-international-academy',
-            'code' => 'GIA001',
-            'email' => 'info@greenfieldacademy.ng',
+            'name' => 'ChrizFasa Academy',
+            'slug' => 'chrizfasa-academy',
+            'code' => 'CFA001',
+            'email' => 'info@chrizfasa.ng',
             'phone' => '+2348012345678',
             'address' => '25 Education Lane, Victoria Island',
             'city' => 'Lagos',
             'state' => 'Lagos',
             'country' => 'Nigeria',
-            'motto' => 'Excellence in Education',
+            'motto' => 'A modern learning environment for KG, Primary, and Secondary students',
             'school_type' => 'combined',
             'ownership' => 'private',
             'established_year' => 2010,
@@ -37,23 +37,12 @@ class SchoolSeeder extends Seeder
             ],
         ]);
 
-        // Super Admin
-        User::create([
-            'school_id' => null,
-            'first_name' => 'Super',
-            'last_name' => 'Admin',
-            'email' => 'superadmin@chrizfasa.ng',
-            'password' => Hash::make('password'),
-            'role' => 'super_admin',
-            'email_verified_at' => now(),
-        ]);
-
-        // School Admin
+        // Primary Admin Account
         User::create([
             'school_id' => $school->id,
             'first_name' => 'Adeyemi',
             'last_name' => 'Johnson',
-            'email' => 'admin@greenfieldacademy.ng',
+            'email' => 'admin@chrizfasa.ng',
             'password' => Hash::make('password'),
             'role' => 'school_admin',
             'email_verified_at' => now(),
@@ -64,7 +53,7 @@ class SchoolSeeder extends Seeder
             'school_id' => $school->id,
             'first_name' => 'Mrs. Folake',
             'last_name' => 'Adeyemo',
-            'email' => 'principal@greenfieldacademy.ng',
+            'email' => 'principal@chrizfasa.ng',
             'password' => Hash::make('password'),
             'role' => 'principal',
             'email_verified_at' => now(),
@@ -73,7 +62,7 @@ class SchoolSeeder extends Seeder
         \App\Models\Staff::create([
             'school_id' => $school->id,
             'user_id' => $principalUser->id,
-            'staff_id_number' => 'GIA/STF/001',
+            'staff_id_number' => 'CFA/STF/001',
             'designation' => 'Principal',
             'department' => 'Administration',
             'gender' => 'female',

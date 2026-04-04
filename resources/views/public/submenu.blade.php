@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $item['title'] }} | {{ $schoolName }}</title>
+    @php
+        $faviconPath = data_get($school?->settings, 'branding.favicon');
+        $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
+    @endphp
+    @if($faviconPath)
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
+    @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    @php($theme = \App\Support\ThemePalette::fromPublicPage($publicPage))
     <script>
         tailwind.config = {
             theme: {
@@ -188,6 +194,96 @@
     .bg-white {
         background-color: var(--theme-surface, #FFFFFF) !important;
     }
+
+    .rich-text-content p + p,
+    .rich-text-content ul + p,
+    .rich-text-content ol + p,
+    .rich-text-content p + ul,
+    .rich-text-content p + ol,
+    .rich-text-content figure,
+    .rich-text-content blockquote {
+        margin-top: 0.75rem;
+    }
+
+    .rich-text-content ul,
+    .rich-text-content ol {
+        margin-left: 1.25rem;
+        list-style-position: outside;
+    }
+
+    .rich-text-content ul {
+        list-style-type: disc;
+    }
+
+    .rich-text-content ol {
+        list-style-type: decimal;
+    }
+
+    .rich-text-content blockquote {
+        border-left: 3px solid rgba(45, 29, 92, 0.24);
+        padding-left: 0.9rem;
+        font-style: italic;
+    }
+
+    .rich-text-content a {
+        color: var(--submenu-primary, #2D1D5C);
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    .rich-text-content img {
+        display: block;
+        max-width: 100%;
+        border-radius: 1rem;
+        box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.45);
+    }
+
+    .rich-text-content figcaption {
+        margin-top: 0.6rem;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    /* FAQ pill filter buttons */
+    .faq-pill {
+        background-color: #ffffff;
+        border-color: #e2e8f0;
+        color: #475569;
+    }
+    .faq-pill:hover {
+        border-color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #2D1D5C);
+        background-color: #f8fafc;
+    }
+    .faq-pill .faq-pill-count {
+        background-color: #e2e8f0;
+        color: #475569;
+    }
+    .faq-pill-active {
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        border-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
+    }
+    .faq-pill-active .faq-pill-count {
+        background-color: rgba(255,255,255,0.25) !important;
+        color: #ffffff !important;
+    }
+    .faq-pill span:last-child {
+        background-color: #e2e8f0;
+        color: #475569;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    .faq-pill-active span:last-child {
+        background-color: rgba(255,255,255,0.22) !important;
+        color: #fff !important;
+    }
+    /* FAQ accordion open state */
+    .faq-item.faq-open .faq-chevron {
+        transform: rotate(180deg);
+    }
+    .faq-item.faq-open .faq-trigger {
+        background-color: #f8fafc;
+    }
 </style>
 </head>
 @php
@@ -204,15 +300,20 @@
                 ->values()
                 ->all();
 
-            $isContact = $id === 'contact';
+            $isContact   = $id === 'contact';
+            $firstSlug   = collect($items)->first()['slug'] ?? null;
+            $sectionLink = $isContact
+                ? route('public.contact')
+                : ($firstSlug ? route('public.submenu', ['section' => $id, 'slug' => $firstSlug]) : route('public.home'));
 
             return [
-                'id' => $id,
+                'id'    => $id,
                 'label' => $section['label'] ?? ucfirst(str_replace('-', ' ', $id)),
-                'link' => $isContact ? route('public.contact') : route('public.home') . "#{$id}",
+                'link'  => $sectionLink,
                 'items' => $isContact ? [] : $items,
             ];
         })
+        ->prepend(['id' => 'home', 'label' => 'Home', 'link' => route('public.home'), 'items' => []])
         ->values()
         ->all();
 
@@ -247,23 +348,25 @@
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
         <header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur" style="background-color: {{ $headerBgColor }};">
-            <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-                <a href="{{ route('public.home') }}" class="flex items-center gap-3 transition duration-200 hover:opacity-90">
+            <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
+                <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
-                        <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="{{ $schoolName }} Logo" class="h-10 w-10 rounded-full border border-slate-200 bg-white object-cover">
+                        <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="{{ $schoolName }} Logo" style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;object-fit:cover;border:1px solid rgba(255,255,255,0.2);background:#fff;">
+                    @else
+                        <div style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;letter-spacing:0.1em;color:#fff;">
+                            {{ \Illuminate\Support\Str::upper(collect(preg_split('/\s+/', trim($schoolName)))->filter()->take(2)->map(fn($w) => \Illuminate\Support\Str::substr($w,0,1))->implode('')) }}
+                        </div>
                     @endif
-                    <span class="font-display text-xl font-semibold tracking-tight text-white whitespace-nowrap">{{ $schoolName }}</span>
                 </a>
-
-                <nav class="hidden items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/90 p-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
                     @foreach($menuSections as $section)
                         @php
                             $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
                             $isCurrentSection = $section['id'] === $sectionKey;
                         @endphp
-                        <div class="relative" data-menu="{{ $section['id'] }}">
+                        <div class="relative shrink-0" data-menu="{{ $section['id'] }}">
                             @if(!empty($section['items']))
-                                <button type="button" data-menu-toggle aria-expanded="false" aria-controls="submenu-{{ $section['id'] }}" class="theme-nav-link inline-flex cursor-pointer items-center rounded-full px-4 py-2.5 transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 {{ $isCurrentSection ? 'theme-nav-link-active' : '' }}">
+                                <button type="button" data-menu-toggle aria-expanded="false" aria-controls="submenu-{{ $section['id'] }}" class="theme-nav-link inline-flex cursor-pointer items-center whitespace-nowrap rounded-xl px-3.5 py-2 text-[15px] font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 {{ $isCurrentSection ? 'theme-nav-link-active' : '' }}">
                                     {{ $section['label'] }}
                                 </button>
                                 <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
@@ -283,17 +386,16 @@
                                     </div>
                                 </div>
                             @else
-                                <a href="{{ $section['link'] }}" class="theme-nav-link inline-flex items-center rounded-full px-4 py-2.5 transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
+                                <a href="{{ $section['link'] }}" class="theme-nav-link inline-flex items-center whitespace-nowrap rounded-xl px-3.5 py-2 text-[15px] font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 {{ $isCurrentSection ? 'theme-nav-link-active' : '' }}">
                                     {{ $section['label'] }}
                                 </a>
                             @endif
                         </div>
                     @endforeach
                 </nav>
-
-                <div class="flex items-center gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
-                    <a href="{{ route('admission.apply') }}" class="theme-header-action-outline hidden rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">{{ $headerApplyText !== '' ? $headerApplyText : 'Apply' }}</a>
-                    <a href="{{ route('login') }}" class="theme-header-action-solid rounded-full px-3 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:px-4">{{ $headerPortalLoginText !== '' ? $headerPortalLoginText : 'Portal Login' }}</a>
+                <div class="flex items-center justify-end gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                    <a href="{{ route('admission.apply') }}" class="theme-header-action-outline hidden items-center whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">{{ $headerApplyText !== '' ? $headerApplyText : 'Apply' }}</a>
+                    <a href="{{ route('login') }}" class="theme-header-action-solid inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $headerPortalLoginText !== '' ? $headerPortalLoginText : 'Portal Login' }}</a>
                     <button type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/40 text-white transition duration-200 hover:bg-white/10 xl:hidden">
                         <svg data-mobile-menu-open-icon class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -349,29 +451,229 @@
         </header>
 
         <main class="relative z-0">
-            <section class="mx-auto max-w-7xl px-6 pb-14 pt-16 lg:px-8 lg:pt-20">
-                <div class="grid gap-8 lg:grid-cols-3">
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-                        <p class="inline-flex rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-brand-700">{{ $sectionLabel }}</p>
-                        <h1 class="mt-4 font-display text-3xl font-semibold leading-tight text-slate-900 sm:text-4xl">{{ $item['title'] }}</h1>
-                        <p class="mt-5 max-w-3xl text-base leading-relaxed text-muted sm:text-lg">{{ $item['description'] }}</p>
+            {{-- Full-width hero section --}}
+            <div class="relative w-full overflow-hidden" style="min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;">
+                @if(!empty($item['image']))
+                    <img src="{{ asset('storage/' . ltrim($item['image'], '/')) }}" alt="{{ $item['title'] }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.62) 100%);"></div>
+                @else
+                    <div style="position:absolute;inset:0;background:linear-gradient(135deg, {{ $submenuPrimaryColor }} 0%, rgba(45,29,92,0.88) 60%, {{ $submenuSecondaryColor }}33 100%);"></div>
+                    <div class="pointer-events-none" style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);background-size:36px 36px;"></div>
+                @endif
+                <div class="relative px-6 pb-14 pt-28 lg:px-8 lg:pb-16 lg:pt-32" style="max-width:80rem;margin:0 auto;width:100%;">
+                    <span class="inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.18em]" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#ffffff;">{{ $sectionLabel }}</span>
+                    <h1 class="mt-5 font-display font-bold leading-tight text-white" style="font-size:clamp(2rem,5vw,3.5rem);text-shadow:0 2px 16px rgba(0,0,0,0.45);max-width:42rem;">{{ $item['title'] }}</h1>
+                </div>
+            </div>
 
-                        <div class="mt-7 grid gap-4 sm:grid-cols-2">
-                            <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                                <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $submenuHighlightOneTitle !== '' ? $submenuHighlightOneTitle : 'What Students Gain' }}</h2>
-                                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ $submenuHighlightOneText !== '' ? $submenuHighlightOneText : 'Learners receive practical support, clear expectations, and measurable progress across this focus area.' }}</p>
-                            </article>
-                            <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                                <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $submenuHighlightTwoTitle !== '' ? $submenuHighlightTwoTitle : 'How We Deliver' }}</h2>
-                                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ $submenuHighlightTwoText !== '' ? $submenuHighlightTwoText : 'Delivery is structured to be balanced and moderate, so parents and students can follow the process with confidence.' }}</p>
-                            </article>
+            <section class="mx-auto max-w-7xl px-6 pb-14 pt-10 lg:px-8">
+                <div class="grid gap-8 lg:grid-cols-3">
+
+                @if($sectionKey === 'admissions' && $item['slug'] === 'faqs')
+                {{-- ═══════════════════════════════════════════════════════════════
+                     PREMIUM FAQ SECTION — data from admin settings
+                ════════════════════════════════════════════════════════════════ --}}
+                @php
+                // Category icons map (keyed by category id)
+                $catIcons = [
+                    'admissions'  => 'M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766z',
+                    'fees'        => 'M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z',
+                    'academics'   => 'M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
+                    'school-life' => 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0z',
+                    'results'     => 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125z',
+                    'general'     => 'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9 5.25h.008v.008H12v-.008z',
+                ];
+                $defaultIcon = 'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9 5.25h.008v.008H12v-.008z';
+
+                $faqCategories = collect($publicPage['faqs'] ?? [])
+                    ->filter(fn($cat) => !empty($cat['items']))
+                    ->map(fn($cat) => array_merge($cat, [
+                        'icon' => $catIcons[$cat['id']] ?? $defaultIcon,
+                    ]))
+                    ->values()
+                    ->all();
+                $totalFaqs = collect($faqCategories)->sum(fn($c) => count($c['items'] ?? []));
+                @endphp
+
+                <div class="lg:col-span-2 space-y-6">
+
+                    {{-- Search bar --}}
+                    <div class="relative">
+                        <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-slate-400">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><circle cx="11" cy="11" r="7.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/></svg>
+                        </span>
+                        <input id="faq-search" type="text" placeholder="Search frequently asked questions…"
+                               class="w-full rounded-2xl border border-slate-200 bg-white py-4 pl-14 pr-5 text-sm font-medium text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 placeholder:text-slate-400">
+                        <span id="faq-search-clear" class="absolute inset-y-0 right-0 hidden cursor-pointer items-center pr-5 text-slate-400 hover:text-slate-600" style="display:none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                        </span>
+                    </div>
+
+                    {{-- Category pills --}}
+                    <div class="flex flex-wrap gap-2" id="faq-category-pills">
+                        <button type="button" data-faq-cat="all"
+                                class="faq-pill faq-pill-active inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold transition duration-200">
+                            All Questions
+                            <span class="inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-extrabold" id="faq-count-all">{{ collect($faqCategories)->sum(fn($c) => count($c['items'])) }}</span>
+                        </button>
+                        @foreach($faqCategories as $cat)
+                        <button type="button" data-faq-cat="{{ $cat['id'] }}"
+                                class="faq-pill inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold transition duration-200">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5 shrink-0">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $cat['icon'] }}"/>
+                            </svg>
+                            {{ $cat['label'] }}
+                            <span class="inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-extrabold">{{ count($cat['items']) }}</span>
+                        </button>
+                        @endforeach
+                    </div>
+
+                    {{-- No results notice --}}
+                    <div id="faq-no-results" class="hidden rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto mb-3 h-9 w-9 text-slate-300"><circle cx="11" cy="11" r="7.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/></svg>
+                        <p class="text-sm font-semibold text-slate-500">No matching questions found.</p>
+                        <p class="mt-1 text-xs text-slate-400">Try a different keyword or browse all categories.</p>
+                    </div>
+
+                    {{-- FAQ groups --}}
+                    @foreach($faqCategories as $cat)
+                    <div class="faq-category-group" data-cat-group="{{ $cat['id'] }}">
+                        <div class="mb-3 flex items-center gap-3">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white"
+                                  style="background:{{ $submenuPrimaryColor }}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $cat['icon'] }}"/>
+                                </svg>
+                            </span>
+                            <h2 class="text-base font-bold text-slate-900">{{ $cat['label'] }}</h2>
+                            <div class="h-px flex-1 bg-slate-100"></div>
                         </div>
 
-                        <div class="mt-8 flex flex-wrap gap-3">
-                            <a href="{{ route('admission.apply') }}" class="theme-cta-solid inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $submenuPrimaryButtonText !== '' ? $submenuPrimaryButtonText : 'Start Admission' }}</a>
-                            <a href="{{ route('public.home') }}#{{ $sectionKey }}" class="theme-cta-outline inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $submenuBackButtonPrefix !== '' ? $submenuBackButtonPrefix : 'Back to' }} {{ $sectionLabel }}</a>
+                        <div class="space-y-2">
+                            @foreach($cat['items'] as $idx => $faq)
+                            <div class="faq-item rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all duration-200"
+                                 data-question="{{ strtolower($faq['q']) }}"
+                                 data-cat="{{ $cat['id'] }}">
+                                <button type="button"
+                                        onclick="toggleFaq(this)"
+                                        class="faq-trigger flex w-full items-start justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-slate-900 transition duration-200 hover:bg-slate-50/60">
+                                    <span class="flex items-start gap-3">
+                                        <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-extrabold"
+                                              style="background:{{ $submenuSecondaryColor }};color:{{ $submenuPrimaryColor }}">
+                                            {{ $idx + 1 }}
+                                        </span>
+                                        <span class="leading-relaxed">{{ $faq['q'] }}</span>
+                                    </span>
+                                    <svg class="faq-chevron mt-0.5 h-5 w-5 shrink-0 transition-transform duration-300 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+                                    </svg>
+                                </button>
+                                <div class="faq-answer hidden overflow-hidden">
+                                    <div class="border-t border-slate-100 px-5 pb-5 pt-4">
+                                        <div class="flex gap-3">
+                                            <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold text-white"
+                                                 style="background:{{ $submenuPrimaryColor }}">A</div>
+                                            <div class="text-sm leading-relaxed text-slate-600 rich-text-content space-y-1">{!! $faq['a'] !!}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
+                    @endforeach
+
+                    {{-- Bottom CTA --}}
+                    <div class="relative overflow-hidden rounded-3xl p-8 text-center shadow-lg"
+                         style="background:linear-gradient(135deg, {{ $submenuPrimaryColor }} 0%, #3a2872 60%, #1a0f3a 100%);">
+                        <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;"></div>
+                        <div class="relative z-10">
+                            <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white/80">
+                                Still have questions?
+                            </span>
+                            <h3 class="mt-4 text-2xl font-extrabold text-white">We're happy to help</h3>
+                            <p class="mt-2 text-sm text-white/65 max-w-sm mx-auto">Our admissions team is available Monday–Friday to answer any question not covered here.</p>
+                            <div class="mt-6 flex flex-wrap justify-center gap-3">
+                                <a href="{{ route('public.contact') }}"
+                                   class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition duration-200 hover:-translate-y-0.5"
+                                   style="background:{{ $submenuSecondaryColor }};color:{{ $submenuPrimaryColor }}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5H4.5a2.25 2.25 0 0 0-2.25 2.25m19.5 0-9.75 6.75-9.75-6.75"/></svg>
+                                    Contact Us
+                                </a>
+                                <a href="{{ route('admission.apply') }}"
+                                   class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-white/20">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zM4 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 10.374 21c-2.331 0-4.512-.645-6.374-1.766z"/></svg>
+                                    Start Application
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                @else
+                {{-- ── Standard submenu content ── --}}
+                @php
+                    $displayDescription = !empty($item['rich_description'])
+                        ? $item['rich_description']
+                        : $item['description'];
+
+                    $h1Title = !empty($item['highlight_one_title'])
+                        ? $item['highlight_one_title']
+                        : ($submenuHighlightOneTitle !== '' ? $submenuHighlightOneTitle : 'What Students Gain');
+                    $h1Text = !empty($item['highlight_one_text'])
+                        ? $item['highlight_one_text']
+                        : ($submenuHighlightOneText !== '' ? $submenuHighlightOneText : 'Learners receive practical support, clear expectations, and measurable progress across this focus area.');
+                    $h2Title = !empty($item['highlight_two_title'])
+                        ? $item['highlight_two_title']
+                        : ($submenuHighlightTwoTitle !== '' ? $submenuHighlightTwoTitle : 'How We Deliver');
+                    $h2Text = !empty($item['highlight_two_text'])
+                        ? $item['highlight_two_text']
+                        : ($submenuHighlightTwoText !== '' ? $submenuHighlightTwoText : 'Delivery is structured to be balanced and moderate, so parents and students can follow the process with confidence.');
+                @endphp
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+                    <div class="rich-text-content mt-1 max-w-3xl text-base leading-relaxed text-muted sm:text-lg">{!! \App\Support\RichText::render($displayDescription) !!}</div>
+
+                    @php
+                        $pageImgOne = trim((string) ($item['image_one'] ?? ''));
+                        $pageImgTwo = trim((string) ($item['image_two'] ?? ''));
+                    @endphp
+                    @if($pageImgOne !== '' || $pageImgTwo !== '')
+                    <div class="mt-6 grid gap-4 {{ ($pageImgOne !== '' && $pageImgTwo !== '') ? 'sm:grid-cols-2' : 'sm:grid-cols-1 max-w-lg' }}">
+                        @if($pageImgOne !== '')
+                        <div class="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
+                            <img src="{{ asset('storage/' . ltrim($pageImgOne, '/')) }}"
+                                 alt="{{ $item['title'] }}"
+                                 class="h-52 w-full object-cover transition duration-300 hover:scale-105">
+                        </div>
+                        @endif
+                        @if($pageImgTwo !== '')
+                        <div class="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
+                            <img src="{{ asset('storage/' . ltrim($pageImgTwo, '/')) }}"
+                                 alt="{{ $item['title'] }}"
+                                 class="h-52 w-full object-cover transition duration-300 hover:scale-105">
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    <div class="mt-7 grid gap-4 sm:grid-cols-2">
+                        <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $h1Title }}</h2>
+                            <div class="rich-text-content mt-2 text-sm leading-relaxed text-slate-600">{!! \App\Support\RichText::render($h1Text) !!}</div>
+                        </article>
+                        <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $h2Title }}</h2>
+                            <div class="rich-text-content mt-2 text-sm leading-relaxed text-slate-600">{!! \App\Support\RichText::render($h2Text) !!}</div>
+                        </article>
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-3">
+                        <a href="{{ route('admission.apply') }}" class="theme-cta-solid inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $submenuPrimaryButtonText !== '' ? $submenuPrimaryButtonText : 'Start Admission' }}</a>
+                        <a href="{{ route('public.home') }}#{{ $sectionKey }}" class="theme-cta-outline inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $submenuBackButtonPrefix !== '' ? $submenuBackButtonPrefix : 'Back to' }} {{ $sectionLabel }}</a>
+                    </div>
+                </div>
+                @endif
 
                     <aside class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <h2 class="font-display text-xl font-semibold text-slate-900">{{ $submenuMoreInPrefix !== '' ? $submenuMoreInPrefix : 'More In' }} {{ $sectionLabel }}</h2>
@@ -594,5 +896,143 @@
             });
         })();
     </script>
+
+    {{-- FAQ interactive JS (only needed when the FAQ section is rendered) --}}
+    @if($sectionKey === 'admissions' && $item['slug'] === 'faqs')
+    <script>
+    (function () {
+        // ── Accordion ───────────────────────────────────────────────────
+        window.toggleFaq = function (btn) {
+            const item   = btn.closest('.faq-item');
+            const answer = item.querySelector('.faq-answer');
+            const isOpen = item.classList.contains('faq-open');
+
+            // Close all open items in the same group for a single-open accordion
+            const group = item.closest('.faq-category-group');
+            if (group) {
+                group.querySelectorAll('.faq-item.faq-open').forEach(function (openItem) {
+                    if (openItem !== item) {
+                        openItem.classList.remove('faq-open');
+                        openItem.querySelector('.faq-answer').classList.add('hidden');
+                    }
+                });
+            }
+
+            if (isOpen) {
+                item.classList.remove('faq-open');
+                answer.classList.add('hidden');
+            } else {
+                item.classList.add('faq-open');
+                answer.classList.remove('hidden');
+                // Smooth scroll into view if partly off-screen
+                setTimeout(function () {
+                    const rect = item.getBoundingClientRect();
+                    if (rect.top < 80) {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 50);
+            }
+        };
+
+        // ── Search ──────────────────────────────────────────────────────
+        const searchInput  = document.getElementById('faq-search');
+        const searchClear  = document.getElementById('faq-search-clear');
+        const noResults    = document.getElementById('faq-no-results');
+        const allItems     = Array.from(document.querySelectorAll('.faq-item'));
+        const allGroups    = Array.from(document.querySelectorAll('.faq-category-group'));
+
+        let activeCategory = 'all';
+
+        function applyFilters() {
+            const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            let visibleCount = 0;
+
+            allGroups.forEach(function (group) {
+                const catId = group.getAttribute('data-cat-group');
+                const catMatch = activeCategory === 'all' || activeCategory === catId;
+                let groupVisible = 0;
+
+                group.querySelectorAll('.faq-item').forEach(function (item) {
+                    const questionText = item.getAttribute('data-question') || '';
+                    const answerText   = item.querySelector('.faq-answer')
+                                            ? item.querySelector('.faq-answer').textContent.toLowerCase()
+                                            : '';
+                    const textMatch    = !query || questionText.includes(query) || answerText.includes(query);
+                    const show         = catMatch && textMatch;
+
+                    item.style.display = show ? '' : 'none';
+                    if (show) { groupVisible++; visibleCount++; }
+                });
+
+                group.style.display = groupVisible > 0 ? '' : 'none';
+            });
+
+            if (noResults) {
+                noResults.classList.toggle('hidden', visibleCount > 0);
+            }
+
+            // Show / hide search clear button
+            if (searchClear) {
+                searchClear.style.display = query ? 'flex' : 'none';
+            }
+
+            // Auto-open first item when searching
+            if (query) {
+                allItems.forEach(function (item) {
+                    if (item.style.display !== 'none') {
+                        const answer = item.querySelector('.faq-answer');
+                        item.classList.add('faq-open');
+                        if (answer) answer.classList.remove('hidden');
+                    }
+                });
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilters);
+        }
+
+        if (searchClear) {
+            searchClear.addEventListener('click', function () {
+                searchInput.value = '';
+                applyFilters();
+                searchInput.focus();
+            });
+        }
+
+        // ── Category pills ──────────────────────────────────────────────
+        const pills = Array.from(document.querySelectorAll('#faq-category-pills [data-faq-cat]'));
+
+        pills.forEach(function (pill) {
+            pill.addEventListener('click', function () {
+                activeCategory = pill.getAttribute('data-faq-cat');
+
+                pills.forEach(function (p) {
+                    p.classList.remove('faq-pill-active');
+                });
+                pill.classList.add('faq-pill-active');
+
+                applyFilters();
+            });
+        });
+
+        // ── Keyboard shortcut: "/" to focus search ──────────────────────
+        document.addEventListener('keydown', function (e) {
+            if (e.key === '/' && document.activeElement !== searchInput
+                && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        });
+    })();
+    </script>
+    @endif
 </body>
 </html>
+
+
+
+
