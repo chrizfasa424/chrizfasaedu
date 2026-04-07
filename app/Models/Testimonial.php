@@ -13,6 +13,7 @@ class Testimonial extends Model
 
     protected $fillable = [
         'school_id',
+        'student_id',
         'full_name',
         'role_title',
         'rating',
@@ -32,6 +33,11 @@ class Testimonial extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
     }
 }
 

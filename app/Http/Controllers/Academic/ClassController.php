@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Academic;
 
+use App\Enums\GradeLevel;
 use App\Http\Controllers\Controller;
-use App\Models\SchoolClass;
 use App\Models\ClassArm;
+use App\Models\SchoolClass;
 use App\Models\Staff;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class ClassController extends Controller
 {
@@ -20,16 +22,19 @@ class ClassController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'grade_level' => 'required|string',
+            'grade_level' => ['required', new Enum(GradeLevel::class)],
             'section' => 'nullable|string',
             'capacity' => 'integer|min:1',
             'class_teacher_id' => 'nullable|exists:staff,id',
             'arms' => 'nullable|array',
         ]);
 
+        $arms = array_filter($validated['arms'] ?? []);
+        unset($validated['arms']);
+
         $class = SchoolClass::create($validated);
 
-        foreach ($request->input('arms', []) as $arm) {
+        foreach ($arms as $arm) {
             ClassArm::create([
                 'school_id' => auth()->user()->school_id,
                 'class_id' => $class->id,
@@ -49,12 +54,40 @@ class ClassController extends Controller
 
     public function update(Request $request, SchoolClass $class)
     {
-        $class->update($request->validate([
-            'name' => 'required|string',
-            'capacity' => 'integer|min:1',
+        $validated = $request->validate([
+            'name'             => 'required|string|max:100',
+            'grade_level'      => ['required', new Enum(GradeLevel::class)],
+            'capacity'         => 'integer|min:1',
             'class_teacher_id' => 'nullable|exists:staff,id',
-        ]));
-        return back()->with('success', 'Class updated.');
+            'arms'             => 'nullable|array',
+        ]);
+
+        $arms = array_filter($validated['arms'] ?? []);
+        unset($validated['arms']);
+
+        $class->update($validated);
+
+        // Sync arms: delete removed, add new
+        $existingNames = $class->arms->pluck('name')->toArray();
+        $newNames      = array_values($arms);
+
+        foreach ($class->arms as $arm) {
+            if (!in_array($arm->name, $newNames)) {
+                $arm->delete();
+            }
+        }
+        foreach ($newNames as $armName) {
+            if (!in_array($armName, $existingNames)) {
+                ClassArm::create([
+                    'school_id' => auth()->user()->school_id,
+                    'class_id'  => $class->id,
+                    'name'      => $armName,
+                    'capacity'  => $validated['capacity'] ?? $class->capacity ?? 40,
+                ]);
+            }
+        }
+
+        return redirect()->route('academic.classes.index')->with('success', 'Class updated.');
     }
 
     public function destroy(SchoolClass $class)

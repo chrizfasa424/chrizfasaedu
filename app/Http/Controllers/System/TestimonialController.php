@@ -51,7 +51,7 @@ class TestimonialController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        return back()->with('success', 'Testimonial approved successfully.');
+        return redirect()->route('system.testimonials.index')->with('success', 'Testimonial approved successfully.');
     }
 
     public function reject(int $testimonial)
@@ -66,7 +66,50 @@ class TestimonialController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        return back()->with('success', 'Testimonial rejected.');
+        return redirect()->route('system.testimonials.index')->with('success', 'Testimonial rejected.');
+    }
+
+    public function destroy(int $testimonial)
+    {
+        $this->ensureAdminAccess();
+
+        $record = $this->scopedTestimonialsQuery()->findOrFail($testimonial);
+        $record->delete();
+
+        return redirect()->route('system.testimonials.index')->with('success', 'Testimonial deleted.');
+    }
+
+    public function bulkAction(\Illuminate\Http\Request $request)
+    {
+        $this->ensureAdminAccess();
+
+        $request->validate([
+            'ids'    => 'required|array|min:1',
+            'ids.*'  => 'integer',
+            'action' => 'required|in:approve,reject,delete',
+        ]);
+
+        $query = $this->scopedTestimonialsQuery()->whereIn('id', $request->ids);
+
+        match ($request->action) {
+            'approve' => $query->update([
+                'status'      => 'approved',
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]),
+            'reject'  => $query->update([
+                'status'      => 'rejected',
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]),
+            'delete'  => $query->delete(),
+        };
+
+        $count  = count($request->ids);
+        $labels = ['approve' => 'approved', 'reject' => 'rejected', 'delete' => 'deleted'];
+        $label  = $labels[$request->action];
+
+        return redirect()->route('system.testimonials.index')->with('success', "{$count} testimonial(s) {$label}.");
     }
 
     private function ensureAdminAccess(): void

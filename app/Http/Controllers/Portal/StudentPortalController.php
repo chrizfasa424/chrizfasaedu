@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Enums\UserRole;
+use App\Exports\ResultsExport;
 use App\Http\Controllers\Controller;
+use App\Models\AcademicTerm;
+use App\Models\ReportCard;
 use App\Models\Result;
 use App\Models\StudentAttendance;
 use App\Models\Invoice;
@@ -12,6 +15,7 @@ use App\Models\Timetable;
 use App\Support\PublicPageContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentPortalController extends Controller
 {
@@ -27,11 +31,18 @@ class StudentPortalController extends Controller
         $term = $session?->terms()->where('is_current', true)->first();
         $publicPage = PublicPageContent::forSchool($school);
 
+        // Results for current term only (approved)
         $results = Result::with('subject')
             ->where('student_id', $student->id)
             ->where('is_approved', true)
-            ->latest()
-            ->take(10)
+            ->when($term, fn($q) => $q->where('term_id', $term->id))
+            ->get();
+
+        // Published report cards for this student
+        $reportCards = ReportCard::with(['term.session'])
+            ->where('student_id', $student->id)
+            ->where('is_published', true)
+            ->orderByDesc('id')
             ->get();
 
         $attendance = StudentAttendance::where('student_id', $student->id)
@@ -58,12 +69,89 @@ class StudentPortalController extends Controller
         return view('portal.student.dashboard', compact(
             'student',
             'results',
+            'reportCards',
+            'term',
             'attendance',
             'invoices',
             'timetable',
             'publicPage',
             'studentTestimonials'
         ));
+    }
+
+    public function reportCard($termId)
+    {
+        $user    = auth()->user();
+        $student = $user->student;
+        $school  = $user->school;
+
+        if (!$student) abort(403, 'Student profile not available.');
+
+        $reportCard = ReportCard::where('student_id', $student->id)
+            ->where('term_id', $termId)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        $results = \App\Models\Result::with('subject')
+            ->where('student_id', $student->id)
+            ->where('term_id', $termId)
+            ->where('is_approved', true)
+            ->get();
+
+        $term = AcademicTerm::with('session')->find($termId);
+
+        return view('portal.student.report-card', compact('student', 'reportCard', 'results', 'school', 'term'));
+    }
+
+    public function downloadReportCard($termId)
+    {
+        $user    = auth()->user();
+        $student = $user->student;
+        $school  = $user->school;
+
+        if (!$student) abort(403, 'Student profile not available.');
+
+        $reportCard = ReportCard::where('student_id', $student->id)
+            ->where('term_id', $termId)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        $results = \App\Models\Result::with('subject')
+            ->where('student_id', $student->id)
+            ->where('term_id', $termId)
+            ->where('is_approved', true)
+            ->get();
+
+        $term = AcademicTerm::with('session')->find($termId);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'pdf.report-card',
+            compact('student', 'reportCard', 'results', 'school', 'term')
+        );
+
+        return $pdf->download("report-card-{$student->admission_number}-term{$termId}.pdf");
+    }
+
+    public function downloadResultExcel($termId)
+    {
+        $user    = auth()->user();
+        $student = $user->student;
+
+        if (!$student) abort(403, 'Student profile not available.');
+
+        ReportCard::where('student_id', $student->id)
+            ->where('term_id', $termId)
+            ->where('is_published', true)
+            ->firstOrFail(); // must be published
+
+        $term     = AcademicTerm::with('session')->findOrFail($termId);
+        $filename = "result-{$student->admission_number}-{$term->name}.xlsx";
+        $filename = preg_replace('/[^A-Za-z0-9\-_. ]/', '', $filename);
+
+        return Excel::download(
+            new ResultsExport($student->class_id, $termId, $student->school_id, $student->id),
+            $filename
+        );
     }
 
     public function submitTestimonial(Request $request)
@@ -128,12 +216,13 @@ class StudentPortalController extends Controller
         }
 
         Testimonial::query()->create([
-            'school_id' => $school->id,
-            'full_name' => $student->full_name,
+            'school_id'  => $school->id,
+            'student_id' => $student->id,
+            'full_name'  => $student->full_name,
             'role_title' => $roleTitle !== '' ? $roleTitle : 'Student',
-            'rating' => (int) $validated['rating'],
-            'message' => $message,
-            'status' => 'pending',
+            'rating'     => (int) $validated['rating'],
+            'message'    => $message,
+            'status'     => 'pending',
             'ip_address' => $request->ip(),
             'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
         ]);

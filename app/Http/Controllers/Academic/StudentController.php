@@ -7,6 +7,8 @@ use App\Models\Student;
 use App\Models\SchoolClass;
 use App\Models\ClassArm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
@@ -78,8 +80,54 @@ class StudentController extends Controller
         $student->load([
             'schoolClass', 'arm', 'parents', 'attendances',
             'results.subject', 'invoices.payments', 'behaviourRecords',
+            'user',
         ]);
         return view('academic.students.show', compact('student'));
+    }
+
+    public function toggleActive(Student $student)
+    {
+        $user = $student->user;
+        abort_if(!$user, 404, 'No portal account linked to this student.');
+
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $state = $user->is_active ? 'activated' : 'blocked';
+        return back()->with('success', "Portal account {$state} for {$student->full_name}.");
+    }
+
+    public function resetPassword(Student $student)
+    {
+        $user = $student->user;
+        abort_if(!$user, 404, 'No portal account linked to this student.');
+
+        $plain = Str::random(10);
+        $user->password = Hash::make($plain);
+        $user->save();
+
+        return back()
+            ->with('success', "Password reset for {$student->full_name}.")
+            ->with('reset_credentials', [
+                'name'     => $student->full_name,
+                'email'    => $user->email,
+                'password' => $plain,
+            ]);
+    }
+
+    public function changePassword(Request $request, Student $student)
+    {
+        $user = $student->user;
+        abort_if(!$user, 404, 'No portal account linked to this student.');
+
+        $request->validate([
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', "Password changed successfully for {$student->full_name}.");
     }
 
     public function edit(Student $student)

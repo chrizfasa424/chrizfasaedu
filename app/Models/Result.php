@@ -37,19 +37,15 @@ class Result extends Model
     public function term() { return $this->belongsTo(AcademicTerm::class, 'term_id'); }
     public function approvedBy() { return $this->belongsTo(User::class, 'approved_by'); }
 
-    // WAEC grading system
+    // Grading system: 70-100=A, 60-69=B, 50-59=C, 40-49=D, 0-39=E
     public static function calculateGrade(float $score): array
     {
         return match(true) {
-            $score >= 75 => ['grade' => 'A1', 'point' => 1, 'remark' => 'Excellent'],
-            $score >= 70 => ['grade' => 'B2', 'point' => 2, 'remark' => 'Very Good'],
-            $score >= 65 => ['grade' => 'B3', 'point' => 3, 'remark' => 'Good'],
-            $score >= 60 => ['grade' => 'C4', 'point' => 4, 'remark' => 'Credit'],
-            $score >= 55 => ['grade' => 'C5', 'point' => 5, 'remark' => 'Credit'],
-            $score >= 50 => ['grade' => 'C6', 'point' => 6, 'remark' => 'Credit'],
-            $score >= 45 => ['grade' => 'D7', 'point' => 7, 'remark' => 'Pass'],
-            $score >= 40 => ['grade' => 'E8', 'point' => 8, 'remark' => 'Pass'],
-            default      => ['grade' => 'F9', 'point' => 9, 'remark' => 'Fail'],
+            $score >= 70 => ['grade' => 'A', 'point' => 5.0, 'remark' => 'Excellent'],
+            $score >= 60 => ['grade' => 'B', 'point' => 4.5, 'remark' => 'Very Good'],
+            $score >= 50 => ['grade' => 'C', 'point' => 4.0, 'remark' => 'Good'],
+            $score >= 40 => ['grade' => 'D', 'point' => 3.5, 'remark' => 'Pass'],
+            default      => ['grade' => 'E', 'point' => 3.0, 'remark' => 'Fail'],
         };
     }
 }

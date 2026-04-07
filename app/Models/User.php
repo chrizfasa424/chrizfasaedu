@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Notifications\CustomResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -98,5 +99,45 @@ class User extends Authenticatable
     public function isParent(): bool
     {
         return $this->role === UserRole::PARENT;
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new CustomResetPasswordNotification($token));
+    }
+
+    // ── Messaging relationships ────────────────────────────
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function messageRecipients()
+    {
+        return $this->hasMany(MessageRecipient::class);
+    }
+
+    public function messageReplies()
+    {
+        return $this->hasMany(MessageReply::class, 'sender_id');
+    }
+
+    // ── Notification bell helpers ──────────────────────────
+
+    /** Unread inbox messages — used by portal users (student/parent) */
+    public function unreadMessagesCount(): int
+    {
+        return MessageRecipient::where('user_id', $this->id)
+            ->whereNull('read_at')
+            ->count();
+    }
+
+    /** Unread replies from portal users — used by admin/staff */
+    public function unreadAdminRepliesCount(): int
+    {
+        return MessageReply::whereHas('message', function ($q) {
+            $q->where('school_id', $this->school_id);
+        })->whereNull('read_by_admin_at')->count();
     }
 }

@@ -81,8 +81,9 @@
                             ],
                         ];
                         $navSections[] = [
-                            'label' => 'Community',
+                            'label' => 'Communication',
                             'items' => [
+                                ['label' => 'My Inbox',           'route' => route('portal.messages.index'),                      'pattern' => ['portal.messages.*'], 'icon' => 'inbox'],
                                 ['label' => 'Submit Testimonial', 'route' => route('student.dashboard') . '#student-testimonial-form', 'pattern' => [], 'icon' => 'quote'],
                             ],
                         ];
@@ -95,6 +96,7 @@
                                 ['label' => 'Academic Overview',  'route' => route('parent.dashboard') . '#children-overview',  'pattern' => [], 'icon' => 'chart'],
                                 ['label' => 'Results & Grades',   'route' => route('parent.dashboard') . '#children-overview',  'pattern' => [], 'icon' => 'book'],
                                 ['label' => 'Fees Summary',       'route' => route('parent.dashboard') . '#fees-summary',       'pattern' => [], 'icon' => 'wallet'],
+                                ['label' => 'My Inbox',           'route' => route('portal.messages.index'),                    'pattern' => ['portal.messages.*'], 'icon' => 'inbox'],
                             ],
                         ];
                     }
@@ -149,6 +151,7 @@
                             'items' => [
                                 ['label' => 'Staff', 'route' => route('staff.index'), 'pattern' => ['staff.*'], 'icon' => 'briefcase'],
                                 ['label' => 'Announcements', 'route' => route('announcements.index'), 'pattern' => ['announcements.*'], 'icon' => 'megaphone'],
+                                ['label' => 'Messages', 'route' => route('messages.index'), 'pattern' => ['messages.*'], 'icon' => 'inbox'],
                                 ['label' => 'Library', 'route' => route('library.index'), 'pattern' => ['library.*'], 'icon' => 'library'],
                                 ['label' => 'Hostel', 'route' => route('hostel.index'), 'pattern' => ['hostel.*'], 'icon' => 'home-2'],
                                 ['label' => 'Health', 'route' => route('health.index'), 'pattern' => ['health.*'], 'icon' => 'shield'],
@@ -305,10 +308,25 @@
                     </nav>
                 </div>
 
-                <div class="border-t border-white/10 px-4 py-4">
-                    <form action="{{ route('logout') }}" method="POST">
+                <div class="border-t border-white/10 px-4 py-4 space-y-2">
+                    @php
+                        $profileRoute = ($currentUser->isStudent() || $currentUser->isParent())
+                            ? route('portal.profile.show')
+                            : route('profile.show');
+                        $profileActive = request()->routeIs('profile.*') || request()->routeIs('portal.profile.*');
+                        $logoutRoute   = ($currentUser->isStudent() || $currentUser->isParent())
+                            ? route('portal.logout')
+                            : route('logout');
+                    @endphp
+                    <a href="{{ $profileRoute }}" class="flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-medium transition duration-200 {{ $profileActive ? 'border-[#DFE753] bg-[#DFE753] text-[#2D1D5C]' : 'border-white/10 bg-white/5 text-white hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C]' }}">
+                        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl {{ $profileActive ? 'bg-[#2D1D5C]/10' : 'bg-white/8' }}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><circle cx="12" cy="8" r="3.75"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 20.25a8.25 8.25 0 0 1 16.5 0"/></svg>
+                        </span>
+                        <span class="flex-1">My Profile</span>
+                    </a>
+                    <form action="{{ $logoutRoute }}" method="POST">
                         @csrf
-                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C]">
+                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-red-400 hover:bg-red-500 hover:text-white">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15"/><path stroke-linecap="round" stroke-linejoin="round" d="M18 12H9.75"/><path stroke-linecap="round" stroke-linejoin="round" d="m15 9 3 3-3 3"/></svg>
                             Sign Out
                         </button>
@@ -316,7 +334,7 @@
                 </div>
             </aside>
 
-            <main class="min-h-screen transition-all duration-300 lg:pl-[290px]">
+            <main class="min-h-screen flex flex-col transition-all duration-300 lg:pl-[290px]">
                 <header class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/92 backdrop-blur">
                     <div class="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                         <div class="flex items-center gap-3">
@@ -330,16 +348,32 @@
                         </div>
 
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 shadow-sm md:flex">
+                            <a href="{{ ($currentUser->isStudent() || $currentUser->isParent()) ? route('portal.profile.show') : route('profile.show') }}" class="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 shadow-sm transition hover:border-[#2D1D5C]/30 hover:shadow-md md:flex">
                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#2D1D5C] text-sm font-bold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($currentUser->first_name, 0, 1) . \Illuminate\Support\Str::substr($currentUser->last_name, 0, 1)) }}</span>
                                 <div>
                                     <p class="text-sm font-semibold text-slate-900">{{ $currentUser->full_name }}</p>
                                     <p class="text-xs text-slate-500">{{ $singleSchoolMode && $currentUser->isSuperAdmin() ? 'Administrator' : $currentUser->role->label() }}</p>
                                 </div>
-                            </div>
-                            <div class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#2D1D5C] shadow-sm">
+                            </a>
+                            @php
+                                $bellCount = 0;
+                                $bellRoute = '#';
+                                if ($currentUser->isStudent() || $currentUser->isParent()) {
+                                    $bellCount = $currentUser->unreadMessagesCount();
+                                    $bellRoute = route('portal.messages.index');
+                                } elseif ($actsAsSchoolAdmin || $currentUser->isTeacher()) {
+                                    $bellCount = $currentUser->unreadAdminRepliesCount();
+                                    $bellRoute = route('messages.index');
+                                }
+                            @endphp
+                            <a href="{{ $bellRoute }}" class="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#2D1D5C] shadow-sm transition hover:border-[#2D1D5C]/40 hover:shadow-md">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75v-.7V9a6 6 0 1 0-12 0v.05c0 .232 0 .465-.001.697a8.967 8.967 0 0 1-2.311 6.025 23.848 23.848 0 0 0 5.454 1.31m5.715 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
-                            </div>
+                                @if($bellCount > 0)
+                                    <span class="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
+                                        {{ $bellCount > 99 ? '99+' : $bellCount }}
+                                    </span>
+                                @endif
+                            </a>
                         </div>
                     </div>
                 </header>
@@ -349,7 +383,7 @@
             $mainContentClass = auth()->check() ? 'px-4 py-6 sm:px-6 lg:px-8' : '';
         @endphp
 
-        <div class="{{ $mainContentClass }}">
+        <div class="{{ $mainContentClass }} flex-1">
             @if(session('success'))
             <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 shadow-sm">
                 {{ session('success') }}
@@ -376,7 +410,7 @@
         </div>
 
         @auth
-            <footer class="mt-8" style="background-color: #2D1D5C;">
+            <footer class="mt-auto" style="background-color: #2D1D5C;">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="border-t pt-5 pb-5" style="border-top-color: rgba(223,231,83,0.35);">
                         <p class="text-xs" style="color: rgba(255,255,255,0.55);">&copy; {{ date('Y') }} {{ $schoolBrandName }}. All rights reserved.</p>

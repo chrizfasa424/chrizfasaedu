@@ -15,7 +15,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'school.active' => \App\Http\Middleware\EnsureSchoolIsActive::class,
+            'portal.guard' => \App\Http\Middleware\UsePortalGuard::class,
         ]);
+
+        // Redirect unauthenticated portal guard requests to /portal instead of /login
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            if ($request->routeIs('student.*') || $request->routeIs('parent.*')) {
+                return route('portal.login');
+            }
+            return route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -25,6 +25,7 @@ class PublicPageController extends Controller
 
         if ($school) {
             $approvedTestimonials = Testimonial::query()
+                ->with('student')
                 ->where('school_id', $school->id)
                 ->where('status', 'approved')
                 ->latest('reviewed_at')

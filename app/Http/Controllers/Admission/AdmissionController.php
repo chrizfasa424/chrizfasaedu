@@ -6,6 +6,8 @@ use App\Enums\AdmissionStatus;
 use App\Http\Controllers\Controller;
 use App\Mail\AdmissionReceived;
 use App\Mail\AdmissionStatusChanged;
+use App\Mail\StudentEnrolled;
+use Illuminate\Support\Str;
 use App\Models\Admission;
 use App\Models\AcademicSession;
 use App\Models\School;
@@ -71,6 +73,9 @@ class AdmissionController extends Controller
             'other_names'         => 'nullable|string|max:100',
             'gender'              => 'required|in:male,female',
             'date_of_birth'       => 'required|date|before:today',
+            'blood_group'         => 'nullable|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'genotype'            => 'nullable|string|in:AA,AS,AC,SS,SC',
+            'religion'            => 'nullable|string|max:50',
             'class_applied_for'   => 'required|string|max:100',
             'parent_name'         => 'required|string|max:200',
             'parent_phone'        => ['required','string','max:20','regex:/^[0-9\+\-\s\(\)]{7,20}$/'],
@@ -196,7 +201,7 @@ class AdmissionController extends Controller
     // ── Admin: detail ──────────────────────────────────────────────
     public function show(Admission $admission)
     {
-        $admission->load('session', 'reviewer');
+        $admission->load('session', 'reviewer', 'student.user');
         return view('admission.show', compact('admission'));
     }
 
@@ -258,16 +263,19 @@ class AdmissionController extends Controller
     {
         abort_if($admission->status !== AdmissionStatus::APPROVED, 403, 'Only approved applications can be enrolled.');
 
-        DB::transaction(function () use ($admission) {
+        $plainPassword = Str::random(10);
+        $loginEmail    = $admission->parent_email
+            ?? strtolower($admission->first_name . '.' . $admission->last_name . '@student.school.ng');
+
+        DB::transaction(function () use ($admission, $plainPassword, $loginEmail) {
             $schoolId = $admission->school_id;
 
             $user = User::create([
                 'school_id'  => $schoolId,
                 'first_name' => $admission->first_name,
                 'last_name'  => $admission->last_name,
-                'email'      => $admission->parent_email
-                    ?? strtolower($admission->first_name . '.' . $admission->last_name . '@student.school.ng'),
-                'password'   => Hash::make('changeme123'),
+                'email'      => $loginEmail,
+                'password'   => Hash::make($plainPassword),
                 'role'       => 'student',
             ]);
 
@@ -308,7 +316,29 @@ class AdmissionController extends Controller
             ]);
         });
 
-        return back()->with('success', 'Student enrolled and account created successfully.');
+        // Send credentials email
+        $school    = auth()->user()?->school;
+        $loginUrl  = route('portal.login');
+        $emailSent = false;
+        try {
+            Mail::to($loginEmail)->send(new StudentEnrolled($admission, $school, $loginEmail, $plainPassword, $loginUrl));
+            $emailSent = true;
+        } catch (\Throwable $e) {
+            Log::warning('Student enrolment email failed', [
+                'admission_id' => $admission->id,
+                'error'        => $e->getMessage(),
+            ]);
+        }
+
+        return back()
+            ->with('success', 'Student enrolled and account created successfully.')
+            ->with('enrolled_credentials', [
+                'name'       => $admission->first_name . ' ' . $admission->last_name,
+                'email'      => $loginEmail,
+                'password'   => $plainPassword,
+                'login_url'  => $loginUrl,
+                'email_sent' => $emailSent,
+            ]);
     }
 
     // ── Helpers ───────────────────────────────────────────────────

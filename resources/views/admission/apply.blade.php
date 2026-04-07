@@ -61,7 +61,7 @@
     </style>
 </head>
 <body style="min-height:100vh;color:{{ $muted }};">
-
+@include('public.partials.page-loader', ['school' => $school, 'primary' => $primary])
 @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
 <div class="max-w-3xl mx-auto px-4 py-10">
@@ -153,6 +153,33 @@
                         <label class="field-label">Date of Birth <span class="text-red-500">*</span></label>
                         <input type="date" name="date_of_birth" id="f_date_of_birth" value="{{ old('date_of_birth') }}" max="{{ date('Y-m-d', strtotime('-1 year')) }}" class="field-input" required>
                         <span class="error-msg" id="err-date_of_birth">Date of birth is required</span>
+                    </div>
+                    <div>
+                        <label class="field-label">Blood Group</label>
+                        <select name="blood_group" id="f_blood_group" class="field-input">
+                            <option value="">— Select Blood Group —</option>
+                            @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
+                                <option value="{{ $bg }}" {{ old('blood_group') === $bg ? 'selected' : '' }}>{{ $bg }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">Genotype</label>
+                        <select name="genotype" id="f_genotype" class="field-input">
+                            <option value="">— Select Genotype —</option>
+                            @foreach(['AA','AS','AC','SS','SC'] as $gt)
+                                <option value="{{ $gt }}" {{ old('genotype') === $gt ? 'selected' : '' }}>{{ $gt }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">Religion</label>
+                        <select name="religion" id="f_religion" class="field-input">
+                            <option value="">— Select Religion —</option>
+                            @foreach(['Christianity','Islam','Traditional','Other'] as $rel)
+                                <option value="{{ $rel }}" {{ old('religion') === $rel ? 'selected' : '' }}>{{ $rel }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <label class="field-label">Class Applying For <span class="text-red-500">*</span></label>
@@ -327,6 +354,9 @@
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Full Name</p><p class="font-semibold text-slate-800" id="rv-name">—</p></div>
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Gender</p><p class="font-semibold text-slate-800" id="rv-gender">—</p></div>
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Date of Birth</p><p class="font-semibold text-slate-800" id="rv-dob">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Blood Group</p><p class="font-semibold text-slate-800" id="rv-blood-group">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Genotype</p><p class="font-semibold text-slate-800" id="rv-genotype">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Religion</p><p class="font-semibold text-slate-800" id="rv-religion">—</p></div>
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Class</p><p class="font-semibold text-slate-800" id="rv-class">—</p></div>
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Previous School</p><p class="font-semibold text-slate-800" id="rv-prev-school">—</p></div>
                     </div>
@@ -573,6 +603,9 @@ function buildReview() {
     g('rv-name').textContent = [fn, on !== '—' ? on : '', ln].filter(Boolean).join(' ');
     g('rv-gender').textContent = v('gender') !== '—' ? v('gender').charAt(0).toUpperCase() + v('gender').slice(1) : '—';
     g('rv-dob').textContent = v('date_of_birth');
+    g('rv-blood-group').textContent = v('blood_group');
+    g('rv-genotype').textContent = v('genotype');
+    g('rv-religion').textContent = v('religion');
     g('rv-class').textContent = v('class_applied_for');
     g('rv-prev-school').textContent = v('previous_school');
     g('rv-parent-name').textContent = v('parent_name');

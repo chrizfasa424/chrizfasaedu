@@ -12,7 +12,7 @@
     @include('public.partials.nav-styles')
 </head>
 <body style="background:{{ $bg }};font-family:'Manrope',sans-serif;min-height:100vh;">
-
+@include('public.partials.page-loader', ['school' => $school, 'primary' => $primary])
 @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
     <div class="min-h-[calc(100vh-68px)] flex items-center justify-center py-16 px-4">

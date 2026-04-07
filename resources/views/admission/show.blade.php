@@ -18,13 +18,56 @@
     $isAdmin  = auth()->check() && in_array(auth()->user()->role->value, ['super_admin','school_admin','principal']);
 @endphp
 
-{{-- Flash --}}
+{{-- Flash: general success --}}
 @if(session('success'))
-<div class="mb-6 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
+<div class="mb-4 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
     <svg class="h-5 w-5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
     </svg>
     {{ session('success') }}
+</div>
+@endif
+
+{{-- Flash: enrolment credentials --}}
+@if(session('enrolled_credentials'))
+@php $creds = session('enrolled_credentials'); @endphp
+<div class="mb-6 rounded-2xl border border-blue-200 bg-blue-50 overflow-hidden">
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-blue-200 bg-blue-100">
+        <svg class="h-5 w-5 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+        </svg>
+        <div>
+            <p class="text-sm font-bold text-blue-900">Student Portal Credentials Created</p>
+            <p class="text-xs text-blue-600 mt-0.5">
+                @if($creds['email_sent'])
+                    Credentials have been emailed to <strong>{{ $creds['email'] }}</strong>. Share the details below with the student/parent as a backup.
+                @else
+                    Email delivery failed — please share these credentials directly with the student/parent.
+                @endif
+            </p>
+        </div>
+    </div>
+    <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+        <div class="rounded-xl bg-white border border-blue-200 px-4 py-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-1">Student</p>
+            <p class="font-semibold text-slate-800">{{ $creds['name'] }}</p>
+        </div>
+        <div class="rounded-xl bg-white border border-blue-200 px-4 py-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-1">Login Email</p>
+            <p class="font-semibold text-slate-800 break-all">{{ $creds['email'] }}</p>
+        </div>
+        <div class="rounded-xl bg-white border border-blue-200 px-4 py-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-1">Temporary Password</p>
+            <p class="font-mono font-bold text-slate-800 tracking-widest">{{ $creds['password'] }}</p>
+        </div>
+    </div>
+    <div class="px-5 pb-4">
+        <a href="{{ $creds['login_url'] }}" target="_blank"
+           class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 underline">
+            Portal Login URL: {{ $creds['login_url'] }}
+        </a>
+        <p class="mt-1 text-xs text-blue-500">Advise the student to change their password after first login.</p>
+    </div>
 </div>
 @endif
 
@@ -90,6 +133,18 @@
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Gender</dt>
                         <dd class="font-semibold text-slate-800">{{ $admission->gender ? ucfirst($admission->gender) : '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Blood Group</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->blood_group ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Genotype</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->genotype ?? '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Religion</dt>
+                        <dd class="font-semibold text-slate-800">{{ $admission->religion ?? '—' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Class Applied For</dt>
@@ -187,8 +242,11 @@
                     <a href="{{ $url }}" target="_blank"
                        class="group flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 hover:border-indigo-300 hover:bg-indigo-50 transition">
                         @if($isImg)
-                        <img src="{{ $url }}" alt="{{ $meta['label'] }}"
-                             class="h-24 w-full object-cover rounded-lg group-hover:opacity-90 transition">
+                        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white" style="width:150px;height:150px;flex-shrink:0;">
+                            <img src="{{ $url }}" alt="{{ $meta['label'] }}"
+                                 style="width:150px;height:150px;object-fit:cover;object-position:center;display:block;"
+                                 class="group-hover:opacity-90 transition">
+                        </div>
                         @else
                         <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-white border border-slate-200 shadow-sm group-hover:border-indigo-300">
                             <svg class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -316,17 +374,42 @@
         </div>
         @endif
 
-        {{-- Enrolled notice --}}
+        {{-- Enrolled notice + user info --}}
         @if($sv === 'enrolled')
-        <div class="rounded-2xl border border-blue-200 bg-blue-50 p-6 text-center">
-            <svg class="mx-auto h-10 w-10 text-blue-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-            <p class="text-sm font-bold text-blue-800">Student Enrolled</p>
-            @if($admission->admission_number)
-            <p class="text-xs text-blue-600 mt-1 font-mono">{{ $admission->admission_number }}</p>
+        @php $enrolledUser = $admission->student?->user; @endphp
+        <div class="rounded-2xl border border-blue-200 bg-blue-50 overflow-hidden">
+            <div class="p-6 text-center border-b border-blue-200">
+                <svg class="mx-auto h-10 w-10 text-blue-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <p class="text-sm font-bold text-blue-800">Student Enrolled</p>
+                @if($admission->admission_number)
+                <p class="text-xs text-blue-600 mt-1 font-mono font-bold tracking-widest">{{ $admission->admission_number }}</p>
+                @endif
+            </div>
+
+            @if($enrolledUser)
+            <div class="p-5 space-y-3">
+                <p class="text-xs font-bold uppercase tracking-wider text-blue-400">Portal Account</p>
+                <dl class="space-y-2 text-sm">
+                    <div class="flex justify-between gap-2">
+                        <dt class="text-slate-500 shrink-0">Login Email</dt>
+                        <dd class="text-slate-800 font-semibold text-right break-all">{{ $enrolledUser->email }}</dd>
+                    </div>
+                    <div class="flex justify-between gap-2">
+                        <dt class="text-slate-500 shrink-0">Role</dt>
+                        <dd class="text-slate-800 font-semibold">{{ ucfirst($enrolledUser->role->value ?? 'student') }}</dd>
+                    </div>
+                    <div class="flex justify-between gap-2">
+                        <dt class="text-slate-500 shrink-0">Account Created</dt>
+                        <dd class="text-slate-800 font-semibold text-right">{{ $enrolledUser->created_at->format('d M Y') }}</dd>
+                    </div>
+                </dl>
+                <div class="pt-1 border-t border-blue-200">
+                    <p class="text-xs text-blue-500">Password is hashed — share credentials from the enrolment email sent to the parent.</p>
+                </div>
+            </div>
             @endif
-            <p class="text-xs text-blue-600 mt-1">This applicant has been successfully enrolled as a student.</p>
         </div>
         @endif
 

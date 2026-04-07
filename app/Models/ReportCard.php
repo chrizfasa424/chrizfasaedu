@@ -12,7 +12,8 @@ class ReportCard extends Model
 
     protected $fillable = [
         'school_id', 'student_id', 'class_id', 'session_id', 'term_id',
-        'total_score', 'average_score', 'position_in_class', 'class_size',
+        'total_score', 'average_score', 'class_average', 'total_ca1', 'total_ca2', 'total_exam',
+        'position_in_class', 'class_size',
         'total_subjects', 'subjects_passed', 'subjects_failed',
         'class_teacher_remark', 'principal_remark',
         'next_term_begins', 'next_term_fees',
@@ -23,6 +24,10 @@ class ReportCard extends Model
     protected $casts = [
         'total_score' => 'decimal:2',
         'average_score' => 'decimal:2',
+        'class_average' => 'decimal:2',
+        'total_ca1' => 'decimal:2',
+        'total_ca2' => 'decimal:2',
+        'total_exam' => 'decimal:2',
         'next_term_begins' => 'date',
         'next_term_fees' => 'decimal:2',
         'is_published' => 'boolean',

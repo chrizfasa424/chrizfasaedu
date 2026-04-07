@@ -17,6 +17,7 @@ class Admission extends Model
         'school_id', 'session_id', 'application_number',
         'first_name', 'last_name', 'other_names',
         'email', 'phone', 'gender', 'date_of_birth',
+        'blood_group', 'genotype', 'religion',
         'nationality', 'state_of_origin', 'lga',
         'address', 'city', 'state',
         'class_applied_for', 'previous_school',

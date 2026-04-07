@@ -103,7 +103,7 @@
                class="theme-header-action-outline hidden items-center whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">
                 {{ $navApplyText ?: 'Apply' }}
             </a>
-            <a href="{{ route('login') }}"
+            <a href="{{ route('portal.login') }}"
                class="theme-header-action-solid inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">
                 {{ $navLoginText ?: 'Portal Login' }}
             </a>
@@ -141,7 +141,7 @@
                    class="theme-mobile-action-outline inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition duration-200">
                     {{ $navMobileApplyText ?: 'Apply Now' }}
                 </a>
-                <a href="{{ route('login') }}"
+                <a href="{{ route('portal.login') }}"
                    class="theme-mobile-action-solid inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200">
                     {{ $navMobileLoginText ?: 'Portal Login' }}
                 </a>

@@ -5,6 +5,7 @@
 @section('content')
 <div class="space-y-6 max-w-4xl">
 
+    {{-- Nav --}}
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
             <a href="{{ route('examination.results.index') }}" class="text-sm text-slate-500 hover:text-slate-700">← Results</a>
@@ -18,90 +19,201 @@
         </a>
     </div>
 
-    {{-- Header --}}
+    {{-- School Header --}}
     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm text-center">
         @if($school->logo)
         <img src="{{ asset('storage/'.$school->logo) }}" class="h-16 mx-auto mb-3" alt="">
         @endif
-        <h1 class="text-xl font-bold text-slate-900">{{ $school->name }}</h1>
-        <p class="text-sm text-slate-500">{{ $school->address ?? '' }}</p>
-        <div class="mt-3 inline-block rounded-full bg-indigo-50 px-4 py-1 text-sm font-semibold text-indigo-700">
-            STUDENT REPORT CARD
+        <h1 class="text-2xl font-bold text-slate-900">{{ $school->name }}</h1>
+        @if($school->address)
+        <p class="text-sm text-slate-500 mt-1">{{ $school->address }}</p>
+        @endif
+        @if($school->phone)
+        <p class="text-xs text-slate-400">Phone: {{ $school->phone }}</p>
+        @endif
+        <div class="mt-3 inline-block rounded-full bg-indigo-50 px-5 py-1 text-sm font-bold tracking-wide text-indigo-700 uppercase">
+            Terminal Report Card
         </div>
     </div>
 
-    {{-- Student Info + Summary --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    {{-- Student Info + Exam Info --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {{-- School info left --}}
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 class="text-xs font-semibold uppercase text-slate-500 mb-3">Student Information</h3>
-            <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                <div><dt class="text-xs text-slate-500">Name</dt><dd class="font-semibold text-slate-800">{{ $student->full_name }}</dd></div>
-                <div><dt class="text-xs text-slate-500">Admission No.</dt><dd class="font-semibold text-slate-800">{{ $student->admission_number }}</dd></div>
-                <div><dt class="text-xs text-slate-500">Class</dt><dd class="font-semibold text-slate-800">{{ $student->schoolClass?->name }}</dd></div>
-                <div><dt class="text-xs text-slate-500">Gender</dt><dd class="font-semibold text-slate-800 capitalize">{{ $student->gender }}</dd></div>
+            <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                <div>
+                    <dt class="text-xs text-slate-400">Full Name</dt>
+                    <dd class="font-semibold text-slate-800">{{ $student->full_name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-slate-400">Reg No</dt>
+                    <dd class="font-semibold text-slate-800">{{ $student->registration_number ?? $student->admission_number }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-slate-400">Class</dt>
+                    <dd class="font-semibold text-slate-800">
+                        {{ $student->schoolClass?->name }}{{ $student->arm ? ' '.$student->arm->name : '' }}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-slate-400">Gender</dt>
+                    <dd class="font-semibold text-slate-800 capitalize">{{ $student->gender }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-slate-400">Academic Year</dt>
+                    <dd class="font-semibold text-slate-800">{{ $term?->session?->name ?? '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-slate-400">Exam</dt>
+                    <dd class="font-semibold text-slate-800">{{ $term?->name ?? '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-slate-400">Position in Class</dt>
+                    <dd class="font-semibold text-slate-800">
+                        @if($reportCard->position_in_class)
+                            @php
+                                $pos = $reportCard->position_in_class;
+                                $suffix = match(true) {
+                                    $pos % 100 >= 11 && $pos % 100 <= 13 => 'th',
+                                    $pos % 10 === 1 => 'st',
+                                    $pos % 10 === 2 => 'nd',
+                                    $pos % 10 === 3 => 'rd',
+                                    default => 'th',
+                                };
+                            @endphp
+                            {{ $pos }}{{ $suffix }}
+                        @else —
+                        @endif
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-slate-400">Attendance</dt>
+                    <dd class="font-semibold text-slate-800">{{ $reportCard->attendance_present ?? 0 }}</dd>
+                </div>
             </dl>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm text-center">
+
+        {{-- Summary right --}}
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 class="text-xs font-semibold uppercase text-slate-500 mb-3">Term Summary</h3>
-            <div class="text-3xl font-bold text-indigo-600">{{ number_format($reportCard->average_score, 1) }}<span class="text-lg text-slate-400">/100</span></div>
-            <p class="text-xs text-slate-500 mt-1">Average Score</p>
-            <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
-                <div class="rounded-lg bg-slate-50 p-2"><span class="text-slate-500 block">Position</span><span class="font-bold text-slate-800">{{ $reportCard->position_in_class }}/{{ $reportCard->class_size }}</span></div>
-                <div class="rounded-lg bg-slate-50 p-2"><span class="text-slate-500 block">Subjects</span><span class="font-bold text-slate-800">{{ $reportCard->total_subjects }}</span></div>
-                <div class="rounded-lg bg-green-50 p-2"><span class="text-green-600 block">Passed</span><span class="font-bold text-green-700">{{ $reportCard->subjects_passed }}</span></div>
-                <div class="rounded-lg bg-red-50 p-2"><span class="text-red-500 block">Failed</span><span class="font-bold text-red-600">{{ $reportCard->subjects_failed }}</span></div>
+            <div class="text-center mb-4">
+                <div class="text-4xl font-extrabold text-indigo-600">{{ number_format($reportCard->average_score, 2) }}</div>
+                <p class="text-xs text-slate-500 mt-1">Mark Average</p>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs text-center">
+                <div class="rounded-lg bg-slate-50 p-3">
+                    <div class="font-bold text-slate-800 text-lg">{{ $reportCard->position_in_class ?? '—' }}</div>
+                    <div class="text-slate-400">Position / {{ $reportCard->class_size }}</div>
+                </div>
+                <div class="rounded-lg bg-slate-50 p-3">
+                    <div class="font-bold text-slate-800 text-lg">{{ $reportCard->total_subjects }}</div>
+                    <div class="text-slate-400">Subjects</div>
+                </div>
+                <div class="rounded-lg bg-green-50 p-3">
+                    <div class="font-bold text-green-700 text-lg">{{ $reportCard->subjects_passed }}</div>
+                    <div class="text-green-500">Passed</div>
+                </div>
+                <div class="rounded-lg bg-red-50 p-3">
+                    <div class="font-bold text-red-600 text-lg">{{ $reportCard->subjects_failed }}</div>
+                    <div class="text-red-400">Failed</div>
+                </div>
             </div>
         </div>
     </div>
 
-    {{-- Results Table --}}
+    {{-- Subject Results Table --}}
     <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100">
             <h3 class="text-sm font-semibold text-slate-700">Subject Results</h3>
         </div>
-        <table class="min-w-full divide-y divide-slate-100 text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
-                <tr>
-                    <th class="px-5 py-2 text-left">Subject</th>
-                    <th class="px-4 py-2 text-center">CA1</th>
-                    <th class="px-4 py-2 text-center">CA2</th>
-                    <th class="px-4 py-2 text-center">CA3</th>
-                    <th class="px-4 py-2 text-center">Exam</th>
-                    <th class="px-4 py-2 text-center">Total</th>
-                    <th class="px-4 py-2 text-center">Grade</th>
-                    <th class="px-4 py-2 text-center">Position</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                @foreach($results->sortBy('subject.name') as $result)
-                <tr class="hover:bg-slate-50">
-                    <td class="px-5 py-2 font-medium text-slate-800">{{ $result->subject?->name }}</td>
-                    <td class="px-4 py-2 text-center text-slate-600">{{ $result->ca1_score ?? '—' }}</td>
-                    <td class="px-4 py-2 text-center text-slate-600">{{ $result->ca2_score ?? '—' }}</td>
-                    <td class="px-4 py-2 text-center text-slate-600">{{ $result->ca3_score ?? '—' }}</td>
-                    <td class="px-4 py-2 text-center text-slate-600">{{ $result->exam_score ?? '—' }}</td>
-                    <td class="px-4 py-2 text-center font-semibold text-slate-800">{{ $result->total_score }}</td>
-                    <td class="px-4 py-2 text-center">
-                        <span class="rounded-full px-2 py-0.5 text-xs font-bold
-                            @if(in_array($result->grade, ['A1','B2','B3'])) bg-green-100 text-green-700
-                            @elseif(in_array($result->grade, ['C4','C5','C6'])) bg-blue-100 text-blue-700
-                            @elseif(in_array($result->grade, ['D7','E8'])) bg-yellow-100 text-yellow-700
-                            @else bg-red-100 text-red-700 @endif">
-                            {{ $result->grade ?? '—' }}
-                        </span>
-                    </td>
-                    <td class="px-4 py-2 text-center text-slate-600">{{ $result->position_in_subject ?? '—' }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot class="bg-slate-50 text-sm font-semibold text-slate-700">
-                <tr>
-                    <td class="px-5 py-2" colspan="5">Total Score</td>
-                    <td class="px-4 py-2 text-center">{{ $reportCard->total_score }}</td>
-                    <td colspan="2"></td>
-                </tr>
-            </tfoot>
-        </table>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-100 text-sm">
+                <thead class="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3 text-left">Subject</th>
+                        <th class="px-4 py-3 text-center">Exam</th>
+                        <th class="px-4 py-3 text-center">First Test</th>
+                        <th class="px-4 py-3 text-center">Second Test</th>
+                        <th class="px-4 py-3 text-center">Total</th>
+                        <th class="px-4 py-3 text-center">Position</th>
+                        <th class="px-4 py-3 text-center">Grade</th>
+                        <th class="px-4 py-3 text-center">Remarks</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @foreach($results->sortBy('subject.name') as $result)
+                    @php
+                        $gradeColor = match($result->grade) {
+                            'A' => 'bg-emerald-100 text-emerald-700',
+                            'B' => 'bg-blue-100 text-blue-700',
+                            'C' => 'bg-indigo-100 text-indigo-700',
+                            'D' => 'bg-amber-100 text-amber-700',
+                            default => 'bg-red-100 text-red-700',
+                        };
+                    @endphp
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-5 py-2.5 font-medium text-slate-800">{{ $result->subject?->name }}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->exam_score ?? '—' }}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->ca1_score ?? '—' }}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->ca2_score ?? '—' }}</td>
+                        <td class="px-4 py-2.5 text-center font-semibold text-slate-800">{{ $result->total_score }}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->position_in_subject ?? '—' }}</td>
+                        <td class="px-4 py-2.5 text-center">
+                            <span class="rounded-full px-2.5 py-0.5 text-xs font-bold {{ $gradeColor }}">
+                                {{ $result->grade ?? '—' }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->teacher_remark ?? '—' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="bg-slate-50 text-sm font-semibold">
+                    <tr>
+                        <td class="px-5 py-2.5 text-slate-700" colspan="4">Total</td>
+                        <td class="px-4 py-2.5 text-center text-slate-800">{{ $reportCard->total_score }}</td>
+                        <td colspan="3"></td>
+                    </tr>
+                    <tr>
+                        <td class="px-5 py-2 text-slate-500 text-xs font-normal" colspan="4">Mark Average</td>
+                        <td class="px-4 py-2 text-center text-slate-700 font-semibold text-xs">{{ number_format($reportCard->average_score, 2) }}</td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    {{-- Remarks + Signature --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-xs font-semibold uppercase text-slate-500 mb-2">Class Teacher Remarks</h3>
+            <p class="text-sm text-slate-700 min-h-[3rem]">{{ $reportCard->class_teacher_remark ?? '—' }}</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-xs font-semibold uppercase text-slate-500 mb-2">Principal Remarks</h3>
+            <p class="text-sm text-slate-700 min-h-[3rem]">{{ $reportCard->principal_remark ?? 'N/A' }}</p>
+        </div>
+    </div>
+
+    {{-- Promoted / Next Term --}}
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm flex flex-wrap gap-6 text-sm">
+        <div>
+            <span class="text-xs text-slate-400 block">Promoted To</span>
+            <span class="font-semibold text-slate-800">{{ $reportCard->promoted_to ?? '—' }}</span>
+        </div>
+        @if($reportCard->next_term_begins)
+        <div>
+            <span class="text-xs text-slate-400 block">Next Term Begins</span>
+            <span class="font-semibold text-slate-800">{{ \Carbon\Carbon::parse($reportCard->next_term_begins)->format('d M Y') }}</span>
+        </div>
+        @endif
+    </div>
+
+    {{-- Grade Interpretation --}}
+    <div class="rounded-xl border border-slate-200 bg-slate-50 px-5 py-3 text-xs text-slate-500">
+        <span class="font-semibold text-slate-600">Interpretation of Grades: </span>
+        70–100 = 5.0 [A] &nbsp;|&nbsp; 60–69 = 4.5 [B] &nbsp;|&nbsp; 50–59 = 4.0 [C] &nbsp;|&nbsp; 40–49 = 3.5 [D] &nbsp;|&nbsp; 0–39 = 3.0 [E]
     </div>
 
 </div>
