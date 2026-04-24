@@ -8,6 +8,7 @@ use App\Models\InvoiceItem;
 use App\Models\FeeStructure;
 use App\Models\Student;
 use App\Models\SchoolClass;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -89,5 +90,43 @@ class InvoiceController extends Controller
     {
         $invoice->load(['student.schoolClass', 'items.feeStructure', 'payments']);
         return view('financial.invoices.show', compact('invoice'));
+    }
+
+    public function print(Invoice $invoice)
+    {
+        $invoice->load([
+            'student.schoolClass',
+            'student.arm',
+            'session',
+            'term',
+            'items.feeStructure',
+            'payments',
+            'school',
+        ]);
+
+        return view('financial.invoices.print', [
+            'invoice' => $invoice,
+            'asPdf' => false,
+        ]);
+    }
+
+    public function pdf(Invoice $invoice)
+    {
+        $invoice->load([
+            'student.schoolClass',
+            'student.arm',
+            'session',
+            'term',
+            'items.feeStructure',
+            'payments',
+            'school',
+        ]);
+
+        $pdf = Pdf::loadView('financial.invoices.print', [
+            'invoice' => $invoice,
+            'asPdf' => true,
+        ]);
+
+        return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
     }
 }

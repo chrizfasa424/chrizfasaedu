@@ -10,6 +10,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     @include('public.partials.nav-styles')
+    <style>
+        :root {
+            --success-focus: color-mix(in srgb, {{ $primary }} 24%, transparent);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--success-focus);
+        }
+    </style>
 </head>
 <body style="background:{{ $bg }};font-family:'Manrope',sans-serif;min-height:100vh;">
 @include('public.partials.page-loader', ['school' => $school, 'primary' => $primary])

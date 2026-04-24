@@ -33,7 +33,7 @@ return [
         'ca1_max' => 20,
         'ca2_max' => 20,
         'ca3_max' => 20,
-        'exam_max' => 60,
+        'exam_max' => 70,
         'total_max' => 100,
     ],
 

@@ -2,8 +2,8 @@
   'app' => 
   array (
     'name' => 'ChrizFasa Academy',
-    'env' => 'local',
-    'debug' => true,
+    'env' => 'production',
+    'debug' => false,
     'url' => 'http://chrizfasaedu.test',
     'frontend_url' => 'http://localhost:3000',
     'asset_url' => NULL,
@@ -154,7 +154,7 @@
   ),
   'cache' => 
   array (
-    'default' => 'database',
+    'default' => 'file',
     'stores' => 
     array (
       'array' => 
@@ -464,14 +464,14 @@
       array (
         'driver' => 'single',
         'path' => 'C:\\wamp64\\www\\chrizfasaedu\\storage\\logs/laravel.log',
-        'level' => 'debug',
+        'level' => 'warning',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
         'path' => 'C:\\wamp64\\www\\chrizfasaedu\\storage\\logs/laravel.log',
-        'level' => 'debug',
+        'level' => 'warning',
         'days' => 14,
         'replace_placeholders' => true,
       ),
@@ -481,13 +481,13 @@
         'url' => NULL,
         'username' => 'Laravel Log',
         'emoji' => ':boom:',
-        'level' => 'debug',
+        'level' => 'warning',
         'replace_placeholders' => true,
       ),
       'papertrail' => 
       array (
         'driver' => 'monolog',
-        'level' => 'debug',
+        'level' => 'warning',
         'handler' => 'Monolog\\Handler\\SyslogUdpHandler',
         'handler_with' => 
         array (
@@ -503,7 +503,7 @@
       'stderr' => 
       array (
         'driver' => 'monolog',
-        'level' => 'debug',
+        'level' => 'warning',
         'handler' => 'Monolog\\Handler\\StreamHandler',
         'formatter' => NULL,
         'with' => 
@@ -518,14 +518,14 @@
       'syslog' => 
       array (
         'driver' => 'syslog',
-        'level' => 'debug',
+        'level' => 'warning',
         'facility' => 8,
         'replace_placeholders' => true,
       ),
       'errorlog' => 
       array (
         'driver' => 'errorlog',
-        'level' => 'debug',
+        'level' => 'warning',
         'replace_placeholders' => true,
       ),
       'null' => 
@@ -617,7 +617,7 @@
     'cookie' => 'chrizfasa_academy_session',
     'path' => '/',
     'domain' => NULL,
-    'secure' => NULL,
+    'secure' => false,
     'http_only' => true,
     'same_site' => 'lax',
     'partitioned' => false,
@@ -771,7 +771,7 @@
       'ca1_max' => 20,
       'ca2_max' => 20,
       'ca3_max' => 20,
-      'exam_max' => 60,
+      'exam_max' => 70,
       'total_max' => 100,
     ),
     'states' => 
@@ -974,6 +974,12 @@
       'secret' => NULL,
       'hash' => NULL,
       'encryption' => NULL,
+      'url' => 'https://api.flutterwave.com/v3',
+    ),
+    'payment_gateways' => 
+    array (
+      'ssl_verify' => NULL,
+      'ca_bundle' => NULL,
     ),
     'sms' => 
     array (
@@ -990,6 +996,13 @@
       'sid' => '',
       'auth_token' => '',
       'from' => NULL,
+    ),
+    'openai' => 
+    array (
+      'api_key' => NULL,
+      'model' => 'gpt-4o-mini',
+      'base_url' => 'https://api.openai.com/v1',
+      'timeout' => 30,
     ),
   ),
   'dompdf' => 
@@ -1489,118 +1502,6 @@
       ),
       'tries' => 1,
       'retry_delay' => 0,
-    ),
-  ),
-  'flare' => 
-  array (
-    'key' => NULL,
-    'flare_middleware' => 
-    array (
-      0 => 'Spatie\\FlareClient\\FlareMiddleware\\RemoveRequestIp',
-      1 => 'Spatie\\FlareClient\\FlareMiddleware\\AddGitInformation',
-      2 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddNotifierName',
-      3 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddEnvironmentInformation',
-      4 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddExceptionInformation',
-      5 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddDumps',
-      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddLogs' => 
-      array (
-        'maximum_number_of_collected_logs' => 200,
-      ),
-      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddQueries' => 
-      array (
-        'maximum_number_of_collected_queries' => 200,
-        'report_query_bindings' => true,
-      ),
-      'Spatie\\LaravelIgnition\\FlareMiddleware\\AddJobs' => 
-      array (
-        'max_chained_job_reporting_depth' => 5,
-      ),
-      6 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddContext',
-      7 => 'Spatie\\LaravelIgnition\\FlareMiddleware\\AddExceptionHandledStatus',
-      'Spatie\\FlareClient\\FlareMiddleware\\CensorRequestBodyFields' => 
-      array (
-        'censor_fields' => 
-        array (
-          0 => 'password',
-          1 => 'password_confirmation',
-        ),
-      ),
-      'Spatie\\FlareClient\\FlareMiddleware\\CensorRequestHeaders' => 
-      array (
-        'headers' => 
-        array (
-          0 => 'API-KEY',
-          1 => 'Authorization',
-          2 => 'Cookie',
-          3 => 'Set-Cookie',
-          4 => 'X-CSRF-TOKEN',
-          5 => 'X-XSRF-TOKEN',
-        ),
-      ),
-    ),
-    'send_logs_as_events' => true,
-  ),
-  'ignition' => 
-  array (
-    'editor' => 'phpstorm',
-    'theme' => 'auto',
-    'enable_share_button' => true,
-    'register_commands' => false,
-    'solution_providers' => 
-    array (
-      0 => 'Spatie\\Ignition\\Solutions\\SolutionProviders\\BadMethodCallSolutionProvider',
-      1 => 'Spatie\\Ignition\\Solutions\\SolutionProviders\\MergeConflictSolutionProvider',
-      2 => 'Spatie\\Ignition\\Solutions\\SolutionProviders\\UndefinedPropertySolutionProvider',
-      3 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\IncorrectValetDbCredentialsSolutionProvider',
-      4 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\MissingAppKeySolutionProvider',
-      5 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\DefaultDbNameSolutionProvider',
-      6 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\TableNotFoundSolutionProvider',
-      7 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\MissingImportSolutionProvider',
-      8 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\InvalidRouteActionSolutionProvider',
-      9 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\ViewNotFoundSolutionProvider',
-      10 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\RunningLaravelDuskInProductionProvider',
-      11 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\MissingColumnSolutionProvider',
-      12 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\UnknownValidationSolutionProvider',
-      13 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\MissingMixManifestSolutionProvider',
-      14 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\MissingViteManifestSolutionProvider',
-      15 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\MissingLivewireComponentSolutionProvider',
-      16 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\UndefinedViewVariableSolutionProvider',
-      17 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\GenericLaravelExceptionSolutionProvider',
-      18 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\OpenAiSolutionProvider',
-      19 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\SailNetworkSolutionProvider',
-      20 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\UnknownMysql8CollationSolutionProvider',
-      21 => 'Spatie\\LaravelIgnition\\Solutions\\SolutionProviders\\UnknownMariadbCollationSolutionProvider',
-    ),
-    'ignored_solution_providers' => 
-    array (
-    ),
-    'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => 'C:\\wamp64\\www\\chrizfasaedu',
-    'local_sites_path' => '',
-    'housekeeping_endpoint_prefix' => '_ignition',
-    'settings_file_path' => '',
-    'recorders' => 
-    array (
-      0 => 'Spatie\\LaravelIgnition\\Recorders\\DumpRecorder\\DumpRecorder',
-      1 => 'Spatie\\LaravelIgnition\\Recorders\\JobRecorder\\JobRecorder',
-      2 => 'Spatie\\LaravelIgnition\\Recorders\\LogRecorder\\LogRecorder',
-      3 => 'Spatie\\LaravelIgnition\\Recorders\\QueryRecorder\\QueryRecorder',
-    ),
-    'open_ai_key' => NULL,
-    'with_stack_frame_arguments' => true,
-    'argument_reducers' => 
-    array (
-      0 => 'Spatie\\Backtrace\\Arguments\\Reducers\\BaseTypeArgumentReducer',
-      1 => 'Spatie\\Backtrace\\Arguments\\Reducers\\ArrayArgumentReducer',
-      2 => 'Spatie\\Backtrace\\Arguments\\Reducers\\StdClassArgumentReducer',
-      3 => 'Spatie\\Backtrace\\Arguments\\Reducers\\EnumArgumentReducer',
-      4 => 'Spatie\\Backtrace\\Arguments\\Reducers\\ClosureArgumentReducer',
-      5 => 'Spatie\\Backtrace\\Arguments\\Reducers\\DateTimeArgumentReducer',
-      6 => 'Spatie\\Backtrace\\Arguments\\Reducers\\DateTimeZoneArgumentReducer',
-      7 => 'Spatie\\Backtrace\\Arguments\\Reducers\\SymphonyRequestArgumentReducer',
-      8 => 'Spatie\\LaravelIgnition\\ArgumentReducers\\ModelArgumentReducer',
-      9 => 'Spatie\\LaravelIgnition\\ArgumentReducers\\CollectionArgumentReducer',
-      10 => 'Spatie\\Backtrace\\Arguments\\Reducers\\StringableArgumentReducer',
     ),
   ),
   'media-library' => 

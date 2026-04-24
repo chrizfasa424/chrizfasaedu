@@ -92,7 +92,9 @@
                 <div class="border-b border-slate-50 px-5 py-3">
                     <p class="text-xs font-semibold uppercase tracking-widest text-slate-400">Message Body</p>
                 </div>
-                <div class="px-5 py-5 prose prose-sm max-w-none text-slate-700 leading-relaxed whitespace-pre-wrap">{{ $message->body }}</div>
+                <div class="px-5 py-5 prose prose-sm max-w-none text-slate-700 leading-relaxed">
+                    {!! \App\Support\RichTextSanitizer::sanitize((string) $message->body) !!}
+                </div>
             </div>
 
             {{-- Replies thread --}}
@@ -124,7 +126,9 @@
                                     </span>
                                     <span class="text-xs text-slate-400">{{ $reply->created_at->format('d M Y, g:i A') }}</span>
                                 </div>
-                                <p class="mt-2 text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{{ $reply->body }}</p>
+                                <div class="mt-2 prose prose-sm max-w-none text-slate-600 leading-relaxed">
+                                    {!! \App\Support\RichTextSanitizer::sanitize((string) $reply->body) !!}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -103,17 +103,6 @@
       0 => 'Spatie\\Backup\\BackupServiceProvider',
     ),
   ),
-  'spatie/laravel-ignition' => 
-  array (
-    'aliases' => 
-    array (
-      'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
-    ),
-    'providers' => 
-    array (
-      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    ),
-  ),
   'spatie/laravel-medialibrary' => 
   array (
     'providers' => 

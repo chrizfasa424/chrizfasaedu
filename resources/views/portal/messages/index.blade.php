@@ -3,7 +3,7 @@
 @section('header', 'My Inbox')
 
 @section('content')
-<div class="max-w-3xl space-y-5">
+<div class="w-full space-y-5">
 
     {{-- Header --}}
     <div class="flex items-center justify-between">

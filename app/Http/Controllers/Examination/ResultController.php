@@ -165,8 +165,9 @@ class ResultController extends Controller
             ->take(2)
             ->get(['admission_number', 'first_name', 'last_name']);
 
-        $eg1 = $students->first()?->admission_number ?? 'ADM/2026/0001';
-        $eg2 = $students->skip(1)->first()?->admission_number ?? 'ADM/2026/0002';
+        $fallback = Student::generateAdmissionNumber((int) auth()->user()->school_id);
+        $eg1 = $students->first()?->admission_number ?? $fallback;
+        $eg2 = $students->skip(1)->first()?->admission_number ?? $this->incrementAdmissionNumber($fallback);
 
         $csv = "registration_number,subject,exam,first_test,second_test\n";
         $csv .= "{$eg1},Mathematics,68,6,15\n";
@@ -226,23 +227,6 @@ class ResultController extends Controller
         $session = $term->session;
 
         // ── Step 1: Position per subject (all subjects that have results) ────────
-        $subjectIds = Result::where('class_id', $request->class_id)
-            ->where('term_id', $request->term_id)
-            ->pluck('subject_id')->unique();
-
-        foreach ($subjectIds as $subjectId) {
-            $subjectResults = Result::where('class_id', $request->class_id)
-                ->where('term_id', $request->term_id)
-                ->where('subject_id', $subjectId)
-                ->orderByDesc('total_score')
-                ->get();
-
-            $pos = 1;
-            foreach ($subjectResults as $r) {
-                $r->update(['position_in_subject' => $pos++]);
-            }
-        }
-
         // ── Step 2: Build per-student aggregates ─────────────────────────────────
         $students  = Student::where('class_id', $request->class_id)->where('status', 'active')->get();
         $classSize = $students->count();
@@ -416,5 +400,18 @@ class ResultController extends Controller
             new ResultsExport($student->class_id, $termId, $student->school_id, $student->id),
             $filename
         );
+    }
+
+    protected function incrementAdmissionNumber(string $admissionNumber): string
+    {
+        if (preg_match('/^(.*\/)(\d+)$/', $admissionNumber, $matches) !== 1) {
+            return $admissionNumber;
+        }
+
+        $prefix = $matches[1];
+        $number = $matches[2];
+        $next = (string) (((int) $number) + 1);
+
+        return $prefix . str_pad($next, strlen($number), '0', STR_PAD_LEFT);
     }
 }

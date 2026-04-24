@@ -15,13 +15,156 @@
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($layoutFavicon, '/')) }}">
     @endif
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        :root {
+            --ui-bg: #f3f7fb;
+            --ui-bg-accent: #eaf4ff;
+            --ui-surface: #ffffff;
+            --ui-border: #dbe5f0;
+            --ui-ink: #0f172a;
+            --ui-muted: #475569;
+            --ui-brand: #0f766e;
+            --ui-brand-soft: #dff7f4;
+            --ui-focus: rgba(15, 118, 110, 0.28);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--ui-ink);
+            background:
+                radial-gradient(circle at 0% 0%, rgba(58, 141, 222, 0.12), transparent 32%),
+                radial-gradient(circle at 100% 100%, rgba(15, 118, 110, 0.10), transparent 30%),
+                linear-gradient(180deg, var(--ui-bg) 0%, #f8fbff 100%);
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .font-display {
+            font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        ::selection {
+            background: rgba(15, 118, 110, 0.2);
+            color: var(--ui-ink);
+        }
+
+        a,
+        button,
+        input,
+        select,
+        textarea {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        [tabindex]:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--ui-focus);
+        }
+
+        input,
+        select,
+        textarea {
+            border-color: #cdd9e7;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead th {
+            position: relative;
+            background: #f7fbff;
+            color: #475569;
+        }
+
+        tbody tr:hover {
+            background: #f8fbff;
+        }
+
+        tbody td {
+            vertical-align: middle;
+        }
+
+        .app-content-shell > * {
+            animation: app-fade-up 0.28s ease both;
+        }
+
+        @keyframes app-fade-up {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fx-lift-card {
+            from {
+                transform: translateY(16px);
+            }
+            to {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes fx-menu-hover-blink {
+            0%, 49% {
+                box-shadow: none;
+            }
+            50%, 100% {
+                box-shadow: 0 0 0 1px rgba(223, 231, 83, 0.85), 0 0 16px rgba(223, 231, 83, 0.42);
+            }
+        }
+
+        .fx-menu-blink:hover,
+        .fx-menu-blink:focus-visible {
+            animation: fx-menu-hover-blink 0.14s steps(2, end) infinite;
+        }
     </style>
     @stack('styles')
 </head>
-<body class="min-h-screen bg-[#F4F6FB] text-slate-900">
+<body class="min-h-screen bg-[#F4F6FB] text-slate-900 antialiased">
     @php
         $sidebarOpen = false;
     @endphp
@@ -44,7 +187,9 @@
                     ? route('teacher.dashboard')
                     : ($currentUser->isStudent()
                         ? route('student.dashboard')
-                        : ($currentUser->isParent() ? route('parent.dashboard') : route('dashboard')));
+                        : ($currentUser->isParent()
+                            ? route('parent.dashboard')
+                            : ($currentUser->isStaff() ? route('staff.dashboard') : route('dashboard'))));
 
                 $navSections = [];
 
@@ -61,7 +206,7 @@
                     $navSections[] = [
                         'label' => 'Overview',
                         'items' => [
-                            ['label' => 'Dashboard', 'route' => $sidebarDashboardRoute, 'pattern' => ['dashboard', 'teacher.dashboard', 'student.dashboard', 'parent.dashboard'], 'icon' => 'home'],
+                            ['label' => 'Dashboard', 'route' => $sidebarDashboardRoute, 'pattern' => ['dashboard', 'teacher.dashboard', 'staff.dashboard', 'student.dashboard', 'parent.dashboard'], 'icon' => 'home'],
                         ],
                     ];
 
@@ -69,15 +214,18 @@
                         $navSections[] = [
                             'label' => 'My Academics',
                             'items' => [
-                                ['label' => 'My Results',    'route' => route('student.dashboard') . '#results-section',    'pattern' => [], 'icon' => 'chart'],
-                                ['label' => 'My Timetable',  'route' => route('student.dashboard') . '#timetable-section',  'pattern' => [], 'icon' => 'clock'],
-                                ['label' => 'My Attendance', 'route' => route('student.dashboard') . '#attendance-section', 'pattern' => [], 'icon' => 'checklist'],
+                                ['label' => 'My Results',    'route' => route('portal.results.center'),    'pattern' => ['portal.results.center', 'portal.results.sheet.pdf'], 'icon' => 'chart'],
+                                ['label' => 'Result Feedback', 'route' => route('portal.results.feedback.index'), 'pattern' => ['portal.results.feedback.*'], 'icon' => 'inbox'],
+                                ['label' => 'My Timetable',  'route' => route('portal.timetable'),  'pattern' => ['portal.timetable'], 'icon' => 'clock'],
+                                ['label' => 'My Attendance', 'route' => route('portal.attendance'), 'pattern' => ['portal.attendance'], 'icon' => 'checklist'],
+                                ['label' => 'My Assignments', 'route' => route('portal.assignments'), 'pattern' => ['portal.assignments*'], 'icon' => 'book'],
                             ],
                         ];
                         $navSections[] = [
                             'label' => 'Finance',
                             'items' => [
-                                ['label' => 'My Invoices', 'route' => route('student.dashboard') . '#invoices-section', 'pattern' => [], 'icon' => 'receipt'],
+                                ['label' => 'My Payments', 'route' => route('portal.payments.index'), 'pattern' => ['portal.payments.*'], 'icon' => 'credit-card'],
+                                ['label' => 'My Invoices', 'route' => route('portal.invoices.index'), 'pattern' => ['portal.invoices.*'], 'icon' => 'receipt'],
                             ],
                         ];
                         $navSections[] = [
@@ -93,25 +241,37 @@
                         $navSections[] = [
                             'label' => "My Children",
                             'items' => [
-                                ['label' => 'Academic Overview',  'route' => route('parent.dashboard') . '#children-overview',  'pattern' => [], 'icon' => 'chart'],
-                                ['label' => 'Results & Grades',   'route' => route('parent.dashboard') . '#children-overview',  'pattern' => [], 'icon' => 'book'],
-                                ['label' => 'Fees Summary',       'route' => route('parent.dashboard') . '#fees-summary',       'pattern' => [], 'icon' => 'wallet'],
+                                ['label' => 'Academic Overview',  'route' => route('parent.academic-overview'), 'pattern' => ['parent.academic-overview'], 'icon' => 'chart'],
+                                ['label' => 'Results & Grades',   'route' => route('parent.results-grades'),    'pattern' => ['parent.results-grades'], 'icon' => 'book'],
+                                ['label' => 'Fees Summary',       'route' => route('parent.fees-summary'),      'pattern' => ['parent.fees-summary'], 'icon' => 'wallet'],
                                 ['label' => 'My Inbox',           'route' => route('portal.messages.index'),                    'pattern' => ['portal.messages.*'], 'icon' => 'inbox'],
                             ],
                         ];
                     }
 
-                    if (in_array($currentUser->role->value, ['school_admin', 'principal', 'teacher']) || $actsAsSchoolAdmin) {
+                    if (in_array($currentUser->role->value, ['school_admin', 'principal', 'vice_principal', 'teacher']) || $actsAsSchoolAdmin) {
+                        $academicItems = [
+                            ['label' => 'Sessions & Terms', 'route' => route('academic.sessions.index'), 'pattern' => ['academic.sessions.*'], 'icon' => 'calendar'],
+                            ['label' => 'Classes', 'route' => route('academic.classes.index'), 'pattern' => ['academic.classes.*'], 'icon' => 'layers'],
+                            ['label' => 'Subjects', 'route' => route('academic.subjects.index'), 'pattern' => ['academic.subjects.*'], 'icon' => 'book'],
+                            ['label' => 'Students', 'route' => route('academic.students.index'), 'pattern' => ['academic.students.*'], 'icon' => 'users'],
+                            ['label' => 'Attendance', 'route' => route('academic.attendance.index'), 'pattern' => ['academic.attendance.*'], 'icon' => 'checklist'],
+                            ['label' => 'Timetable', 'route' => route('academic.timetable.index'), 'pattern' => ['academic.timetable.*'], 'icon' => 'clock'],
+                            ['label' => 'Assignments', 'route' => route('academic.assignments.index'), 'pattern' => ['academic.assignments.*'], 'icon' => 'book'],
+                        ];
+
+                        if (in_array($currentUser->role->value, ['school_admin', 'principal', 'vice_principal', 'super_admin'], true) || $actsAsSchoolAdmin) {
+                            $academicItems[] = [
+                                'label' => 'Teacher Assignment',
+                                'route' => route('academic.teaching-assignments.index'),
+                                'pattern' => ['academic.teaching-assignments.*'],
+                                'icon' => 'briefcase',
+                            ];
+                        }
+
                         $navSections[] = [
                             'label' => 'Academic',
-                            'items' => [
-                                ['label' => 'Sessions & Terms', 'route' => route('academic.sessions.index'), 'pattern' => ['academic.sessions.*'], 'icon' => 'calendar'],
-                                ['label' => 'Classes', 'route' => route('academic.classes.index'), 'pattern' => ['academic.classes.*'], 'icon' => 'layers'],
-                                ['label' => 'Subjects', 'route' => route('academic.subjects.index'), 'pattern' => ['academic.subjects.*'], 'icon' => 'book'],
-                                ['label' => 'Students', 'route' => route('academic.students.index'), 'pattern' => ['academic.students.*'], 'icon' => 'users'],
-                                ['label' => 'Attendance', 'route' => route('academic.attendance.index'), 'pattern' => ['academic.attendance.*'], 'icon' => 'checklist'],
-                                ['label' => 'Timetable', 'route' => route('academic.timetable.index'), 'pattern' => ['academic.timetable.*'], 'icon' => 'clock'],
-                            ],
+                            'items' => $academicItems,
                         ];
                     }
 
@@ -124,13 +284,43 @@
                         ];
                     }
 
-                    if (in_array($currentUser->role->value, ['school_admin', 'principal', 'teacher']) || $actsAsSchoolAdmin) {
+                    if (in_array($currentUser->role->value, ['school_admin', 'principal', 'vice_principal', 'teacher']) || $actsAsSchoolAdmin) {
+                        $canRunOfficialResultImport = in_array($currentUser->role->value, ['school_admin', 'principal', 'vice_principal'], true) || $actsAsSchoolAdmin;
+                        $assessmentItems = [
+                            ['label' => 'Result Submissions', 'route' => route('examination.result-submissions.index'), 'pattern' => ['examination.result-submissions.*'], 'icon' => 'inbox'],
+                            ['label' => 'View Student Result', 'route' => route('examination.results.index'), 'pattern' => ['examination.results.enter-scores', 'examination.results.store-scores', 'examination.results.index', 'examination.results.update', 'examination.results.destroy'], 'icon' => 'chart'],
+                            ['label' => 'Update Student Result', 'route' => route('examination.results.enter-scores'), 'pattern' => ['examination.results.enter-scores', 'examination.results.store-scores', 'examination.results.index', 'examination.results.update', 'examination.results.destroy'], 'icon' => 'edit'],
+                            ['label' => 'Comment', 'route' => route('examination.result-comments.index'), 'pattern' => ['examination.result-comments.*'], 'icon' => 'edit'],
+                            ['label' => 'Result Feedback', 'route' => route('examination.result-feedback.index'), 'pattern' => ['examination.result-feedback.*'], 'icon' => 'inbox'],
+                        ];
+
+                        if ($canRunOfficialResultImport) {
+                            array_splice($assessmentItems, 1, 0, [[
+                                'label' => 'Official Result Import',
+                                'route' => route('examination.result-sheets.import'),
+                                'pattern' => [
+                                    'examination.result-sheets.import',
+                                    'examination.result-sheets.preview',
+                                    'examination.result-sheets.preview.show',
+                                    'examination.result-sheets.commit',
+                                    'examination.result-sheets.template',
+                                    'examination.result-sheets.history',
+                                    'examination.result-sheets.errors',
+                                    'examination.result-sheets.publishing',
+                                    'examination.result-sheets.publish',
+                                    'examination.result-sheets.unpublish',
+                                    'examination.result-sheets.class-sheet',
+                                    'examination.result-sheets.student',
+                                    'examination.result-sheets.student.pdf',
+                                    'examination.result-sheets.bulk-print',
+                                ],
+                                'icon' => 'inbox',
+                            ]]);
+                        }
+
                         $navSections[] = [
                             'label' => 'Assessment',
-                            'items' => [
-                                ['label' => 'Enter Scores', 'route' => route('examination.results.enter-scores'), 'pattern' => ['examination.results.enter-scores', 'examination.results.store-scores'], 'icon' => 'edit'],
-                                ['label' => 'View Results', 'route' => route('examination.results.index'), 'pattern' => ['examination.results.index', 'examination.results.report-card', 'examination.results.report-card.download'], 'icon' => 'chart'],
-                            ],
+                            'items' => $assessmentItems,
                         ];
                     }
 
@@ -139,8 +329,12 @@
                             'label' => 'Finance',
                             'items' => [
                                 ['label' => 'Fee Structures', 'route' => route('financial.fees.index'), 'pattern' => ['financial.fees.*'], 'icon' => 'wallet'],
+                                ['label' => 'Approve Payment', 'route' => route('financial.payments.index', ['status' => 'pending']), 'pattern' => [], 'icon' => 'checklist'],
                                 ['label' => 'Invoices', 'route' => route('financial.invoices.index'), 'pattern' => ['financial.invoices.*'], 'icon' => 'receipt'],
                                 ['label' => 'Payments', 'route' => route('financial.payments.index'), 'pattern' => ['financial.payments.*'], 'icon' => 'credit-card'],
+                                ['label' => 'Bank Accounts', 'route' => route('financial.bank-accounts.index'), 'pattern' => ['financial.bank-accounts.*'], 'icon' => 'wallet'],
+                                ['label' => 'Payment Methods', 'route' => route('financial.payment-methods.index'), 'pattern' => ['financial.payment-methods.*'], 'icon' => 'settings'],
+                                ['label' => 'Assign Signatures', 'route' => route('financial.bursary-signatures.index'), 'pattern' => ['financial.bursary-signatures.*'], 'icon' => 'edit'],
                             ],
                         ];
                     }
@@ -184,6 +378,7 @@
                             'items' => [
                                 ['label' => 'Financial Reports', 'route' => route('reports.financial'), 'pattern' => ['reports.financial'], 'icon' => 'report'],
                                 ['label' => 'Academic Reports', 'route' => route('reports.academic'), 'pattern' => ['reports.academic', 'reports.attendance'], 'icon' => 'analytics'],
+                                ['label' => 'Audit Logs', 'route' => route('system.audit-logs.index'), 'pattern' => ['system.audit-logs.*'], 'icon' => 'shield'],
                                 ['label' => 'Hero Slides', 'route' => route('system.hero-slides.index'), 'pattern' => ['system.hero-slides.*'], 'icon' => 'image'],
                                 ['label' => 'Testimonials', 'route' => route('system.testimonials.index'), 'pattern' => ['system.testimonials.*'], 'icon' => 'quote'],
                                 ['label' => 'Settings', 'route' => route('settings.index'), 'pattern' => ['settings.*'], 'icon' => 'settings', 'children' => $settingsLinks],
@@ -230,8 +425,8 @@
 
             <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-50 flex w-[290px] -translate-x-full flex-col overflow-hidden border-r border-[#43316F] bg-[#2D1D5C] text-white shadow-2xl transition-transform duration-300 lg:translate-x-0">
                 <div class="border-b border-white/10 bg-gradient-to-r from-[#24174A] via-[#2D1D5C] to-[#3A2872] px-6 pb-5 pt-6">
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-center gap-4">
+                    <div class="relative flex items-center justify-center">
+                        <div class="flex items-center justify-center">
                             @if($schoolLogo)
                                 <img src="{{ asset('storage/' . ltrim($schoolLogo, '/')) }}" alt="{{ $schoolBrandName }} logo" class="h-14 w-14 rounded-2xl border border-white/15 bg-white object-cover shadow-lg shadow-black/15">
                             @else
@@ -239,21 +434,8 @@
                                     {{ $schoolInitials }}
                                 </div>
                             @endif
-                            <div>
-                                @php
-                                    $panelLabel = match(true) {
-                                        $currentUser->isStudent() => 'Student Portal',
-                                        $currentUser->isParent()  => 'Parent Portal',
-                                        $currentUser->isTeacher() => 'Teacher Portal',
-                                        default                   => 'School Admin',
-                                    };
-                                @endphp
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/55">{{ $panelLabel }}</p>
-                                <h1 class="mt-2 text-xl font-extrabold leading-tight text-white">{{ $schoolBrandName }}</h1>
-                                <p class="mt-1 text-sm text-slate-200/80">{{ $singleSchoolMode && $currentUser->isSuperAdmin() ? 'School Owner' : $currentUser->role->label() }}</p>
-                            </div>
                         </div>
-                        <button type="button" id="close-admin-sidebar" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/80 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C] lg:hidden">
+                        <button type="button" id="close-admin-sidebar" class="absolute right-0 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/80 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C] lg:hidden">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -271,7 +453,7 @@
                                         @endphp
                                         @if(!empty($item['children']))
                                             <details class="group rounded-2xl border {{ $isActive ? 'border-[#DFE753]/60 bg-white/6' : 'border-white/8 bg-white/[0.03]' }}" {{ $isActive ? 'open' : '' }}>
-                                                <summary class="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold transition duration-200 {{ $isActive ? 'text-[#DFE753]' : 'text-slate-100/92 hover:bg-white/6 hover:text-white' }}">
+                                                <summary class="fx-menu-blink flex cursor-pointer list-none items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold transition duration-200 {{ $isActive ? 'text-[#DFE753]' : 'text-slate-100/92 hover:bg-white/6 hover:text-white' }}">
                                                     <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $isActive ? 'bg-[#DFE753]/12 text-[#DFE753]' : 'bg-white/8 text-[#DFE753] group-hover:bg-white/12' }}">
                                                         {!! $renderNavIcon($item['icon']) !!}
                                                     </span>
@@ -283,7 +465,7 @@
                                                         @php
                                                             $childActive = request()->routeIs('settings.page') && (($child['page'] ?? null) === request()->route('page'));
                                                         @endphp
-                                                        <a href="{{ $child['route'] }}" class="group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition duration-200 {{ $childActive ? 'border-[#DFE753]/70 bg-[#DFE753] text-[#2D1D5C]' : 'border-transparent text-slate-200/88 hover:border-white/8 hover:bg-white/8 hover:text-white' }}">
+                                                        <a href="{{ $child['route'] }}" class="fx-menu-blink group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition duration-200 {{ $childActive ? 'border-[#DFE753]/70 bg-[#DFE753] text-[#2D1D5C]' : 'border-transparent text-slate-200/88 hover:border-white/8 hover:bg-white/8 hover:text-white' }}">
                                                             <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/6 text-[#DFE753]">
                                                                 {!! $renderNavIcon($child['icon']) !!}
                                                             </span>
@@ -293,7 +475,7 @@
                                                 </div>
                                             </details>
                                         @else
-                                            <a href="{{ $item['route'] }}" class="group flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-medium transition duration-200 {{ $isActive ? 'border-[#DFE753] bg-[#DFE753] text-[#2D1D5C] shadow-lg shadow-black/10' : 'border-transparent text-slate-100/92 hover:border-white/10 hover:bg-white/8 hover:text-white' }}">
+                                            <a href="{{ $item['route'] }}" class="fx-menu-blink group flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-medium transition duration-200 {{ $isActive ? 'border-[#DFE753] bg-[#DFE753] text-[#2D1D5C] shadow-lg shadow-black/10' : 'border-transparent text-slate-100/92 hover:border-white/10 hover:bg-white/8 hover:text-white' }}">
                                                 <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $isActive ? 'bg-[#2D1D5C]/10 text-[#2D1D5C]' : 'bg-white/8 text-[#DFE753] group-hover:bg-white/12' }}">
                                                     {!! $renderNavIcon($item['icon']) !!}
                                                 </span>
@@ -316,7 +498,7 @@
                         $profileActive = request()->routeIs('profile.*') || request()->routeIs('portal.profile.*');
                         $logoutRoute   = ($currentUser->isStudent() || $currentUser->isParent())
                             ? route('portal.logout')
-                            : route('logout');
+                            : ($currentUser->isStaff() ? route('staff.logout') : route('logout'));
                     @endphp
                     <a href="{{ $profileRoute }}" class="flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-medium transition duration-200 {{ $profileActive ? 'border-[#DFE753] bg-[#DFE753] text-[#2D1D5C]' : 'border-white/10 bg-white/5 text-white hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C]' }}">
                         <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl {{ $profileActive ? 'bg-[#2D1D5C]/10' : 'bg-white/8' }}">
@@ -335,41 +517,57 @@
             </aside>
 
             <main class="min-h-screen flex flex-col transition-all duration-300 lg:pl-[290px]">
-                <header class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/92 backdrop-blur">
+                <header class="sticky top-0 z-30 border-b border-[#2D1D5C]/15 bg-gradient-to-r from-white/95 via-[#f5f3ff]/95 to-[#eef6ff]/95 shadow-[0_10px_30px_-20px_rgba(45,29,92,0.55)] backdrop-blur-xl">
                     <div class="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                         <div class="flex items-center gap-3">
-                            <button type="button" id="open-admin-sidebar" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#2D1D5C] shadow-sm transition hover:border-[#DFE753] hover:bg-[#DFE753] lg:hidden">
+                            <button type="button" id="open-admin-sidebar" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#2D1D5C]/15 bg-white/90 text-[#2D1D5C] shadow-sm transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C] lg:hidden">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 7.5h15M4.5 12h15M4.5 16.5h15"/></svg>
                             </button>
-                            <div>
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#2D1D5C]/60">Control Panel</p>
-                                <h2 class="mt-1 text-xl font-extrabold tracking-tight text-slate-900">@yield('header', 'Dashboard')</h2>
+                            <div class="rounded-2xl border border-white/60 bg-white/55 px-4 py-2 shadow-sm ring-1 ring-[#2D1D5C]/5">
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#2D1D5C]/70">Control Panel</p>
+                                <h2 class="mt-0.5 bg-gradient-to-r from-[#1f2a44] via-[#2D1D5C] to-[#355AA0] bg-clip-text text-xl font-extrabold tracking-tight text-transparent">@yield('header', 'Dashboard')</h2>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <a href="{{ ($currentUser->isStudent() || $currentUser->isParent()) ? route('portal.profile.show') : route('profile.show') }}" class="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 shadow-sm transition hover:border-[#2D1D5C]/30 hover:shadow-md md:flex">
-                                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#2D1D5C] text-sm font-bold text-white">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($currentUser->first_name, 0, 1) . \Illuminate\Support\Str::substr($currentUser->last_name, 0, 1)) }}</span>
+                            <a href="{{ ($currentUser->isStudent() || $currentUser->isParent()) ? route('portal.profile.show') : route('profile.show') }}" class="hidden items-center gap-2.5 rounded-2xl border border-[#2D1D5C]/10 bg-white/85 px-4 py-2 shadow-[0_8px_22px_-15px_rgba(45,29,92,0.5)] ring-1 ring-white/80 transition hover:-translate-y-0.5 hover:border-[#2D1D5C]/25 hover:shadow-[0_14px_28px_-16px_rgba(45,29,92,0.6)] md:flex">
+                                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#2D1D5C] via-[#355AA0] to-[#4F46E5] text-sm font-bold text-white shadow-inner shadow-white/10">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($currentUser->first_name, 0, 1) . \Illuminate\Support\Str::substr($currentUser->last_name, 0, 1)) }}</span>
                                 <div>
                                     <p class="text-sm font-semibold text-slate-900">{{ $currentUser->full_name }}</p>
-                                    <p class="text-xs text-slate-500">{{ $singleSchoolMode && $currentUser->isSuperAdmin() ? 'Administrator' : $currentUser->role->label() }}</p>
                                 </div>
                             </a>
                             @php
                                 $bellCount = 0;
-                                $bellRoute = '#';
-                                if ($currentUser->isStudent() || $currentUser->isParent()) {
+                                $bellRoute = route('notifications.index');
+                                $canManageResultFeedbackInbox = ($actsAsSchoolAdmin || $currentUser->isTeacher())
+                                    || in_array((string) ($currentUser->role?->value ?? ''), ['principal', 'vice_principal'], true);
+                                if ($currentUser->isStudent()) {
+                                    $unreadMessages = $currentUser->unreadMessagesCount();
+                                    $unreadFeedbackResponses = $currentUser->unreadResultFeedbackResponsesCount();
+                                    $unreadAssignmentReviews = $currentUser->unreadNotifications()
+                                        ->where('type', \App\Notifications\StudentAssignmentReviewedNotification::class)
+                                        ->count();
+
+                                    $bellCount = $unreadMessages + $unreadFeedbackResponses + $unreadAssignmentReviews;
+                                } elseif ($currentUser->isParent()) {
                                     $bellCount = $currentUser->unreadMessagesCount();
-                                    $bellRoute = route('portal.messages.index');
-                                } elseif ($actsAsSchoolAdmin || $currentUser->isTeacher()) {
-                                    $bellCount = $currentUser->unreadAdminRepliesCount();
-                                    $bellRoute = route('messages.index');
+                                } else {
+                                    $unreadReplies = $currentUser->unreadAdminRepliesCount();
+                                    $unreadAssignmentSubmissions = $currentUser->unreadNotifications()
+                                        ->where('type', \App\Notifications\StudentAssignmentSubmittedNotification::class)
+                                        ->count();
+
+                                    $bellCount = $unreadReplies + $unreadAssignmentSubmissions;
+
+                                    if ($canManageResultFeedbackInbox) {
+                                        $bellCount += $currentUser->openResultFeedbackCount();
+                                    }
                                 }
                             @endphp
-                            <a href="{{ $bellRoute }}" class="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#2D1D5C] shadow-sm transition hover:border-[#2D1D5C]/40 hover:shadow-md">
+                            <a href="{{ $bellRoute }}" class="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#2D1D5C]/10 bg-white/90 text-[#2D1D5C] shadow-[0_8px_20px_-14px_rgba(45,29,92,0.5)] ring-1 ring-white/70 transition hover:-translate-y-0.5 hover:border-[#2D1D5C]/30 hover:bg-white hover:shadow-[0_14px_26px_-14px_rgba(45,29,92,0.55)]">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75v-.7V9a6 6 0 1 0-12 0v.05c0 .232 0 .465-.001.697a8.967 8.967 0 0 1-2.311 6.025 23.848 23.848 0 0 0 5.454 1.31m5.715 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
                                 @if($bellCount > 0)
-                                    <span class="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
+                                    <span class="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-[9px] font-bold text-white ring-2 ring-white">
                                         {{ $bellCount > 99 ? '99+' : $bellCount }}
                                     </span>
                                 @endif
@@ -383,7 +581,7 @@
             $mainContentClass = auth()->check() ? 'px-4 py-6 sm:px-6 lg:px-8' : '';
         @endphp
 
-        <div class="{{ $mainContentClass }} flex-1">
+        <div class="{{ $mainContentClass }} app-content-shell flex-1">
             @if(session('success'))
             <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 shadow-sm">
                 {{ session('success') }}
@@ -459,9 +657,104 @@
             });
         })();
     </script>
+
+    <script>
+        (() => {
+            const logoutUrl = @json(
+                ($currentUser->isStudent() || $currentUser->isParent())
+                    ? route('portal.logout')
+                    : ($currentUser->isStaff() ? route('staff.logout') : route('logout'))
+            );
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            if (!logoutUrl) {
+                return;
+            }
+
+            const IDLE_TIMEOUT_MS = 4 * 60 * 1000; // 4 minutes
+            let lastActivityAt = Date.now();
+            let isMouseInsideWindow = false;
+            let hasLoggedOut = false;
+
+            const markActivity = () => {
+                lastActivityAt = Date.now();
+            };
+
+            const markMouseInside = () => {
+                isMouseInsideWindow = true;
+                markActivity();
+            };
+
+            const markMouseOutside = () => {
+                isMouseInsideWindow = false;
+            };
+
+            const submitLogout = () => {
+                if (hasLoggedOut) {
+                    return;
+                }
+
+                hasLoggedOut = true;
+
+                if (!csrfToken) {
+                    window.location.reload();
+                    return;
+                }
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = logoutUrl;
+                form.style.display = 'none';
+
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_token';
+                tokenInput.value = csrfToken;
+                form.appendChild(tokenInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            };
+
+            const checkIdleTimeout = () => {
+                const hasHoveredElement = (() => {
+                    try {
+                        return document.querySelectorAll(':hover').length > 0;
+                    } catch (_) {
+                        return false;
+                    }
+                })();
+
+                if (hasLoggedOut || isMouseInsideWindow || hasHoveredElement) {
+                    return;
+                }
+
+                if (Date.now() - lastActivityAt >= IDLE_TIMEOUT_MS) {
+                    submitLogout();
+                }
+            };
+
+            ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'touchmove', 'pointerdown'].forEach((eventName) => {
+                window.addEventListener(eventName, markActivity, { passive: true });
+            });
+
+            window.addEventListener('mouseenter', markMouseInside, { passive: true });
+            window.addEventListener('mouseover', markMouseInside, { passive: true });
+            window.addEventListener('mouseleave', markMouseOutside, { passive: true });
+            window.addEventListener('blur', markMouseOutside);
+
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    markActivity();
+                }
+            });
+
+            window.setInterval(checkIdleTimeout, 1000);
+        })();
+    </script>
     @endauth
 
     @stack('scripts')
 </body>
 </html>
+
 

@@ -80,10 +80,16 @@
                                 {{ $section['label'] }} {{ $navOverviewSuffix ?: 'Overview' }}
                             </a>
                             @foreach($section['items'] as $menuItem)
-                            <a href="{{ route('public.submenu', ['section' => $section['id'], 'slug' => \Illuminate\Support\Str::slug($menuItem)]) }}"
-                               class="theme-submenu-link block rounded-lg px-3 py-2 text-sm font-medium transition duration-200">
-                                {{ $menuItem }}
-                            </a>
+                                @php
+                                    $menuItemTitle = trim((string) (is_array($menuItem) ? ($menuItem['title'] ?? '') : $menuItem));
+                                    $menuItemSlug = \Illuminate\Support\Str::slug($menuItemTitle);
+                                @endphp
+                                @if($menuItemTitle !== '' && $menuItemSlug !== '')
+                                    <a href="{{ route('public.submenu', ['section' => $section['id'], 'slug' => $menuItemSlug]) }}"
+                                       class="theme-submenu-link block rounded-lg px-3 py-2 text-sm font-medium transition duration-200">
+                                        {{ $menuItemTitle }}
+                                    </a>
+                                @endif
                             @endforeach
                         </div>
                     </div>
@@ -164,10 +170,16 @@
                                     {{ $section['label'] }} {{ $navOverviewSuffix ?: 'Overview' }}
                                 </a>
                                 @foreach($section['items'] as $menuItem)
-                                <a href="{{ route('public.submenu', ['section' => $section['id'], 'slug' => \Illuminate\Support\Str::slug($menuItem)]) }}"
-                                   class="theme-mobile-submenu-link block rounded-lg px-3 py-2 text-sm transition duration-200">
-                                    {{ $menuItem }}
-                                </a>
+                                    @php
+                                        $menuItemTitle = trim((string) (is_array($menuItem) ? ($menuItem['title'] ?? '') : $menuItem));
+                                        $menuItemSlug = \Illuminate\Support\Str::slug($menuItemTitle);
+                                    @endphp
+                                    @if($menuItemTitle !== '' && $menuItemSlug !== '')
+                                        <a href="{{ route('public.submenu', ['section' => $section['id'], 'slug' => $menuItemSlug]) }}"
+                                           class="theme-mobile-submenu-link block rounded-lg px-3 py-2 text-sm transition duration-200">
+                                            {{ $menuItemTitle }}
+                                        </a>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>

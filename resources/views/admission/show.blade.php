@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Application — ' . $admission->application_number)
+@section('title', 'Application - ' . $admission->application_number)
 @section('header', 'Admission Application')
 
 @section('content')
@@ -28,6 +28,15 @@
 </div>
 @endif
 
+@if(session('error'))
+<div class="mb-4 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800">
+    <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ session('error') }}
+</div>
+@endif
+
 {{-- Flash: enrolment credentials --}}
 @if(session('enrolled_credentials'))
 @php $creds = session('enrolled_credentials'); @endphp
@@ -40,9 +49,9 @@
             <p class="text-sm font-bold text-blue-900">Student Portal Credentials Created</p>
             <p class="text-xs text-blue-600 mt-0.5">
                 @if($creds['email_sent'])
-                    Credentials have been emailed to <strong>{{ $creds['email'] }}</strong>. Share the details below with the student/parent as a backup.
+                    Credentials have been emailed to <strong>{{ $creds['sent_to'] ?? $creds['email'] }}</strong>. Share the details below with the student/parent as a backup.
                 @else
-                    Email delivery failed — please share these credentials directly with the student/parent.
+                    Email delivery failed - please share these credentials directly with the student/parent.
                 @endif
             </p>
         </div>
@@ -84,7 +93,7 @@
 
 <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-    {{-- ── Left column (2/3) ────────────────────────────────────────── --}}
+    {{-- Left column (2/3) --}}
     <div class="xl:col-span-2 space-y-5">
 
         {{-- Application header card --}}
@@ -128,47 +137,57 @@
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm">
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Date of Birth</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->date_of_birth?->format('d M Y') ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->date_of_birth?->format('d M Y') ?? '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Gender</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->gender ? ucfirst($admission->gender) : '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->gender ? ucfirst($admission->gender) : '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Blood Group</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->blood_group ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->blood_group ?? '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Genotype</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->genotype ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->genotype ?? '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Religion</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->religion ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->religion ?? '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Class Applied For</dt>
                         <dd class="font-semibold text-slate-800">{{ $admission->class_applied_for }}</dd>
                     </div>
                     <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Student Email (Portal Login)</dt>
+                        <dd class="font-semibold text-slate-800">
+                            @if($admission->email)
+                            <a href="mailto:{{ $admission->email }}" class="hover:text-indigo-600">{{ $admission->email }}</a>
+                            @else
+                            -
+                            @endif
+                        </dd>
+                    </div>
+                    <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Academic Session</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->session?->name ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->session?->name ?? '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">State of Origin</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->state_of_origin ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->state_of_origin ?? '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">LGA</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->lga ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->lga ?? '-' }}</dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Previous School</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->previous_school ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->previous_school ?? '-' }}</dd>
                     </div>
                     <div class="sm:col-span-2">
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Home Address</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->address ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->address ?? '-' }}</dd>
                     </div>
                 </dl>
             </div>
@@ -200,13 +219,13 @@
                             @if($admission->parent_email)
                             <a href="mailto:{{ $admission->parent_email }}" class="hover:text-indigo-600">{{ $admission->parent_email }}</a>
                             @else
-                            —
+                            -
                             @endif
                         </dd>
                     </div>
                     <div>
                         <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Occupation</dt>
-                        <dd class="font-semibold text-slate-800">{{ $admission->parent_occupation ?? '—' }}</dd>
+                        <dd class="font-semibold text-slate-800">{{ $admission->parent_occupation ?? '-' }}</dd>
                     </div>
                 </dl>
             </div>
@@ -237,7 +256,7 @@
                         $path = $admission->$field;
                         $ext  = strtolower(pathinfo($path, PATHINFO_EXTENSION));
                         $isImg = in_array($ext, ['jpg','jpeg','png','webp']);
-                        $url   = asset('storage/' . ltrim($path, '/'));
+                        $url   = route('admission.documents.show', ['admission' => $admission, 'document' => $field]);
                     @endphp
                     <a href="{{ $url }}" target="_blank"
                        class="group flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 hover:border-indigo-300 hover:bg-indigo-50 transition">
@@ -300,7 +319,7 @@
 
     </div>
 
-    {{-- ── Right column (1/3) ───────────────────────────────────────── --}}
+    {{-- Right column (1/3) --}}
     <div class="space-y-5">
 
         @if($isAdmin && $sv !== 'enrolled')
@@ -332,14 +351,14 @@
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Screening Score (%)</label>
                     <input type="number" name="screening_score" min="0" max="100"
                         value="{{ old('screening_score', $admission->screening_score) }}"
-                        placeholder="0 – 100"
+                        placeholder="0 - 100"
                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Review Notes</label>
                     <textarea name="review_notes" rows="4"
-                        placeholder="Add notes about this application…"
+                        placeholder="Add notes about this application..."
                         class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">{{ old('review_notes', $admission->review_notes) }}</textarea>
                 </div>
 
@@ -406,8 +425,36 @@
                     </div>
                 </dl>
                 <div class="pt-1 border-t border-blue-200">
-                    <p class="text-xs text-blue-500">Password is hashed — share credentials from the enrolment email sent to the parent.</p>
+                    <p class="text-xs text-blue-500">Password is hashed - share credentials from the enrolment email sent to the parent.</p>
                 </div>
+                @if($isAdmin)
+                <div class="pt-2 border-t border-blue-200">
+                    <form action="{{ route('admission.update-student-email', $admission) }}" method="POST" class="mb-3">
+                        @csrf
+                        @method('PATCH')
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-blue-500 mb-1">Student Portal Email</label>
+                        <div class="flex gap-2">
+                            <input type="email" name="email" value="{{ old('email', $admission->email) }}"
+                                   placeholder="student@example.com"
+                                   class="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                            <button type="submit"
+                                class="shrink-0 rounded-lg border border-blue-300 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition">
+                                Save
+                            </button>
+                        </div>
+                        <p class="mt-1 text-xs text-blue-500">Set a real student email here, then click sync below.</p>
+                    </form>
+                    <p class="text-xs text-blue-600 mb-2">Need to align login with application email? This safely updates only when the target email is not used by another user.</p>
+                    <form action="{{ route('admission.sync-login-email', $admission) }}" method="POST"
+                          onsubmit="return confirm('Sync this student login email from admission data now?')">
+                        @csrf
+                        <button type="submit"
+                            class="w-full rounded-xl border border-blue-300 bg-white py-2 text-sm font-semibold text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition">
+                            Sync Login Email From Admission
+                        </button>
+                    </form>
+                </div>
+                @endif
             </div>
             @endif
         </div>

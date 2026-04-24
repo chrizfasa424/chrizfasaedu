@@ -30,6 +30,12 @@ return [
         'secret' => env('FLUTTERWAVE_SECRET_KEY'),
         'hash' => env('FLUTTERWAVE_SECRET_HASH'),
         'encryption' => env('FLUTTERWAVE_ENCRYPTION_KEY'),
+        'url' => env('FLUTTERWAVE_BASE_URL', 'https://api.flutterwave.com/v3'),
+    ],
+
+    'payment_gateways' => [
+        'ssl_verify' => env('PAYMENT_GATEWAY_SSL_VERIFY'),
+        'ca_bundle' => env('PAYMENT_GATEWAY_CA_BUNDLE'),
     ],
 
     'sms' => [
@@ -46,5 +52,12 @@ return [
         'sid' => env('TWILIO_SID'),
         'auth_token' => env('TWILIO_AUTH_TOKEN'),
         'from' => env('TWILIO_FROM'),
+    ],
+
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'timeout' => env('OPENAI_TIMEOUT', 30),
     ],
 ];

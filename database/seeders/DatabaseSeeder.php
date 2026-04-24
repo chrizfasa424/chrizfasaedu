@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
             SchoolSeeder::class,
             AcademicStructureSeeder::class,
             SubjectSeeder::class,
+            ExamTypeSeeder::class,
+            GradingScaleSeeder::class,
         ]);
     }
 }

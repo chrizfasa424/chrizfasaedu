@@ -27,12 +27,22 @@
     $isStudent = $user->isStudent();
     $isStaff   = $user->isTeacher() || $user->isSchoolAdmin() || $user->isSuperAdmin();
     $isParent  = $user->isParent();
+    $studentClassLabel = $isStudent
+        ? ($profile?->schoolClass?->grade_level?->label() ?? $profile?->schoolClass?->name ?? null)
+        : null;
+    $studentArmLabel = $isStudent && $profile?->arm?->name ? ('Arm ' . $profile->arm->name) : null;
 @endphp
 
 {{-- Active tab from session or default --}}
 @php $activeTab = session('profile_tab', request('tab', 'info')); @endphp
 
-<div class="max-w-4xl space-y-6">
+<div class="w-full space-y-6">
+
+    @if(!$isPortal && ($user->must_change_password ?? false))
+    <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        You are using a temporary password. Change your password now to continue using your dashboard.
+    </div>
+    @endif
 
     {{-- Profile Header Card --}}
     <div class="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
@@ -65,6 +75,11 @@
                     </p>
                     @if($isStudent && $profile?->admission_number)
                         <p class="text-xs text-slate-400 mt-0.5">Adm No: {{ $profile->admission_number }}</p>
+                    @endif
+                    @if($isStudent)
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            Class: {{ $studentClassLabel ?? 'Not Assigned' }}@if($studentArmLabel) - {{ $studentArmLabel }}@endif
+                        </p>
                     @endif
                 </div>
             </div>

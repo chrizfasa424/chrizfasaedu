@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\MessageRecipient;
 use App\Models\Student;
 use App\Models\User;
+use App\Support\RichTextSanitizer;
 use Illuminate\Support\Facades\DB;
 
 class MessageDispatchService
@@ -22,8 +23,8 @@ class MessageDispatchService
             'sender_id' => $sender->id,
             'audience'  => $validated['audience'],
             'class_id'  => $validated['class_id'] ?? null,
-            'subject'   => $validated['subject'],
-            'body'      => $validated['body'],
+            'subject'   => trim(strip_tags((string) $validated['subject'])),
+            'body'      => RichTextSanitizer::sanitize((string) $validated['body']),
         ]);
 
         $recipientIds = $this->resolveRecipients($validated['audience'], $validated['class_id'] ?? null, $schoolId);

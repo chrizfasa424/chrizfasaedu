@@ -198,10 +198,173 @@
     };
 @endphp
 
+@once
+    <style>
+        .hero-fullbleed {
+            position: relative;
+            left: 50%;
+            right: 50%;
+            width: 100vw;
+            transform: translateX(-50%);
+        }
+
+        .hero-premium-stage {
+            border: 1px solid color-mix(in srgb, var(--hero-primary, #2D1D5C) 18%, #ffffff);
+            border-radius: 2rem;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.62),
+                0 34px 80px -46px rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-premium-stage,
+        .hero-premium-stage * {
+            text-align: left;
+            text-justify: auto;
+        }
+
+        .hero-premium-stage::before {
+            content: "";
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(115deg, rgba(255, 255, 255, 0.45), transparent 38%);
+        }
+
+        .hero-gloss-btn {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .hero-gloss-btn::after {
+            content: "";
+            pointer-events: none;
+            position: absolute;
+            left: -45%;
+            top: -115%;
+            width: 190%;
+            height: 62%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0));
+            transform: rotate(8deg);
+            transition: top 0.5s ease;
+            z-index: 1;
+        }
+
+        .hero-gloss-btn:hover::after,
+        .hero-gloss-btn:focus-visible::after {
+            top: 120%;
+        }
+
+        .hero-metric-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--hero-secondary, #DFE753) !important;
+            background-color: var(--hero-secondary, #DFE753) !important;
+            background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(0, 0, 0, 0.18));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.18),
+                0 18px 40px -24px rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(6px);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .hero-metric-card p {
+            color: var(--hero-text-on-secondary, #2D1D5C) !important;
+        }
+
+        .hero-metric-card p:last-child {
+            color: var(--hero-text-on-secondary, #2D1D5C) !important;
+        }
+
+        .hero-metric-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: var(--hero-secondary, #DFE753);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-metric-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-metric-card:hover,
+        .hero-metric-card:focus-visible {
+            border-color: var(--hero-primary, #2D1D5C) !important;
+            background-color: var(--hero-primary, #2D1D5C) !important;
+        }
+
+        .hero-metric-card:hover::after,
+        .hero-metric-card:focus-visible::after {
+            opacity: 0;
+            animation: none;
+        }
+
+        .hero-metric-card:hover p,
+        .hero-metric-card:focus-visible p {
+            color: var(--hero-text-on-primary, #ffffff) !important;
+        }
+
+        @keyframes hero-metric-bg-flash {
+            0%, 100% {
+                opacity: 0.72;
+            }
+            50% {
+                opacity: 0.96;
+            }
+        }
+
+        @keyframes hero-metric-border-blink {
+            0%, 49% {
+                border-color: #DFE753;
+            }
+            50%, 100% {
+                border-color: color-mix(in srgb, #DFE753 30%, transparent);
+            }
+        }
+
+        .hero-visual-card {
+            border: 1px solid color-mix(in srgb, var(--hero-primary, #2D1D5C) 14%, #ffffff);
+            box-shadow: 0 34px 90px -42px rgba(15, 23, 42, 0.62);
+        }
+
+        .hero-float-card {
+            border: 1px solid var(--hero-primary, #2D1D5C) !important;
+            background: linear-gradient(170deg, rgba(255, 255, 255, 0.93), rgba(255, 255, 255, 0.82));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                0 28px 70px -34px rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(7px);
+            z-index: 12;
+        }
+
+        .hero-float-card h2 {
+            color: var(--hero-heading, #0F172A) !important;
+        }
+
+        .hero-float-card p {
+            color: var(--hero-body, #475569) !important;
+        }
+
+        .hero-fullbleed .hero-premium-stage,
+        .hero-fullbleed .hero-visual-card,
+        .hero-fullbleed .hero-float-card {
+            border-color: var(--hero-primary, #2D1D5C) !important;
+        }
+    </style>
+@endonce
+
 @if($slides->isNotEmpty())
 <section
-    class="relative overflow-hidden border-b border-slate-200"
-    style="background-color: {{ $heroStyle === 'minimal-clean' ? $heroSurface : $heroSoftSurface }};"
+    class="hero-fullbleed relative overflow-visible border-b border-slate-200"
+    style="background-color: {{ $heroStyle === 'minimal-clean' ? $heroSurface : $heroSoftSurface }}; --hero-primary: {{ $heroPrimary }}; --hero-secondary: {{ $heroSecondary }}; --hero-text-on-primary: {{ $heroTextOnPrimary }}; --hero-text-on-secondary: {{ $heroTextOnSecondary }}; --hero-surface: {{ $heroSurface }}; --hero-heading: {{ $heroHeading }}; --hero-body: {{ $heroBody }};"
     x-data="{
         active: 0,
         slides: {{ $slides->count() }},
@@ -226,8 +389,8 @@
         <div class="pointer-events-none absolute inset-x-0 top-0 h-24" style="background: linear-gradient(180deg, {{ $heroPrimarySoft }}, transparent); opacity: 0.65;"></div>
     @endif
 
-    <div class="relative mx-auto max-w-7xl px-6 pb-16 pt-14 lg:px-8 lg:pb-20 lg:pt-16">
-        <div class="relative min-h-[42rem] lg:min-h-[40rem]" @mouseenter="if (timer) clearInterval(timer)" @mouseleave="autoplay()">
+    <div class="relative w-full px-4 pb-10 pt-12 sm:px-6 lg:px-10 lg:pb-12 lg:pt-14 xl:px-14 2xl:px-20">
+        <div class="hero-premium-stage relative min-h-[40rem] px-5 py-6 sm:px-7 sm:py-8 lg:min-h-[38rem] lg:px-10 lg:py-10" @mouseenter="if (timer) clearInterval(timer)" @mouseleave="autoplay()">
             @foreach ($slides as $index => $slide)
                 <div x-cloak x-show="active === {{ $index }}" class="absolute inset-0 grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12">
                     <div
@@ -238,7 +401,7 @@
                         x-transition:leave="transition ease-in duration-300"
                         x-transition:leave-start="opacity-100 translate-y-0"
                         x-transition:leave-end="opacity-0 translate-y-6"
-                        class="max-w-3xl"
+                        class="max-w-3xl pl-2"
                     >
                         @if(filled(data_get($slide, 'badge_text')))
                             <p class="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-semibold tracking-tight shadow-sm backdrop-blur" style="border-color: {{ $heroSecondary }}; background-color: {{ $heroSurface }}CC; color: {{ $heroPrimary }};">
@@ -246,23 +409,23 @@
                             </p>
                         @endif
 
-                        <h1 class="mt-7 max-w-4xl font-[Georgia,serif] text-5xl font-semibold leading-[0.94] tracking-[-0.04em] sm:text-6xl lg:text-[4.8rem]" style="color: {{ $heroHeading }};">
+                        <h1 class="mt-6 max-w-4xl font-[Georgia,serif] text-5xl font-semibold leading-[0.95] tracking-[-0.04em] sm:text-6xl lg:text-[4.3rem]" style="color: {{ $heroHeading }};">
                             {{ data_get($slide, 'title') }}
                         </h1>
 
-                        <p class="mt-7 max-w-2xl text-lg leading-relaxed sm:text-[1.35rem]" style="color: {{ $heroBody }};">
+                        <p class="mt-6 max-w-2xl text-lg leading-relaxed sm:text-[1.28rem]" style="color: {{ $heroBody }};">
                             {{ data_get($slide, 'subtitle') }}
                         </p>
 
                         <div class="mt-8 flex flex-wrap gap-4">
                             @if(filled(data_get($slide, 'button_1_text')) && filled(data_get($slide, 'button_1_link')))
-                                <a href="{{ $resolveLink(data_get($slide, 'button_1_link')) }}" class="inline-flex items-center rounded-full px-7 py-3.5 text-sm font-bold shadow-[0_18px_35px_-16px_rgba(15,23,42,0.35)] transition duration-200 hover:-translate-y-0.5" style="background-color: {{ $heroPrimary }}; color: {{ $heroTextOnPrimary }};" onmouseover="this.style.backgroundColor='{{ $heroSecondary }}'; this.style.color='{{ $heroTextOnSecondary }}'" onmouseout="this.style.backgroundColor='{{ $heroPrimary }}'; this.style.color='{{ $heroTextOnPrimary }}'">
+                                <a href="{{ $resolveLink(data_get($slide, 'button_1_link')) }}" class="hero-gloss-btn inline-flex items-center rounded-full px-7 py-3.5 text-sm font-bold shadow-[0_18px_35px_-16px_rgba(15,23,42,0.35)] transition duration-200 hover:-translate-y-0.5" style="background-color: {{ $heroPrimary }}; color: {{ $heroTextOnPrimary }};" onmouseover="this.style.backgroundColor='{{ $heroSecondary }}'; this.style.color='{{ $heroTextOnSecondary }}'" onmouseout="this.style.backgroundColor='{{ $heroPrimary }}'; this.style.color='{{ $heroTextOnPrimary }}'">
                                     {{ data_get($slide, 'button_1_text') }}
                                 </a>
                             @endif
 
                             @if(filled(data_get($slide, 'button_2_text')) && filled(data_get($slide, 'button_2_link')))
-                                <a href="{{ $resolveLink(data_get($slide, 'button_2_link')) }}" class="inline-flex items-center rounded-full border px-7 py-3.5 text-sm font-bold shadow-sm backdrop-blur transition duration-200 hover:-translate-y-0.5" style="border-color: {{ $heroPrimary }}55; background-color: {{ $heroSurface }}D9; color: {{ $heroPrimary }};" onmouseover="this.style.borderColor='{{ $heroSecondary }}'; this.style.backgroundColor='{{ $heroSecondary }}'; this.style.color='{{ $heroTextOnSecondary }}'" onmouseout="this.style.borderColor='{{ $heroPrimary }}55'; this.style.backgroundColor='{{ $heroSurface }}D9'; this.style.color='{{ $heroPrimary }}'">
+                                <a href="{{ $resolveLink(data_get($slide, 'button_2_link')) }}" class="hero-gloss-btn inline-flex items-center rounded-full border px-7 py-3.5 text-sm font-bold shadow-sm backdrop-blur transition duration-200 hover:-translate-y-0.5" style="border-color: {{ $heroPrimary }}55; background-color: {{ $heroSurface }}D9; color: {{ $heroPrimary }};" onmouseover="this.style.borderColor='{{ $heroSecondary }}'; this.style.backgroundColor='{{ $heroSecondary }}'; this.style.color='{{ $heroTextOnSecondary }}'" onmouseout="this.style.borderColor='{{ $heroPrimary }}55'; this.style.backgroundColor='{{ $heroSurface }}D9'; this.style.color='{{ $heroPrimary }}'">
                                     {{ data_get($slide, 'button_2_text') }}
                                 </a>
                             @endif
@@ -271,7 +434,7 @@
                         @if($metrics->isNotEmpty())
                             <div class="mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                                 @foreach($metrics as $metric)
-                                    <div class="rounded-[1.6rem] border p-4 shadow-[0_18px_40px_-24px_rgba(15,23,42,0.35)] backdrop-blur" style="border-color: {{ $heroPrimary }}22; background-color: {{ $heroSurface }}E6;">
+                                    <div class="hero-metric-card rounded-[1.35rem] p-4">
                                         <p class="text-4xl font-black tracking-[-0.04em]" style="color: {{ $heroHeading }};">{{ data_get($metric, 'value') }}</p>
                                         <p class="mt-1 text-sm font-medium" style="color: {{ $heroBody }};">{{ data_get($metric, 'label') }}</p>
                                     </div>
@@ -281,7 +444,7 @@
                     </div>
 
                     <div class="relative lg:pl-6">
-                        <div class="relative overflow-hidden rounded-[2rem] border shadow-[0_30px_80px_-35px_rgba(15,23,42,0.6)]" style="border-color: {{ $heroPrimary }}18; background-color: {{ $heroSurface }};">
+                        <div class="hero-visual-card relative overflow-hidden rounded-[2rem]" style="background-color: {{ $heroSurface }};">
                             <div class="relative aspect-[4/4.15] min-h-[24rem] overflow-hidden sm:min-h-[30rem]">
                                 @if(filled(data_get($slide, 'image_url')) && !data_get($slide, 'is_placeholder_visual'))
                                     <img src="{{ data_get($slide, 'image_url') }}" alt="{{ data_get($slide, 'title') }}" class="h-full w-full object-cover">
@@ -335,7 +498,7 @@
                             x-transition:leave="transition ease-in duration-300"
                             x-transition:leave-start="opacity-100 translate-x-0"
                             x-transition:leave-end="opacity-0 translate-x-8"
-                            class="absolute -bottom-6 left-4 max-w-[18rem] rounded-[1.5rem] border p-4 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.4)] backdrop-blur sm:left-[-1.25rem] sm:p-5" style="border-color: {{ $heroPrimary }}22; background-color: {{ $heroSurface }}F2;"
+                            class="hero-float-card absolute -bottom-2 left-4 max-w-[18rem] rounded-[1.35rem] p-4 sm:bottom-0 sm:left-[-1rem] sm:p-5"
                         >
                             @if(filled(data_get($slide, 'school_name')))
                                 <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: {{ $heroPrimary }}99;">{{ data_get($slide, 'school_name') }}</p>

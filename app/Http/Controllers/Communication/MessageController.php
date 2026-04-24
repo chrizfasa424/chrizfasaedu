@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\MessageReply;
 use App\Models\SchoolClass;
+use App\Support\RichTextSanitizer;
 use App\Services\MessageDispatchService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class MessageController extends Controller
 {
@@ -42,6 +44,15 @@ class MessageController extends Controller
             'audience' => 'required|in:all_students,all_parents,all_portal,class',
             'class_id' => 'required_if:audience,class|nullable|exists:classes,id',
         ]);
+
+        $validated['subject'] = trim(strip_tags((string) $validated['subject']));
+        $validated['body'] = RichTextSanitizer::sanitize((string) $validated['body']);
+
+        if (RichTextSanitizer::plainTextLength($validated['body']) === 0) {
+            throw ValidationException::withMessages([
+                'body' => 'Message body cannot be empty.',
+            ]);
+        }
 
         $dispatcher->send($validated, auth()->user());
 

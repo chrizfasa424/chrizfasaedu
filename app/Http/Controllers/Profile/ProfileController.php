@@ -25,6 +25,9 @@ class ProfileController extends Controller
     {
         $user = $this->user();
         $profile = $this->resolveProfile($user);
+        if ($user->isStudent() && $profile) {
+            $profile->loadMissing(['schoolClass', 'arm']);
+        }
         return view('profile.show', compact('user', 'profile'));
     }
 
@@ -91,9 +94,14 @@ class ProfileController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()],
         ]);
 
-        $user->update(['password' => Hash::make($request->password)]);
+        $user->update([
+            'password' => Hash::make($request->password),
+            'must_change_password' => false,
+        ]);
 
-        return back()->with('success', 'Password changed successfully.');
+        return back()
+            ->with('success', 'Password changed successfully.')
+            ->with('profile_tab', 'password');
     }
 
     // ── Upload profile photo ───────────────────────────────

@@ -22,8 +22,11 @@ class ClassController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'grade_level' => ['required', new Enum(GradeLevel::class)],
-            'section' => 'nullable|string',
+            'grade_level' => [
+                'required',
+                new Enum(GradeLevel::class),
+            ],
+            'section' => 'nullable|string|max:60',
             'capacity' => 'integer|min:1',
             'class_teacher_id' => 'nullable|exists:staff,id',
             'arms' => 'nullable|array',
@@ -56,7 +59,11 @@ class ClassController extends Controller
     {
         $validated = $request->validate([
             'name'             => 'required|string|max:100',
-            'grade_level'      => ['required', new Enum(GradeLevel::class)],
+            'grade_level'      => [
+                'required',
+                new Enum(GradeLevel::class),
+            ],
+            'section'          => 'nullable|string|max:60',
             'capacity'         => 'integer|min:1',
             'class_teacher_id' => 'nullable|exists:staff,id',
             'arms'             => 'nullable|array',

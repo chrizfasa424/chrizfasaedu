@@ -206,6 +206,25 @@ class SettingsController extends Controller
                 ->all());
         }
 
+        $teacherMarqueeItems = collect($publicPage['teachers_marquee'] ?? [])
+            ->map(function ($item) {
+                return [
+                    'image' => $item['image'] ?? ($item['path'] ?? null),
+                    'name' => trim((string) ($item['name'] ?? '')),
+                    'role' => trim((string) ($item['role'] ?? '')),
+                ];
+            })
+            ->filter(function (array $item) {
+                return !empty($item['image']) || $item['name'] !== '' || $item['role'] !== '';
+            })
+            ->values();
+
+        if ($teacherMarqueeItems->isEmpty()) {
+            $teacherMarqueeItems = collect([
+                ['image' => null, 'name' => '', 'role' => ''],
+            ]);
+        }
+
         $parentsBannerSlots = $bannerSlots($parentsBanners, 6);
         $whyChooseUsBannerSlots = $bannerSlots($whyChooseUsBanners, 4);
         $aboutBannerSlots = $bannerSlots($aboutBanners, 6);
@@ -247,6 +266,7 @@ class SettingsController extends Controller
             'parentsBannerSlots' => $parentsBannerSlots,
             'whyChooseUsBannerSlots' => $whyChooseUsBannerSlots,
             'aboutBannerSlots' => $aboutBannerSlots,
+            'teacherMarqueeItems' => $teacherMarqueeItems->all(),
             'academicsVisualSlots' => $academicsVisualSlots,
         ];
     }
@@ -599,7 +619,9 @@ class SettingsController extends Controller
                 'error' => $exception->getMessage(),
             ]);
 
-            return back()->withErrors(['smtp_test' => 'SMTP test failed: ' . $exception->getMessage()]);
+            return back()->withErrors([
+                'smtp_test' => 'SMTP test failed. Please verify host, port, encryption, username/password, and sender settings, then try again.',
+            ]);
         }
 
         return back()->with('success', 'SMTP test email sent successfully to ' . $recipient . '.');
@@ -650,6 +672,9 @@ class SettingsController extends Controller
             'contact_intro' => 'nullable|string|max:4000',
             'why_choose_us_label' => 'nullable|string|max:120',
             'why_choose_us_intro' => 'nullable|string|max:4000',
+            'teachers_marquee_label' => 'nullable|string|max:120',
+            'teachers_marquee_heading' => 'nullable|string|max:180',
+            'teachers_marquee_intro' => 'nullable|string|max:500',
             'programs_label' => 'nullable|string|max:120',
             'admissions_label' => 'nullable|string|max:120',
             'admissions_process_label' => 'nullable|string|max:120',
@@ -719,6 +744,17 @@ class SettingsController extends Controller
             'contact_status_recipient_missing_text' => 'nullable|string|max:220',
             'contact_status_send_error_text' => 'nullable|string|max:220',
             'contact_status_success_text' => 'nullable|string|max:220',
+            'legal_effective_date' => 'nullable|string|max:80',
+            'privacy_policy_title' => 'nullable|string|max:180',
+            'privacy_policy_intro' => 'nullable|string|max:4000',
+            'privacy_policy_content' => 'nullable|string|max:30000',
+            'cookies_policy_title' => 'nullable|string|max:180',
+            'cookies_policy_intro' => 'nullable|string|max:4000',
+            'cookies_policy_content' => 'nullable|string|max:30000',
+            'cookie_banner_title' => 'nullable|string|max:120',
+            'cookie_banner_text' => 'nullable|string|max:1200',
+            'cookie_banner_accept_text' => 'nullable|string|max:80',
+            'cookie_banner_reject_text' => 'nullable|string|max:120',
             'submenu_highlight_one_title' => 'nullable|string|max:120',
             'submenu_highlight_one_text' => 'nullable|string|max:1500',
             'submenu_highlight_two_title' => 'nullable|string|max:120',
@@ -829,6 +865,13 @@ class SettingsController extends Controller
             'remove_about_banner_4' => 'nullable|boolean',
             'remove_about_banner_5' => 'nullable|boolean',
             'remove_about_banner_6' => 'nullable|boolean',
+            'teacher_marquee' => 'nullable|array|max:80',
+            'teacher_marquee.*.name' => 'nullable|string|max:120',
+            'teacher_marquee.*.role' => 'nullable|string|max:120',
+            'teacher_marquee.*.existing_image' => 'nullable|string|max:500',
+            'teacher_marquee.*.remove_image' => 'nullable|boolean',
+            'teacher_marquee.*.remove_row' => 'nullable|boolean',
+            'teacher_marquee.*.image' => 'nullable|image|max:4096',
 
             'footer_description' => 'nullable|string|max:4000',
             'footer_contact_address' => 'nullable|string|max:255',
@@ -861,6 +904,10 @@ class SettingsController extends Controller
             'academic_highlight_1_description',
             'academic_highlight_2_description',
             'footer_description',
+            'privacy_policy_intro',
+            'privacy_policy_content',
+            'cookies_policy_intro',
+            'cookies_policy_content',
         ] as $richField) {
             $validated[$richField] = RichText::sanitize($validated[$richField] ?? '');
         }
@@ -919,6 +966,9 @@ class SettingsController extends Controller
         $publicPage['contact_intro'] = $validated['contact_intro'] ?? '';
         $publicPage['why_choose_us_label'] = $validated['why_choose_us_label'] ?? 'Why Choose Us';
         $publicPage['why_choose_us_intro'] = $validated['why_choose_us_intro'] ?? '';
+        $publicPage['teachers_marquee_label'] = $validated['teachers_marquee_label'] ?? 'Our Teachers';
+        $publicPage['teachers_marquee_heading'] = $validated['teachers_marquee_heading'] ?? 'Meet Our Teaching Team';
+        $publicPage['teachers_marquee_intro'] = $validated['teachers_marquee_intro'] ?? 'Experienced teachers guiding learners with care, discipline, and excellence.';
         $publicPage['programs_label'] = $validated['programs_label'] ?? 'Programs';
         $publicPage['admissions_label'] = $validated['admissions_label'] ?? 'Admissions';
         $publicPage['admissions_process_label'] = $validated['admissions_process_label'] ?? 'Admissions Process';
@@ -988,6 +1038,17 @@ class SettingsController extends Controller
         $publicPage['contact_status_recipient_missing_text'] = $validated['contact_status_recipient_missing_text'] ?? 'Contact recipient is not configured by admin yet.';
         $publicPage['contact_status_send_error_text'] = $validated['contact_status_send_error_text'] ?? 'Message could not be sent right now. Please try again shortly.';
         $publicPage['contact_status_success_text'] = $validated['contact_status_success_text'] ?? 'Thank you. Your message has been received. Our team will contact you shortly.';
+        $publicPage['legal_effective_date'] = trim((string) ($validated['legal_effective_date'] ?? ''));
+        $publicPage['privacy_policy_title'] = trim((string) ($validated['privacy_policy_title'] ?? 'Privacy Policy')) ?: 'Privacy Policy';
+        $publicPage['privacy_policy_intro'] = $validated['privacy_policy_intro'] ?? 'This Privacy Policy explains how we collect, use, store, and protect personal information in line with GDPR principles and Nigeria data protection obligations.';
+        $publicPage['privacy_policy_content'] = $validated['privacy_policy_content'] ?? '';
+        $publicPage['cookies_policy_title'] = trim((string) ($validated['cookies_policy_title'] ?? 'Cookies Policy')) ?: 'Cookies Policy';
+        $publicPage['cookies_policy_intro'] = $validated['cookies_policy_intro'] ?? 'This Cookies Policy explains what cookies are, how this website uses them, and how visitors can accept or reject optional cookies.';
+        $publicPage['cookies_policy_content'] = $validated['cookies_policy_content'] ?? '';
+        $publicPage['cookie_banner_title'] = trim((string) ($validated['cookie_banner_title'] ?? 'Cookie Notice')) ?: 'Cookie Notice';
+        $publicPage['cookie_banner_text'] = trim((string) ($validated['cookie_banner_text'] ?? 'We use necessary cookies to keep this website secure and functional. You can accept or reject optional cookies. Rejecting optional cookies will not block access to the website.')) ?: 'We use necessary cookies to keep this website secure and functional. You can accept or reject optional cookies. Rejecting optional cookies will not block access to the website.';
+        $publicPage['cookie_banner_accept_text'] = trim((string) ($validated['cookie_banner_accept_text'] ?? 'Accept Cookies')) ?: 'Accept Cookies';
+        $publicPage['cookie_banner_reject_text'] = trim((string) ($validated['cookie_banner_reject_text'] ?? 'Reject Optional')) ?: 'Reject Optional';
         $publicPage['submenu_highlight_one_title'] = $validated['submenu_highlight_one_title'] ?? 'What Students Gain';
         $publicPage['submenu_highlight_one_text'] = $validated['submenu_highlight_one_text'] ?? 'Learners receive practical support, clear expectations, and measurable progress across this focus area.';
         $publicPage['submenu_highlight_two_title'] = $validated['submenu_highlight_two_title'] ?? 'How We Deliver';
@@ -1284,6 +1345,67 @@ class SettingsController extends Controller
             ->values()
             ->all();
 
+        $existingTeacherMarqueeItems = $publicPage['teachers_marquee'] ?? [];
+        $existingTeacherImagePaths = collect($existingTeacherMarqueeItems)
+            ->map(function ($item) {
+                return trim((string) ($item['image'] ?? ($item['path'] ?? '')));
+            })
+            ->filter()
+            ->values();
+
+        $teacherMarqueeItems = [];
+        $submittedTeacherRows = $validated['teacher_marquee'] ?? [];
+
+        foreach ($submittedTeacherRows as $index => $row) {
+            $existingImage = trim((string) ($row['existing_image'] ?? ''));
+            $imagePath = $existingImage !== '' ? $existingImage : null;
+            $removeImage = !empty($row['remove_image']);
+            $removeRow = !empty($row['remove_row']);
+
+            if (($removeImage || $removeRow) && $imagePath) {
+                Storage::disk('public')->delete($imagePath);
+                $imagePath = null;
+            }
+
+            if ($request->hasFile("teacher_marquee.{$index}.image")) {
+                if ($imagePath) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+
+                $imagePath = $request->file("teacher_marquee.{$index}.image")->store('schools/public/teachers-marquee', 'public');
+            }
+
+            if ($removeRow) {
+                continue;
+            }
+
+            $name = trim((string) ($row['name'] ?? ''));
+            $role = trim((string) ($row['role'] ?? ''));
+
+            if ($imagePath || $name !== '' || $role !== '') {
+                $teacherMarqueeItems[] = [
+                    'image' => $imagePath,
+                    'name' => $name,
+                    'role' => $role,
+                ];
+            }
+        }
+
+        $keptTeacherImagePaths = collect($teacherMarqueeItems)
+            ->pluck('image')
+            ->filter()
+            ->values();
+
+        $staleTeacherImagePaths = $existingTeacherImagePaths
+            ->diff($keptTeacherImagePaths)
+            ->values();
+
+        foreach ($staleTeacherImagePaths as $staleImagePath) {
+            Storage::disk('public')->delete($staleImagePath);
+        }
+
+        $publicPage['teachers_marquee'] = $teacherMarqueeItems;
+
         $existingFooterLogo = $publicPage['footer_logo'] ?? null;
         if ($request->boolean('remove_footer_logo') && $existingFooterLogo) {
             Storage::disk('public')->delete($existingFooterLogo);
@@ -1369,7 +1491,7 @@ class SettingsController extends Controller
                 $items = collect($cat['items'] ?? [])
                     ->map(function (array $item) {
                         $q = trim(strip_tags((string) ($item['q'] ?? '')));
-                        $a = trim((string) ($item['a'] ?? ''));
+                        $a = RichText::sanitize((string) ($item['a'] ?? ''));
                         return ($q !== '' && $a !== '') ? compact('q', 'a') : null;
                     })
                     ->filter()
@@ -1439,6 +1561,9 @@ class SettingsController extends Controller
             'contact_intro' => $publicPage['contact_intro'] ?? '',
             'why_choose_us_label' => $publicPage['why_choose_us_label'] ?? 'Why Choose Us',
             'why_choose_us_intro' => $publicPage['why_choose_us_intro'] ?? '',
+            'teachers_marquee_label' => $publicPage['teachers_marquee_label'] ?? 'Our Teachers',
+            'teachers_marquee_heading' => $publicPage['teachers_marquee_heading'] ?? 'Meet Our Teaching Team',
+            'teachers_marquee_intro' => $publicPage['teachers_marquee_intro'] ?? 'Experienced teachers guiding learners with care, discipline, and excellence.',
             'programs_label' => $publicPage['programs_label'] ?? 'Programs',
             'admissions_label' => $publicPage['admissions_label'] ?? 'Admissions',
             'admissions_process_label' => $publicPage['admissions_process_label'] ?? 'Admissions Process',
@@ -1508,6 +1633,17 @@ class SettingsController extends Controller
             'contact_status_recipient_missing_text' => $publicPage['contact_status_recipient_missing_text'] ?? 'Contact recipient is not configured by admin yet.',
             'contact_status_send_error_text' => $publicPage['contact_status_send_error_text'] ?? 'Message could not be sent right now. Please try again shortly.',
             'contact_status_success_text' => $publicPage['contact_status_success_text'] ?? 'Thank you. Your message has been received. Our team will contact you shortly.',
+            'legal_effective_date' => $publicPage['legal_effective_date'] ?? '',
+            'privacy_policy_title' => $publicPage['privacy_policy_title'] ?? 'Privacy Policy',
+            'privacy_policy_intro' => $publicPage['privacy_policy_intro'] ?? 'This Privacy Policy explains how we collect, use, store, and protect personal information in line with GDPR principles and Nigeria data protection obligations.',
+            'privacy_policy_content' => $publicPage['privacy_policy_content'] ?? '',
+            'cookies_policy_title' => $publicPage['cookies_policy_title'] ?? 'Cookies Policy',
+            'cookies_policy_intro' => $publicPage['cookies_policy_intro'] ?? 'This Cookies Policy explains what cookies are, how this website uses them, and how visitors can accept or reject optional cookies.',
+            'cookies_policy_content' => $publicPage['cookies_policy_content'] ?? '',
+            'cookie_banner_title' => $publicPage['cookie_banner_title'] ?? 'Cookie Notice',
+            'cookie_banner_text' => $publicPage['cookie_banner_text'] ?? 'We use necessary cookies to keep this website secure and functional. You can accept or reject optional cookies. Rejecting optional cookies will not block access to the website.',
+            'cookie_banner_accept_text' => $publicPage['cookie_banner_accept_text'] ?? 'Accept Cookies',
+            'cookie_banner_reject_text' => $publicPage['cookie_banner_reject_text'] ?? 'Reject Optional',
             'submenu_highlight_one_title' => $publicPage['submenu_highlight_one_title'] ?? 'What Students Gain',
             'submenu_highlight_one_text' => $publicPage['submenu_highlight_one_text'] ?? 'Learners receive practical support, clear expectations, and measurable progress across this focus area.',
             'submenu_highlight_two_title' => $publicPage['submenu_highlight_two_title'] ?? 'How We Deliver',
@@ -1589,9 +1725,3 @@ class SettingsController extends Controller
         app('mail.manager')->purge('smtp');
     }
 }
-
-
-
-
-
-

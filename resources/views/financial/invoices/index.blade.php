@@ -49,6 +49,10 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($invoices as $invoice)
+                @php
+                    $invoiceStatus = $invoice->status?->value ?? (string) $invoice->status;
+                    $invoiceStatusLabel = ucfirst(str_replace('_', ' ', $invoiceStatus));
+                @endphp
                 <tr class="hover:bg-slate-50">
                     <td class="px-5 py-3 font-mono text-xs text-slate-600">{{ $invoice->invoice_number }}</td>
                     <td class="px-5 py-3 font-medium text-slate-800">{{ $invoice->student?->full_name }}</td>
@@ -57,11 +61,11 @@
                     <td class="px-5 py-3 text-right {{ $invoice->balance > 0 ? 'text-red-600 font-semibold' : 'text-green-600' }}">₦{{ number_format($invoice->balance, 2) }}</td>
                     <td class="px-5 py-3">
                         <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                            @if($invoice->status === 'paid') bg-green-100 text-green-700
-                            @elseif($invoice->status === 'partial') bg-blue-100 text-blue-700
-                            @elseif($invoice->status === 'overdue') bg-red-100 text-red-700
+                            @if($invoiceStatus === 'paid') bg-green-100 text-green-700
+                            @elseif($invoiceStatus === 'partial') bg-blue-100 text-blue-700
+                            @elseif($invoiceStatus === 'overdue') bg-red-100 text-red-700
                             @else bg-yellow-100 text-yellow-700 @endif">
-                            {{ ucfirst($invoice->status) }}
+                            {{ $invoiceStatusLabel }}
                         </span>
                     </td>
                     <td class="px-5 py-3">
@@ -114,3 +118,4 @@
     </div>
 </div>
 @endsection
+

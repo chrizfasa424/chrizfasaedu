@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\MessageRecipient;
 use App\Models\MessageReply;
+use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PortalMessageController extends Controller
 {
@@ -68,13 +70,20 @@ class PortalMessageController extends Controller
         }
 
         $request->validate([
-            'body' => 'required|string|max:2000',
+            'body' => 'required|string|max:50000',
         ]);
+
+        $body = RichTextSanitizer::sanitize((string) $request->input('body', ''));
+        if (RichTextSanitizer::plainTextLength($body) === 0) {
+            throw ValidationException::withMessages([
+                'body' => 'Reply body cannot be empty.',
+            ]);
+        }
 
         MessageReply::create([
             'message_id' => $message->id,
             'sender_id'  => $user->id,
-            'body'       => $request->body,
+            'body'       => $body,
         ]);
 
         return redirect()->route('portal.messages.show', $message)

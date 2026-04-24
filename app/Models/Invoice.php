@@ -42,7 +42,7 @@ class Invoice extends Model
 
     public function updateBalance(): void
     {
-        $this->amount_paid = $this->payments()->where('status', 'confirmed')->sum('amount');
+        $this->amount_paid = $this->payments()->successful()->sum('amount');
         $this->balance = $this->net_amount - $this->amount_paid;
         $this->status = match(true) {
             $this->balance <= 0 => PaymentStatus::PAID,
@@ -53,9 +53,20 @@ class Invoice extends Model
         $this->save();
     }
 
+    public function getOutstandingAmountAttribute(): float
+    {
+        return (float) max(0, (float) $this->balance);
+    }
+
+    public function getFeeStateAttribute(): string
+    {
+        return ((float) $this->balance) > 0 ? 'active' : 'inactive';
+    }
+
     public static function generateInvoiceNumber(int $schoolId): string
     {
         $count = static::where('school_id', $schoolId)->count() + 1;
         return sprintf('INV-%s-%06d', date('Y'), $count);
     }
 }
+

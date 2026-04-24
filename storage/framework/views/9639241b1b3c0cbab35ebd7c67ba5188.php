@@ -8,6 +8,7 @@
     $footerNote = trim((string) ($publicPage['footer_note'] ?? 'All rights reserved.'));
     $footerBgColor = $theme['footer'];
     $footerSeparatorColor = $theme['divider'];
+    $footerSecondaryLineColor = $theme['secondary']['500'] ?? '#DFE753';
     $footerHoverColor = $theme['secondary']['300'];
     $footerMutedColor = $theme['secondary']['100'];
     $footerContactAddress = trim((string) ($publicPage['footer_contact_address'] ?? ($school?->address ?? '')));
@@ -19,6 +20,14 @@
     $footerQuickLinks = collect($publicPage['footer_quick_links'] ?? [])->filter(fn ($item) => !empty($item['title']))->values();
     $footerResources = collect($publicPage['footer_resources'] ?? [])->filter(fn ($item) => !empty($item['title']))->values();
     $footerSocialLinks = collect($publicPage['footer_social_links'] ?? [])->filter(fn ($item) => !empty($item['title']))->values();
+    $cookieBannerTitle = trim((string) ($publicPage['cookie_banner_title'] ?? 'Cookie Notice')) ?: 'Cookie Notice';
+    $cookieBannerText = trim((string) ($publicPage['cookie_banner_text'] ?? 'We use necessary cookies to keep this website secure and functional. You can accept or reject optional cookies. Rejecting optional cookies will not block access to the website.')) ?: 'We use necessary cookies to keep this website secure and functional. You can accept or reject optional cookies. Rejecting optional cookies will not block access to the website.';
+    $cookieBannerAcceptText = trim((string) ($publicPage['cookie_banner_accept_text'] ?? 'Accept Cookies')) ?: 'Accept Cookies';
+    $cookieBannerRejectText = trim((string) ($publicPage['cookie_banner_reject_text'] ?? 'Reject Optional')) ?: 'Reject Optional';
+    $legalLinks = [
+        ['label' => 'Privacy Policy', 'url' => route('public.privacy')],
+        ['label' => 'Cookies Policy', 'url' => route('public.cookies')],
+    ];
 
     $socialIcon = static function (string $title): string {
         return match (strtolower(trim($title))) {
@@ -125,8 +134,15 @@
             </div>
         </div>
 
-        <div class="mt-10 border-t pt-6 text-xs" style="border-top-color: <?php echo e($footerSeparatorColor); ?>; color: <?php echo e($footerMutedColor); ?>;">
+        <div class="mt-10 h-px w-full" style="background-color: <?php echo e($footerSecondaryLineColor); ?>;"></div>
+
+        <div class="pt-6 text-xs" style="color: <?php echo e($footerMutedColor); ?>;">
             <p>&copy; <?php echo e(date('Y')); ?> <?php echo e($schoolName); ?>. <?php echo e($footerNote); ?></p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+                <?php $__currentLoopData = $legalLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $legalLink): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e($legalLink['url']); ?>" class="transition hover:text-white"><?php echo e($legalLink['label']); ?></a>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
         </div>
     </div>
     <style>
@@ -180,4 +196,98 @@
         }
     </style>
 </footer>
+
+<div id="cookie-consent-banner" class="pointer-events-none fixed inset-x-0 bottom-4 z-[90] hidden px-4 sm:px-6">
+    <div class="pointer-events-auto mx-auto w-full max-w-5xl rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur sm:p-5"
+         style="border-color: var(--submenu-primary, #2D1D5C);">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div class="max-w-3xl">
+                <p class="text-sm font-bold uppercase tracking-[0.16em] text-slate-700"><?php echo e($cookieBannerTitle); ?></p>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                    <?php echo e($cookieBannerText); ?>
+
+                    See our <a href="<?php echo e(route('public.cookies')); ?>" class="font-semibold text-brand-700 underline underline-offset-2">Cookies Policy</a> for details.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-2 sm:justify-end">
+                <button type="button" id="cookie-consent-reject" class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+                    <?php echo e($cookieBannerRejectText); ?>
+
+                </button>
+                <button type="button" id="cookie-consent-accept" class="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition hover:opacity-95"
+                        style="background-color: var(--submenu-primary, #2D1D5C);">
+                    <?php echo e($cookieBannerAcceptText); ?>
+
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const banner = document.getElementById('cookie-consent-banner');
+        const acceptButton = document.getElementById('cookie-consent-accept');
+        const rejectButton = document.getElementById('cookie-consent-reject');
+        const storageKey = 'site_cookie_consent_status';
+        const cookieName = 'site_cookie_consent';
+
+        if (!banner || !acceptButton || !rejectButton) {
+            return;
+        }
+
+        const readCookie = (name) => {
+            const escaped = name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+            const match = document.cookie.match(new RegExp('(?:^|; )' + escaped + '=([^;]*)'));
+            return match ? decodeURIComponent(match[1]) : '';
+        };
+
+        const writeCookie = (name, value) => {
+            document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+        };
+
+        const getStoredChoice = () => {
+            let localChoice = '';
+            try {
+                localChoice = window.localStorage.getItem(storageKey) || '';
+            } catch (error) {
+                localChoice = '';
+            }
+
+            return localChoice || readCookie(cookieName);
+        };
+
+        const persistChoice = (choice) => {
+            try {
+                window.localStorage.setItem(storageKey, choice);
+            } catch (error) {
+                // Local storage can be blocked by browser privacy mode.
+            }
+
+            writeCookie(cookieName, choice);
+            banner.classList.add('hidden');
+            banner.classList.add('pointer-events-none');
+            document.dispatchEvent(new CustomEvent('site:cookie-consent', { detail: { status: choice } }));
+        };
+
+        const existingChoice = getStoredChoice();
+
+        if (existingChoice === 'accepted' || existingChoice === 'rejected') {
+            banner.classList.add('hidden');
+            banner.classList.add('pointer-events-none');
+            return;
+        }
+
+        banner.classList.remove('hidden');
+        banner.classList.remove('pointer-events-none');
+
+        acceptButton.addEventListener('click', function () {
+            persistChoice('accepted');
+        });
+
+        rejectButton.addEventListener('click', function () {
+            persistChoice('rejected');
+        });
+    })();
+</script>
 <?php /**PATH C:\wamp64\www\chrizfasaedu\resources\views/public/partials/footer.blade.php ENDPATH**/ ?>

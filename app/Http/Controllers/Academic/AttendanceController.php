@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Academic;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicSession;
+use App\Models\AcademicTerm;
 use App\Models\SchoolClass;
+use App\Models\SchoolHoliday;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Notifications\AttendanceWarningNotification;
+use App\Services\AttendanceSheetImportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,13 +19,27 @@ class AttendanceController extends Controller
 {
     private const ABSENCE_WARNING_THRESHOLD = 10;
 
+    public function __construct(
+        private readonly AttendanceSheetImportService $attendanceImportService
+    ) {
+    }
+
     // ── Admin: Record attendance ──────────────────────────────────────────────
 
     public function index(Request $request)
     {
         $classId = $request->get('class_id');
         $date    = $request->get('date', now()->toDateString());
-        $classes = SchoolClass::orderBy('order')->get();
+        $classes = SchoolClass::with('arms')->orderBy('order')->get();
+        $sessions = AcademicSession::query()
+            ->orderByDesc('is_current')
+            ->orderByDesc('start_date')
+            ->get();
+        $terms = AcademicTerm::query()
+            ->with('session')
+            ->orderByDesc('is_current')
+            ->orderByDesc('id')
+            ->get();
 
         $students   = collect();
         $attendances = collect();
@@ -97,7 +115,8 @@ class AttendanceController extends Controller
 
         return view('academic.attendance.index', compact(
             'classes', 'students', 'attendances',
-            'classId', 'date', 'stats', 'trendData', 'warnings'
+            'classId', 'date', 'stats', 'trendData', 'warnings',
+            'sessions', 'terms'
         ));
     }
 
@@ -129,12 +148,143 @@ class AttendanceController extends Controller
             );
         }
 
+        if ($session && $term) {
+            $studentIds = collect($validated['attendance'])
+                ->pluck('student_id')
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+            $this->attendanceImportService->syncAttendanceToResultSummaries([
+                'school_id' => (int) $school->id,
+                'class_id' => (int) $validated['class_id'],
+                'arm_id' => null,
+                'session_id' => (int) $session->id,
+                'term_id' => (int) $term->id,
+            ], $studentIds, (int) auth()->id());
+        }
+
         // Check for absence warnings
         if ($term) {
             $this->checkAndSendWarnings($validated['class_id'], $term->id, $school->name);
         }
 
         return back()->with('success', 'Attendance saved for ' . Carbon::parse($validated['date'])->format('d M Y') . '.');
+    }
+
+    public function importSheet(Request $request)
+    {
+        $validated = $request->validate([
+            'import_class_id' => ['required', 'exists:classes,id'],
+            'import_arm_id' => ['nullable', 'exists:class_arms,id'],
+            'import_session_id' => ['required', 'exists:academic_sessions,id'],
+            'import_term_id' => ['required', 'exists:academic_terms,id'],
+            'attendance_month' => ['required', 'regex:/^\d{4}\-(0[1-9]|1[0-2])$/'],
+            'public_holiday_dates' => ['nullable', 'string', 'max:1000'],
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        $schoolId = (int) auth()->user()->school_id;
+        $class = SchoolClass::query()
+            ->where('id', (int) $validated['import_class_id'])
+            ->where('school_id', $schoolId)
+            ->first();
+
+        if (!$class) {
+            return back()
+                ->withInput()
+                ->withErrors(['attendance_import' => 'Attendance import is not valid. Selected class is outside your school scope.']);
+        }
+
+        $selectedArmId = !empty($validated['import_arm_id']) ? (int) $validated['import_arm_id'] : null;
+        if ($selectedArmId && !$class->arms()->where('id', $selectedArmId)->exists()) {
+            return back()
+                ->withInput()
+                ->withErrors(['attendance_import' => 'Attendance import is not valid. Selected arm does not belong to the selected class.']);
+        }
+
+        $term = AcademicTerm::query()->find((int) $validated['import_term_id']);
+        if (!$term || (int) $term->session_id !== (int) $validated['import_session_id']) {
+            return back()
+                ->withInput()
+                ->withErrors(['attendance_import' => 'Attendance import is not valid. Selected term does not belong to the selected session.']);
+        }
+
+        $month = Carbon::createFromFormat('Y-m', (string) $validated['attendance_month']);
+
+        try {
+            $holidayDates = $this->parseHolidayDatesForMonth(
+                (string) ($validated['public_holiday_dates'] ?? ''),
+                (int) $month->year,
+                (int) $month->month
+            );
+        } catch (\InvalidArgumentException $exception) {
+            return back()
+                ->withInput()
+                ->withErrors(['attendance_import' => $exception->getMessage()]);
+        }
+
+        foreach ($holidayDates as $holidayDate) {
+            SchoolHoliday::query()->updateOrCreate(
+                [
+                    'school_id' => $schoolId,
+                    'session_id' => (int) $validated['import_session_id'],
+                    'term_id' => (int) $term->id,
+                    'holiday_date' => $holidayDate,
+                ],
+                [
+                    'name' => 'Public Holiday',
+                    'is_public' => true,
+                    'created_by' => auth()->id(),
+                ]
+            );
+        }
+
+        $context = [
+            'school_id' => $schoolId,
+            'class_id' => (int) $class->id,
+            'arm_id' => $selectedArmId,
+            'session_id' => (int) $validated['import_session_id'],
+            'term_id' => (int) $term->id,
+            'year' => (int) $month->year,
+            'month' => (int) $month->month,
+        ];
+
+        $result = $this->attendanceImportService->importMonthlySheet(
+            $request->file('file'),
+            $context,
+            (int) auth()->id()
+        );
+
+        $errorCount = count($result['errors']);
+        $excludedMarks = (int) ($result['excluded_marks'] ?? 0);
+        $message = "Attendance import completed: {$result['students_matched']} student(s) matched, {$result['records_written']} day record(s) written.";
+        if ($excludedMarks > 0) {
+            $message .= " {$excludedMarks} mark(s) were ignored on weekends/public holidays.";
+        }
+
+        $response = back()
+            ->with('attendance_import_summary', [
+                'rows_read' => $result['rows_read'],
+                'students_matched' => $result['students_matched'],
+                'records_written' => $result['records_written'],
+                'excluded_marks' => $excludedMarks,
+                'error_count' => $errorCount,
+                'month_label' => $month->format('F Y'),
+            ])
+            ->with('attendance_import_errors', array_slice($result['errors'], 0, 200));
+
+        if ($result['records_written'] === 0) {
+            return $response->withErrors([
+                'attendance_import' => 'Attendance import is not valid. No school-day P/A marks were found in day columns (1-31). Weekends and configured public holidays are automatically ignored.',
+            ]);
+        }
+
+        if ($errorCount > 0) {
+            return $response->with('success', $message . " {$errorCount} row issue(s) were skipped.");
+        }
+
+        return $response->with('success', $message);
     }
 
     // ── Attendance history / analytics ────────────────────────────────────────
@@ -273,5 +423,62 @@ class AttendanceController extends Controller
                 }
             }
         }
+    }
+
+    private function parseHolidayDatesForMonth(string $rawValue, int $year, int $month): array
+    {
+        $value = trim($rawValue);
+        if ($value === '') {
+            return [];
+        }
+
+        $tokens = preg_split('/[\s,;]+/', $value) ?: [];
+        $dates = [];
+        $invalidTokens = [];
+        $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth;
+
+        foreach ($tokens as $token) {
+            $token = trim((string) $token);
+            if ($token === '') {
+                continue;
+            }
+
+            if (preg_match('/^\d{1,2}$/', $token)) {
+                $day = (int) $token;
+                if ($day < 1 || $day > $daysInMonth) {
+                    $invalidTokens[] = $token;
+                    continue;
+                }
+                $dates[] = Carbon::create($year, $month, $day)->toDateString();
+                continue;
+            }
+
+            if (preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $token)) {
+                try {
+                    $date = Carbon::createFromFormat('Y-m-d', $token);
+                } catch (\Throwable) {
+                    $invalidTokens[] = $token;
+                    continue;
+                }
+
+                if ((int) $date->year !== $year || (int) $date->month !== $month) {
+                    $invalidTokens[] = $token;
+                    continue;
+                }
+
+                $dates[] = $date->toDateString();
+                continue;
+            }
+
+            $invalidTokens[] = $token;
+        }
+
+        if (!empty($invalidTokens)) {
+            throw new \InvalidArgumentException(
+                'Attendance import is not valid. Public holiday dates must be day numbers (e.g. 18, 21) or full dates (e.g. 2026-04-18) within the selected month.'
+            );
+        }
+
+        return array_values(array_unique($dates));
     }
 }

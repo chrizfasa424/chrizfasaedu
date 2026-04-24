@@ -7,7 +7,7 @@
 
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <a href="{{ route('academic.students.index') }}" class="text-sm text-slate-500 hover:text-slate-700">← Students</a>
+            <a href="{{ route('academic.students.index') }}" class="text-sm text-slate-500 hover:text-slate-700">&larr; Students</a>
             <span class="text-slate-300">/</span>
             <span class="text-sm font-medium text-slate-800">{{ $student->full_name }}</span>
         </div>
@@ -26,7 +26,7 @@
         <div class="flex items-start gap-3">
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white text-base font-bold">!</div>
             <div class="flex-1">
-                <p class="font-semibold text-amber-900 text-sm mb-2">Password reset — share these credentials with the student/parent</p>
+                <p class="font-semibold text-amber-900 text-sm mb-2">Password reset - share these credentials with the student/parent</p>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                     <div class="rounded-xl bg-white border border-amber-200 px-4 py-3">
                         <p class="text-amber-600 font-semibold uppercase tracking-wider mb-1">Portal URL</p>
@@ -48,6 +48,38 @@
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        @php
+            $studentDisplayName = trim(collect([$student->first_name, $student->other_names, $student->last_name])->filter()->implode(' '));
+            $admission = $student->admission;
+            $primaryParent = $student->parents->first();
+            $dash = '-';
+            $formatValue = function ($value) use ($dash) {
+                if (is_array($value)) {
+                    $value = implode(', ', array_values(array_filter($value, fn ($item) => filled($item))));
+                }
+
+                return filled($value) ? $value : $dash;
+            };
+
+            $medicalConditions = is_array($student->medical_conditions)
+                ? implode(', ', array_values(array_filter($student->medical_conditions, fn ($item) => filled($item))))
+                : $student->medical_conditions;
+
+            $allergies = is_array($student->allergies)
+                ? implode(', ', array_values(array_filter($student->allergies, fn ($item) => filled($item))))
+                : $student->allergies;
+
+            $bloodGroupValue = $student->blood_group ?: $admission?->blood_group;
+            $genotypeValue = $student->genotype ?: $admission?->genotype;
+            $religionValue = $student->religion ?: $admission?->religion;
+            $previousSchoolValue = $student->previous_school ?: $admission?->previous_school;
+            $emergencyContactNameValue = $student->emergency_contact_name
+                ?: $primaryParent?->full_name
+                ?: $admission?->parent_name;
+            $emergencyContactPhoneValue = $student->emergency_contact_phone
+                ?: $primaryParent?->phone
+                ?: $admission?->parent_phone;
+        @endphp
 
         {{-- Profile Card --}}
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm text-center">
@@ -58,7 +90,7 @@
                     {{ strtoupper(substr($student->first_name,0,1)) }}
                 </div>
             @endif
-            <h2 class="mt-4 text-lg font-bold text-slate-900">{{ $student->full_name }}</h2>
+            <h2 class="mt-4 text-lg font-bold text-slate-900">{{ $studentDisplayName ?: $student->full_name }}</h2>
             <p class="text-sm text-slate-500">{{ $student->admission_number }}</p>
             <div class="mt-3 flex justify-center gap-2">
                 <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">{{ $student->schoolClass?->name ?? 'No class' }}</span>
@@ -70,33 +102,146 @@
 
         {{-- Details --}}
         <div class="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 class="text-sm font-semibold text-slate-700 mb-4">Personal Information</h3>
-            <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                @foreach([
-                    ['Gender', ucfirst($student->gender)],
-                    ['Date of Birth', $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d M Y') : '—'],
-                    ['Blood Group', $student->blood_group ?? '—'],
-                    ['Genotype', $student->genotype ?? '—'],
-                    ['Religion', $student->religion ?? '—'],
-                    ['State of Origin', $student->state_of_origin ?? '—'],
-                    ['LGA', $student->lga ?? '—'],
-                    ['Previous School', $student->previous_school ?? '—'],
-                    ['Session Admitted', $student->session_admitted ?? '—'],
-                    ['Status', ucfirst($student->status ?? 'active')],
-                ] as [$label, $val])
-                <div>
-                    <dt class="text-xs text-slate-500">{{ $label }}</dt>
-                    <dd class="font-medium text-slate-800 mt-0.5">{{ $val }}</dd>
+            <h3 class="text-sm font-semibold text-slate-700 mb-4">Student Information</h3>
+
+            @php
+                $personalRows = [
+                    ['Full Name', $studentDisplayName ?: $student->full_name],
+                    ['Other Names', $formatValue($student->other_names)],
+                    ['Gender', $formatValue($student->gender ? ucfirst($student->gender) : null)],
+                    ['Date of Birth', $formatValue($student->date_of_birth?->format('d M Y'))],
+                    ['Age', $formatValue($student->age ? $student->age . ' years' : null)],
+                    ['Admission Number', $formatValue($student->admission_number)],
+                    ['Registration Number', $formatValue($student->registration_number)],
+                    ['Class', $formatValue($student->schoolClass?->name)],
+                    ['Arm', $formatValue($student->arm?->name)],
+                    ['Session Admitted', $formatValue($student->session_admitted)],
+                    ['Status', $formatValue($student->status ? ucfirst($student->status) : null)],
+                    ['Boarding', $student->is_boarding ? 'Yes' : 'No'],
+                    ['Hostel Room', $formatValue($student->hostelRoom?->name ?? $student->hostelRoom?->room_number)],
+                    ['Transport Route', $formatValue($student->transportRoute?->name)],
+                ];
+
+                $contactRows = [
+                    ['Portal Email', $formatValue($student->user?->email)],
+                    ['Phone Number', $formatValue($student->user?->phone)],
+                    ['Address', $formatValue($student->address)],
+                    ['City', $formatValue($student->city)],
+                    ['State', $formatValue($student->state)],
+                    ['State of Origin', $formatValue($student->state_of_origin)],
+                    ['LGA', $formatValue($student->lga)],
+                    ['Nationality', $formatValue($student->nationality)],
+                    ['Religion', $formatValue($religionValue)],
+                    ['Previous School', $formatValue($previousSchoolValue)],
+                ];
+
+                $medicalRows = [
+                    ['Blood Group', $formatValue($bloodGroupValue)],
+                    ['Genotype', $formatValue($genotypeValue)],
+                    ['Medical Conditions', $formatValue($medicalConditions)],
+                    ['Allergies', $formatValue($allergies)],
+                    ['Disabilities', $formatValue($student->disabilities)],
+                    ['Emergency Contact Name', $formatValue($emergencyContactNameValue)],
+                    ['Emergency Contact Phone', $formatValue($emergencyContactPhoneValue)],
+                ];
+            @endphp
+
+            <div class="space-y-5">
+                <div class="overflow-hidden rounded-xl border border-indigo-200">
+                    <div class="border-b border-indigo-200 bg-indigo-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-indigo-700">
+                        Personal and Enrollment
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-indigo-100/70 text-indigo-900">
+                                <tr>
+                                    <th class="px-4 py-2.5 text-left font-semibold w-1/3">Field</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($personalRows as $index => [$label, $val])
+                                @php $isMissing = blank($val) || $val === '-'; @endphp
+                                <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-indigo-50/30' }}">
+                                    <td class="px-4 py-2.5 font-medium text-slate-700">{{ $label }}</td>
+                                    <td class="px-4 py-2.5">
+                                        @if($isMissing)
+                                            <span class="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Not provided</span>
+                                        @else
+                                            <span class="font-semibold text-slate-900">{{ $val }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                @endforeach
-            </dl>
-            @if($student->address)
-            <div class="mt-4 pt-4 border-t border-slate-100">
-                <dt class="text-xs text-slate-500">Address</dt>
-                <dd class="text-sm text-slate-700 mt-0.5">{{ $student->address }}</dd>
+
+                <div class="overflow-hidden rounded-xl border border-emerald-200">
+                    <div class="border-b border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-700">
+                        Contact and Location
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-emerald-100/70 text-emerald-900">
+                                <tr>
+                                    <th class="px-4 py-2.5 text-left font-semibold w-1/3">Field</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($contactRows as $index => [$label, $val])
+                                @php $isMissing = blank($val) || $val === '-'; @endphp
+                                <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-emerald-50/30' }}">
+                                    <td class="px-4 py-2.5 font-medium text-slate-700">{{ $label }}</td>
+                                    <td class="px-4 py-2.5">
+                                        @if($isMissing)
+                                            <span class="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Not provided</span>
+                                        @else
+                                            <span class="font-semibold text-slate-900 break-all">{{ $val }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="overflow-hidden rounded-xl border border-rose-200">
+                    <div class="border-b border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-rose-700">
+                        Medical and Emergency
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-rose-100/70 text-rose-900">
+                                <tr>
+                                    <th class="px-4 py-2.5 text-left font-semibold w-1/3">Field</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($medicalRows as $index => [$label, $val])
+                                @php $isMissing = blank($val) || $val === '-'; @endphp
+                                <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-rose-50/30' }}">
+                                    <td class="px-4 py-2.5 font-medium text-slate-700">{{ $label }}</td>
+                                    <td class="px-4 py-2.5">
+                                        @if($isMissing)
+                                            <span class="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Not provided</span>
+                                        @else
+                                            <span class="font-semibold text-slate-900">{{ $val }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            @endif
         </div>
+
     </div>
 
     {{-- Portal Account Card --}}
@@ -142,13 +287,13 @@
                 </div>
                 @if(session('reset_credentials') && session('reset_credentials.email') === $u->email)
                 <div class="mt-3 pt-3 border-t border-indigo-100">
-                    <p class="text-xs text-indigo-400 font-semibold mb-1">Last Reset Password <span class="text-amber-500">(visible once — save it now)</span></p>
+                    <p class="text-xs text-indigo-400 font-semibold mb-1">Last Reset Password <span class="text-amber-500">(visible once - save it now)</span></p>
                     <div class="flex items-center gap-2">
                         <span id="last_pw" class="font-mono text-sm font-bold text-slate-800 tracking-widest">{{ session('reset_credentials.password') }}</span>
                     </div>
                 </div>
                 @endif
-                <p class="mt-3 text-xs text-indigo-300">Passwords are encrypted — only visible immediately after a reset. Use "Auto-Reset Password" or "Set a specific password" below to generate/change it.</p>
+                <p class="mt-3 text-xs text-indigo-300">Passwords are encrypted - only visible immediately after a reset. Use "Auto-Reset Password" or "Set a specific password" below to generate/change it.</p>
             </div>
 
             {{-- Login details --}}
@@ -295,8 +440,8 @@
                 @foreach($student->results->take(10) as $result)
                 <tr>
                     <td class="px-5 py-2 text-slate-800">{{ $result->subject?->name }}</td>
-                    <td class="px-5 py-2 text-slate-700">{{ $result->total_score ?? '—' }}</td>
-                    <td class="px-5 py-2 font-semibold text-indigo-700">{{ $result->grade ?? '—' }}</td>
+                    <td class="px-5 py-2 text-slate-700">{{ $result->total_score ?? '-' }}</td>
+                    <td class="px-5 py-2 font-semibold text-indigo-700">{{ $result->grade ?? '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>

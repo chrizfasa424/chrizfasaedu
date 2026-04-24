@@ -49,4 +49,9 @@ class SchoolClass extends Model
     {
         return $this->hasMany(Timetable::class, 'class_id');
     }
+
+    public function studentResults()
+    {
+        return $this->hasMany(StudentResult::class, 'class_id');
+    }
 }

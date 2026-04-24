@@ -12,6 +12,10 @@
             <p class="text-sm text-slate-500 mt-0.5">View, import, and manage student results.</p>
         </div>
         <div class="flex flex-wrap gap-2">
+            <a href="{{ route('examination.result-sheets.class-sheet') }}"
+                class="inline-flex items-center gap-2 rounded-xl border border-indigo-300 bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100">
+                Result Sheet Module
+            </a>
             <a href="{{ route('examination.results.import') }}"
                 class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
@@ -144,7 +148,6 @@
                             <th class="px-4 py-2.5 text-center">Second Test</th>
                             <th class="px-4 py-2.5 text-center">Examination</th>
                             <th class="px-4 py-2.5 text-center">Total</th>
-                            <th class="px-4 py-2.5 text-center">Position</th>
                             <th class="px-4 py-2.5 text-center">Grade</th>
                             <th class="px-4 py-2.5 text-center">Remarks</th>
                             <th class="px-4 py-2.5 text-center">Actions</th>
@@ -167,13 +170,6 @@
                             <td class="px-4 py-2.5 text-center text-slate-600">{{ (int)$result->ca2_score }}</td>
                             <td class="px-4 py-2.5 text-center text-slate-600">{{ (int)$result->exam_score }}</td>
                             <td class="px-4 py-2.5 text-center font-bold text-slate-800">{{ (int)$result->total_score }}</td>
-                            <td class="px-4 py-2.5 text-center text-slate-500 text-xs">
-                                @php
-                                    $pos = $result->position_in_subject;
-                                    $suffix = $pos ? match(($pos % 100 >= 11 && $pos % 100 <= 13) ? 0 : $pos % 10) { 1 => 'st', 2 => 'nd', 3 => 'rd', default => 'th' } : '';
-                                @endphp
-                                {{ $pos ? $pos . $suffix : '—' }}
-                            </td>
                             <td class="px-4 py-2.5 text-center">
                                 <span class="rounded-full px-2.5 py-0.5 text-xs font-bold {{ $gc }}">{{ $result->grade }}</span>
                             </td>

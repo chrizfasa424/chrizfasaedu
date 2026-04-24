@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'must_change_password',
         'role',
         'avatar',
         'is_active',
@@ -41,6 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'last_login_at' => 'datetime',
         'password' => 'hashed',
+        'must_change_password' => 'boolean',
         'is_active' => 'boolean',
         'role' => UserRole::class,
     ];
@@ -91,6 +93,11 @@ class User extends Authenticatable
         return $this->role === UserRole::TEACHER;
     }
 
+    public function isStaff(): bool
+    {
+        return $this->role === UserRole::STAFF;
+    }
+
     public function isStudent(): bool
     {
         return $this->role === UserRole::STUDENT;
@@ -139,5 +146,45 @@ class User extends Authenticatable
         return MessageReply::whereHas('message', function ($q) {
             $q->where('school_id', $this->school_id);
         })->whereNull('read_by_admin_at')->count();
+    }
+
+    /** Unread admin responses on student's result queries */
+    public function unreadResultFeedbackResponsesCount(): int
+    {
+        if (!$this->isStudent() || !$this->school_id || !$this->student) {
+            return 0;
+        }
+
+        return StudentResultFeedback::query()
+            ->where('school_id', (int) $this->school_id)
+            ->where('student_id', (int) $this->student->id)
+            ->where('feedback_type', 'query')
+            ->whereNotNull('admin_response')
+            ->whereNotNull('responded_at')
+            ->whereNull('student_read_at')
+            ->count();
+    }
+
+    /** Open result feedback / queries from students â€” used by admin/staff bell */
+    public function openResultFeedbackCount(): int
+    {
+        if (!$this->school_id) {
+            return 0;
+        }
+
+        if (!in_array((string) ($this->role?->value ?? ''), [
+            UserRole::SUPER_ADMIN->value,
+            UserRole::SCHOOL_ADMIN->value,
+            UserRole::PRINCIPAL->value,
+            UserRole::VICE_PRINCIPAL->value,
+            UserRole::TEACHER->value,
+        ], true)) {
+            return 0;
+        }
+
+        return StudentResultFeedback::query()
+            ->where('school_id', (int) $this->school_id)
+            ->where('status', 'open')
+            ->count();
     }
 }

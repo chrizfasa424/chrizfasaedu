@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\SchoolClass;
 use App\Models\ClassArm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -14,7 +15,7 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Student::with(['schoolClass', 'arm'])->active();
+        $query = Student::with(['schoolClass', 'arm', 'user', 'admission'])->active();
 
         if ($request->filled('class_id')) {
             $query->where('class_id', $request->class_id);
@@ -61,8 +62,10 @@ class StudentController extends Controller
         ]);
 
         $schoolId = auth()->user()->school_id;
+        $generatedNumber = Student::generateAdmissionNumber($schoolId);
         $validated['school_id'] = $schoolId;
-        $validated['admission_number'] = Student::generateAdmissionNumber($schoolId);
+        $validated['admission_number'] = $generatedNumber;
+        $validated['registration_number'] = $generatedNumber;
         $validated['session_admitted'] = auth()->user()->school->currentSession()?->name;
 
         if ($request->hasFile('photo')) {
@@ -78,9 +81,9 @@ class StudentController extends Controller
     public function show(Student $student)
     {
         $student->load([
-            'schoolClass', 'arm', 'parents', 'attendances',
+            'schoolClass', 'arm', 'parents', 'attendances', 'admission',
             'results.subject', 'invoices.payments', 'behaviourRecords',
-            'user',
+            'user', 'hostelRoom', 'transportRoute',
         ]);
         return view('academic.students.show', compact('student'));
     }
@@ -172,5 +175,81 @@ class StudentController extends Controller
             ->update(['class_id' => $validated['to_class_id']]);
 
         return back()->with('success', count($validated['student_ids']) . ' students promoted.');
+    }
+
+    public function destroy(Student $student)
+    {
+        $user = auth()->user();
+
+        if (!$user || (!$user->isSuperAdmin() && (int) $student->school_id !== (int) $user->school_id)) {
+            abort(403, 'Unauthorized access to student record.');
+        }
+
+        $studentName = $student->full_name;
+
+        DB::transaction(function () use ($student): void {
+            $this->deleteStudentRecord($student);
+        });
+
+        return redirect()->route('academic.students.index')
+            ->with('success', "{$studentName} deleted successfully.");
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $user = auth()->user();
+        abort_if(!$user, 403, 'Unauthorized.');
+
+        $validated = $request->validate([
+            'student_ids' => 'required|array|min:1',
+            'student_ids.*' => 'integer',
+        ]);
+
+        $ids = collect($validated['student_ids'])
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn (int $id) => $id > 0)
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return back()->with('error', 'Please select at least one student to delete.');
+        }
+
+        $query = Student::with('user')->whereIn('id', $ids->all());
+        if (!$user->isSuperAdmin()) {
+            $query->where('school_id', (int) $user->school_id);
+        }
+
+        $students = $query->get();
+        if ($students->count() !== $ids->count()) {
+            return back()->with('error', 'Some selected students could not be deleted because they are invalid or outside your school.');
+        }
+
+        DB::transaction(function () use ($students): void {
+            foreach ($students as $student) {
+                $this->deleteStudentRecord($student);
+            }
+        });
+
+        $count = $students->count();
+        return back()->with('success', $count . ' student' . ($count === 1 ? '' : 's') . ' deleted successfully.');
+    }
+
+    private function deleteStudentRecord(Student $student): void
+    {
+        $linkedUser = $student->user;
+        $student->delete();
+
+        if (!$linkedUser) {
+            return;
+        }
+
+        $hasOtherProfiles = $linkedUser->staffProfile()->exists() || $linkedUser->parentProfile()->exists();
+        if ($hasOtherProfiles) {
+            $linkedUser->update(['is_active' => false]);
+            return;
+        }
+
+        $linkedUser->delete();
     }
 }

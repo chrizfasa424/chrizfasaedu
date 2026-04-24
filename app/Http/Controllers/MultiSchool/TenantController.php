@@ -5,6 +5,8 @@ namespace App\Http\Controllers\MultiSchool;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\School;
+use App\Models\Staff;
+use App\Models\Student;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Support\DomainHelper;
@@ -30,9 +32,28 @@ class TenantController extends Controller
             'totalSchools' => School::count(),
             'activeSchools' => School::where('is_active', true)->count(),
             'schoolsOnPage' => $schools->count(),
+            'totalStudents' => Student::count(),
+            'totalStaff' => Staff::count(),
         ];
 
-        return view('multi-school.index', compact('schools', 'summary'));
+        $studentGenderDistribution = $this->genderBreakdown(Student::query()
+            ->selectRaw('LOWER(TRIM(COALESCE(gender, "unspecified"))) as gender_key, COUNT(*) as total')
+            ->groupBy('gender_key')
+            ->pluck('total', 'gender_key')
+            ->all());
+
+        $staffGenderDistribution = $this->genderBreakdown(Staff::query()
+            ->selectRaw('LOWER(TRIM(COALESCE(gender, "unspecified"))) as gender_key, COUNT(*) as total')
+            ->groupBy('gender_key')
+            ->pluck('total', 'gender_key')
+            ->all());
+
+        return view('multi-school.index', compact(
+            'schools',
+            'summary',
+            'studentGenderDistribution',
+            'staffGenderDistribution'
+        ));
     }
 
     public function onboard(Request $request)
@@ -77,12 +98,14 @@ class TenantController extends Controller
         ]);
 
         $nameParts = explode(' ', $validated['admin_name'], 2);
+        $temporaryPassword = Str::password(14, true, true, true, false);
         User::create([
             'school_id' => $school->id,
             'first_name' => $nameParts[0],
             'last_name' => $nameParts[1] ?? $nameParts[0],
             'email' => $validated['admin_email'],
-            'password' => Hash::make('changeme123'),
+            'password' => Hash::make($temporaryPassword),
+            'must_change_password' => true,
             'role' => 'school_admin',
         ]);
 
@@ -97,7 +120,15 @@ class TenantController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('multi-school.index')->with('success', "School {$school->name} onboarded.");
+        return redirect()
+            ->route('multi-school.index')
+            ->with('success', "School {$school->name} onboarded. Share the generated admin login details securely.")
+            ->with('new_school_admin_credentials', [
+                'email' => $validated['admin_email'],
+                'temporary_password' => $temporaryPassword,
+                'must_change_password' => true,
+                'login_url' => route('login'),
+            ]);
     }
 
     public function domains(Request $request)
@@ -207,6 +238,32 @@ class TenantController extends Controller
             'enterprise' => 750000,
             default => 50000,
         };
+    }
+
+    private function genderBreakdown(array $genderCounts): array
+    {
+        $maleCount = 0;
+        $femaleCount = 0;
+        $otherCount = 0;
+
+        foreach ($genderCounts as $genderKey => $count) {
+            $normalized = (string) $genderKey;
+            $value = (int) $count;
+
+            if (in_array($normalized, ['male', 'm'], true)) {
+                $maleCount += $value;
+            } elseif (in_array($normalized, ['female', 'f'], true)) {
+                $femaleCount += $value;
+            } else {
+                $otherCount += $value;
+            }
+        }
+
+        return [
+            ['label' => 'Male', 'count' => $maleCount],
+            ['label' => 'Female', 'count' => $femaleCount],
+            ['label' => 'Others', 'count' => $otherCount],
+        ];
     }
 
     private function resolveDomainStatus(?string $domain, ?string $currentHost, ?string $currentHostIp): array

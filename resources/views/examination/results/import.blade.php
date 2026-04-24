@@ -4,6 +4,11 @@
 
 @section('content')
 <div class="space-y-6 max-w-2xl">
+    @php
+        $admissionExample = \App\Models\Student::where('school_id', auth()->user()->school_id)
+            ->whereNotNull('admission_number')
+            ->value('admission_number') ?? \App\Models\Student::generateAdmissionNumber((int) auth()->user()->school_id);
+    @endphp
 
     <div class="flex items-center gap-3">
         <a href="{{ route('examination.results.index') }}" class="text-sm text-slate-500 hover:text-slate-700">← Results</a>
@@ -28,7 +33,7 @@
             <li>
                 In the <strong>registration_number</strong> column, use the student's
                 <strong>Admission Number</strong> exactly as shown in the system
-                (e.g. <code class="bg-blue-100 px-1 rounded font-mono">ADM/2026/0001</code>).
+                (e.g. <code class="bg-blue-100 px-1 rounded font-mono">{{ $admissionExample }}</code>).
             </li>
             <li>In the <strong>subject</strong> column, use the exact subject name as entered in the system (case-insensitive).</li>
             <li>Save as <code class="bg-blue-100 px-1 rounded">.csv</code> or <code class="bg-blue-100 px-1 rounded">.xlsx</code> — do <strong>not</strong> change the column headers.</li>

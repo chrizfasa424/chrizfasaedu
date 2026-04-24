@@ -36,6 +36,58 @@ class PublicPageContent
     {
         $name = $school?->name ?? 'ChrizFasa Academy';
         $motto = $school?->motto ?: 'A modern learning environment for KG, Primary, and Secondary students';
+        $defaultPrivacyContent = <<<'HTML'
+<h3>1. Who We Are</h3>
+<p>We are the data controller for personal data processed through this website, admissions channels, and school operations.</p>
+<h3>2. Data We Collect</h3>
+<ul>
+  <li>Identity and contact details submitted by parents, guardians, learners, and visitors.</li>
+  <li>Communication records from forms, enquiries, and support requests.</li>
+  <li>Technical data required for website security, performance, and abuse prevention.</li>
+</ul>
+<h3>3. Why We Process Data</h3>
+<ul>
+  <li>Admissions, student support, and school communication.</li>
+  <li>Service delivery, security monitoring, and quality improvement.</li>
+  <li>Compliance with legal and regulatory obligations.</li>
+</ul>
+<h3>4. Lawful Bases</h3>
+<p>Where GDPR applies, we rely on lawful bases such as consent, contract, legal obligation, and legitimate interests. Where Nigeria data protection law applies, we process data under NDPA/NDPR lawful processing grounds.</p>
+<h3>5. Data Sharing</h3>
+<p>We may share data with trusted processors that support hosting, communications, and operations, subject to confidentiality and security safeguards.</p>
+<h3>6. International Transfers</h3>
+<p>If data is transferred across borders, we apply suitable safeguards to protect personal information.</p>
+<h3>7. Data Retention</h3>
+<p>We retain personal data only as long as necessary for educational, legal, and operational purposes.</p>
+<h3>8. Security</h3>
+<p>We maintain technical and organizational controls to protect personal data from unauthorized access, loss, or misuse.</p>
+<h3>9. Your Rights</h3>
+<p>Depending on your jurisdiction, you may request access, correction, deletion, restriction, objection, portability, and withdrawal of consent where consent applies.</p>
+<h3>10. Contact and Complaints</h3>
+<p>You may contact us for privacy requests and, where applicable, lodge complaints with relevant supervisory authorities including the Nigeria Data Protection Commission.</p>
+HTML;
+        $defaultCookiesContent = <<<'HTML'
+<h3>1. What Cookies Are</h3>
+<p>Cookies are small text files stored on your device to support website functionality, security, and user preferences.</p>
+<h3>2. Cookies We Use</h3>
+<ul>
+  <li><strong>Necessary cookies</strong> for security, session handling, and essential page functions.</li>
+  <li><strong>Preference cookies</strong> to remember user choices such as cookie consent.</li>
+  <li><strong>Optional analytics/marketing cookies</strong> only where enabled and lawfully configured.</li>
+</ul>
+<h3>3. Consent Choices</h3>
+<p>On first visit, users can accept or reject optional cookies. Rejecting optional cookies does not block access to the website.</p>
+<h3>4. Cookie Lifespan</h3>
+<p>Cookie duration depends on purpose. Consent cookies are retained for a limited period and can be reset by clearing browser storage.</p>
+<h3>5. Third-Party Cookies</h3>
+<p>Where third-party tools are used, those providers may set cookies under their own policies.</p>
+<h3>6. Managing Cookies</h3>
+<p>Users can manage or delete cookies through browser settings. Some features may be affected when cookies are disabled.</p>
+<h3>7. Legal Compliance</h3>
+<p>This cookie framework is designed to align with transparency, choice, and accountability principles under GDPR and Nigeria data protection standards.</p>
+<h3>8. Updates</h3>
+<p>We may update this policy from time to time. The latest version is always published on this page.</p>
+HTML;
 
         return [
             'hero_badge_text' => 'Standard and Industry Professional School',
@@ -112,6 +164,17 @@ class PublicPageContent
             'contact_status_recipient_missing_text' => 'Contact recipient is not configured by admin yet.',
             'contact_status_send_error_text' => 'Message could not be sent right now. Please try again shortly.',
             'contact_status_success_text' => 'Thank you. Your message has been received. Our team will contact you shortly.',
+            'legal_effective_date' => '',
+            'privacy_policy_title' => 'Privacy Policy',
+            'privacy_policy_intro' => 'This Privacy Policy explains how we collect, use, store, and protect personal information in line with GDPR principles and Nigeria data protection obligations.',
+            'privacy_policy_content' => $defaultPrivacyContent,
+            'cookies_policy_title' => 'Cookies Policy',
+            'cookies_policy_intro' => 'This Cookies Policy explains what cookies are, how this website uses them, and how visitors can accept or reject optional cookies.',
+            'cookies_policy_content' => $defaultCookiesContent,
+            'cookie_banner_title' => 'Cookie Notice',
+            'cookie_banner_text' => 'We use necessary cookies to keep this website secure and functional. You can accept or reject optional cookies. Rejecting optional cookies will not block access to the website.',
+            'cookie_banner_accept_text' => 'Accept Cookies',
+            'cookie_banner_reject_text' => 'Reject Optional',
             'submenu_highlight_one_title' => 'What Students Gain',
             'submenu_highlight_one_text' => 'Learners receive practical support, clear expectations, and measurable progress across this focus area.',
             'submenu_highlight_two_title' => 'How We Deliver',
@@ -144,12 +207,16 @@ class PublicPageContent
             ],
             'why_choose_us_label' => 'Why Choose Us',
             'why_choose_us_intro' => '',
+            'teachers_marquee_label' => 'Our Teachers',
+            'teachers_marquee_heading' => 'Meet Our Teaching Team',
+            'teachers_marquee_intro' => 'Experienced teachers guiding learners with care, discipline, and excellence.',
             'why_choose_us_banners' => [
                 ['image' => null, 'title' => 'Structured Curriculum', 'description' => 'Structured curriculum aligned with national and international benchmarks.'],
                 ['image' => null, 'title' => 'Safe and Inclusive Campus', 'description' => 'Safe, inclusive campus with supervised transport and health support.'],
                 ['image' => null, 'title' => 'Digital Learning Culture', 'description' => 'Strong digital learning culture with real-time parent communication.'],
                 ['image' => null, 'title' => 'Balanced Development', 'description' => 'Balanced focus on academics, creativity, sports, and leadership.'],
             ],
+            'teachers_marquee' => [],
             'programs_intro' => 'Learning pathways for every stage.',
             'programs' => [
                 ['title' => 'Kindergarten (KG1-KG3)', 'description' => 'Early years foundation with play-based discovery, phonics, numeracy, and social development.'],

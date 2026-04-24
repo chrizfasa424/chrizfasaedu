@@ -60,15 +60,84 @@
         };
     </script>
 <style>
+    :root {
+        --theme-focus: rgba(15, 118, 110, 0.25);
+    }
+
+    body {
+        text-align: justify;
+        text-justify: inter-word;
+    }
+
+    body * {
+        border-color: var(--submenu-primary, var(--primary, #2D1D5C)) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        text-align: left;
+        text-justify: auto;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea {
+        transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px var(--theme-focus);
+    }
+
+    .theme-nav-link,
+    .theme-submenu-link,
+    .theme-mobile-submenu-link {
+        border-radius: 0.7rem;
+    }
+
     .theme-nav-link {
         color: #475569;
     }
 
     .theme-nav-link:hover,
-    .theme-nav-link:focus-visible,
+    .theme-nav-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
     .theme-nav-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
     }
 
     .theme-header-action-outline {
@@ -139,12 +208,13 @@
     }
 
     .theme-submenu-panel {
-        background-color: var(--submenu-primary);
-        border-color: var(--submenu-secondary);
+        background-color: var(--submenu-primary, #2D1D5C);
+        border-color: var(--submenu-primary, #2D1D5C);
     }
 
     .theme-submenu-heading {
         color: rgba(255, 255, 255, 0.72);
+        opacity: 0.78;
     }
 
     .theme-submenu-link {
@@ -152,10 +222,14 @@
     }
 
     .theme-submenu-link:hover,
-    .theme-submenu-link:focus-visible,
+    .theme-submenu-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
     .theme-submenu-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
     }
 
     .theme-mobile-submenu-link {
@@ -163,10 +237,14 @@
     }
 
     .theme-mobile-submenu-link:hover,
-    .theme-mobile-submenu-link:focus-visible,
+    .theme-mobile-submenu-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
     .theme-mobile-submenu-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
     }
     .text-slate-950,
     .text-slate-900,
@@ -283,6 +361,66 @@
     }
     .faq-item.faq-open .faq-trigger {
         background-color: #f8fafc;
+    }
+
+    @keyframes fx-lift-card {
+        from {
+            transform: translateY(16px);
+        }
+        to {
+            transform: translateY(-8px);
+        }
+    }
+
+    @keyframes fx-menu-hover-blink {
+        0%, 49% {
+            box-shadow: none;
+        }
+        50%, 100% {
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--submenu-secondary, #DFE753) 78%, transparent),
+                        0 0 15px color-mix(in srgb, var(--submenu-secondary, #DFE753) 40%, transparent);
+        }
+    }
+
+    .theme-nav-link:hover,
+    .theme-nav-link:focus-visible,
+    .theme-submenu-link:hover,
+    .theme-submenu-link:focus-visible,
+    .theme-mobile-submenu-link:hover,
+    .theme-mobile-submenu-link:focus-visible {
+        animation: fx-menu-hover-blink 0.14s steps(2, end) infinite;
+    }
+
+    .sidebar-program-link {
+        border-color: #cbd5e1;
+        background-color: #ffffff;
+    }
+
+    .sidebar-program-link-title {
+        color: #0f172a;
+    }
+
+    .sidebar-program-link-meta {
+        color: #64748b;
+    }
+
+    .sidebar-program-link:hover,
+    .sidebar-program-link:focus-visible,
+    .sidebar-program-link-active {
+        border-color: #2D1D5C !important;
+        background-color: #2D1D5C !important;
+    }
+
+    .sidebar-program-link:hover .sidebar-program-link-title,
+    .sidebar-program-link:focus-visible .sidebar-program-link-title,
+    .sidebar-program-link-active .sidebar-program-link-title {
+        color: #ffffff !important;
+    }
+
+    .sidebar-program-link:hover .sidebar-program-link-meta,
+    .sidebar-program-link:focus-visible .sidebar-program-link-meta,
+    .sidebar-program-link-active .sidebar-program-link-meta {
+        color: rgba(255, 255, 255, 0.8) !important;
     }
 </style>
 </head>
@@ -467,8 +605,8 @@
                 </div>
             </div>
 
-            <section class="mx-auto max-w-7xl px-6 pb-14 pt-10 lg:px-8">
-                <div class="grid gap-8 lg:grid-cols-3">
+            <section class="mx-auto max-w-7xl px-5 pb-16 pt-10 lg:px-8">
+                <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] xl:gap-8">
 
                 @if($sectionKey === 'admissions' && $item['slug'] === 'faqs')
                 {{-- ═══════════════════════════════════════════════════════════════
@@ -574,7 +712,7 @@
                                         <div class="flex gap-3">
                                             <div class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold text-white"
                                                  style="background:{{ $submenuPrimaryColor }}">A</div>
-                                            <div class="text-sm leading-relaxed text-slate-600 rich-text-content space-y-1">{!! $faq['a'] !!}</div>
+                                            <div class="text-sm leading-relaxed text-slate-600 rich-text-content space-y-1">{!! \App\Support\RichText::render($faq['a'] ?? '') !!}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -632,58 +770,106 @@
                         ? $item['highlight_two_text']
                         : ($submenuHighlightTwoText !== '' ? $submenuHighlightTwoText : 'Delivery is structured to be balanced and moderate, so parents and students can follow the process with confidence.');
                 @endphp
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-                    <div class="rich-text-content mt-1 max-w-3xl text-base leading-relaxed text-muted sm:text-lg">{!! \App\Support\RichText::render($displayDescription) !!}</div>
+                @php
+                    $plainDescription = trim(strip_tags((string) \App\Support\RichText::render($displayDescription)));
+                    $readingMinutes = max(1, (int) ceil(str_word_count($plainDescription) / 170));
+                @endphp
+                <div class="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/95 p-6 shadow-[0_24px_50px_-38px_rgba(15,23,42,0.5)] lg:p-8">
+                    <div class="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full bg-brand-100/70 blur-3xl"></div>
+                    <div class="pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-secondary-100/70 blur-3xl"></div>
 
-                    @php
-                        $pageImgOne = trim((string) ($item['image_one'] ?? ''));
-                        $pageImgTwo = trim((string) ($item['image_two'] ?? ''));
-                    @endphp
-                    @if($pageImgOne !== '' || $pageImgTwo !== '')
-                    <div class="mt-6 grid gap-4 {{ ($pageImgOne !== '' && $pageImgTwo !== '') ? 'sm:grid-cols-2' : 'sm:grid-cols-1 max-w-lg' }}">
-                        @if($pageImgOne !== '')
-                        <div class="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
-                            <img src="{{ asset('storage/' . ltrim($pageImgOne, '/')) }}"
-                                 alt="{{ $item['title'] }}"
-                                 class="h-52 w-full object-cover transition duration-300 hover:scale-105">
+                    <div class="relative space-y-8">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-brand-700">{{ $sectionLabel }}</span>
+                            <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{{ $readingMinutes }} min read</span>
+                        </div>
+
+                        <div class="rich-text-content max-w-4xl text-base leading-relaxed text-muted sm:text-lg">{!! \App\Support\RichText::render($displayDescription) !!}</div>
+
+                        @php
+                            $pageImgOne = trim((string) ($item['image_one'] ?? ''));
+                            $pageImgTwo = trim((string) ($item['image_two'] ?? ''));
+                        @endphp
+                        @if($pageImgOne !== '' || $pageImgTwo !== '')
+                        <div class="grid gap-4 sm:grid-cols-12">
+                            @if($pageImgOne !== '')
+                            <figure class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm {{ $pageImgTwo !== '' ? 'sm:col-span-8' : 'sm:col-span-12' }}">
+                                <img src="{{ asset('storage/' . ltrim($pageImgOne, '/')) }}"
+                                     alt="{{ $item['title'] }}"
+                                     class="h-64 w-full object-cover transition duration-500 hover:scale-105 sm:h-[20rem]">
+                            </figure>
+                            @endif
+                            @if($pageImgTwo !== '')
+                            <figure class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm sm:col-span-4">
+                                <img src="{{ asset('storage/' . ltrim($pageImgTwo, '/')) }}"
+                                     alt="{{ $item['title'] }}"
+                                     class="h-64 w-full object-cover transition duration-500 hover:scale-105 sm:h-[20rem]">
+                            </figure>
+                            @endif
                         </div>
                         @endif
-                        @if($pageImgTwo !== '')
-                        <div class="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
-                            <img src="{{ asset('storage/' . ltrim($pageImgTwo, '/')) }}"
-                                 alt="{{ $item['title'] }}"
-                                 class="h-52 w-full object-cover transition duration-300 hover:scale-105">
+
+                        <div class="grid gap-4 lg:grid-cols-2">
+                            <article class="rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-white p-5 shadow-sm">
+                                <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 12.75 10.5 18l8.25-12"/></svg>
+                                </div>
+                                <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $h1Title }}</h2>
+                                <div class="rich-text-content mt-2 text-sm leading-relaxed text-slate-600">{!! \App\Support\RichText::render($h1Text) !!}</div>
+                            </article>
+                            <article class="rounded-2xl border border-secondary-200 bg-gradient-to-br from-secondary-50 via-white to-white p-5 shadow-sm">
+                                <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                                </div>
+                                <h2 class="text-sm font-bold uppercase tracking-wide text-slate-800">{{ $h2Title }}</h2>
+                                <div class="rich-text-content mt-2 text-sm leading-relaxed text-slate-600">{!! \App\Support\RichText::render($h2Text) !!}</div>
+                            </article>
                         </div>
-                        @endif
-                    </div>
-                    @endif
 
-                    <div class="mt-7 grid gap-4 sm:grid-cols-2">
-                        <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $h1Title }}</h2>
-                            <div class="rich-text-content mt-2 text-sm leading-relaxed text-slate-600">{!! \App\Support\RichText::render($h1Text) !!}</div>
-                        </article>
-                        <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $h2Title }}</h2>
-                            <div class="rich-text-content mt-2 text-sm leading-relaxed text-slate-600">{!! \App\Support\RichText::render($h2Text) !!}</div>
-                        </article>
-                    </div>
-
-                    <div class="mt-8 flex flex-wrap gap-3">
-                        <a href="{{ route('admission.apply') }}" class="theme-cta-solid inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $submenuPrimaryButtonText !== '' ? $submenuPrimaryButtonText : 'Start Admission' }}</a>
-                        <a href="{{ route('public.home') }}#{{ $sectionKey }}" class="theme-cta-outline inline-flex rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $submenuBackButtonPrefix !== '' ? $submenuBackButtonPrefix : 'Back to' }} {{ $sectionLabel }}</a>
+                        <div class="flex flex-wrap items-center gap-3 pt-1">
+                            <a href="{{ route('admission.apply') }}" class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-slate-800">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6"/></svg>
+                                {{ $submenuPrimaryButtonText !== '' ? $submenuPrimaryButtonText : 'Start Admission' }}
+                            </a>
+                            <a href="{{ route('public.home') }}#{{ $sectionKey }}" class="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:border-slate-500 hover:text-slate-900">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6"/></svg>
+                                {{ $submenuBackButtonPrefix !== '' ? $submenuBackButtonPrefix : 'Back to' }} {{ $sectionLabel }}
+                            </a>
+                            <a href="{{ route('public.contact') }}" class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-5 py-2.5 text-sm font-semibold text-brand-700 transition duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:bg-brand-100">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5A2.25 2.25 0 0 1 19.5 19.5H4.5a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5H4.5a2.25 2.25 0 0 0-2.25 2.25m19.5 0L12 13.5 2.25 6.75"/></svg>
+                                Contact School
+                            </a>
+                        </div>
                     </div>
                 </div>
                 @endif
 
-                    <aside class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <h2 class="font-display text-xl font-semibold text-slate-900">{{ $submenuMoreInPrefix !== '' ? $submenuMoreInPrefix : 'More In' }} {{ $sectionLabel }}</h2>
-                        <div class="mt-4 space-y-2" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                    <aside class="self-start overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_24px_50px_-40px_rgba(15,23,42,0.55)] lg:sticky lg:top-28">
+                        <div class="px-5 py-4" style="background-color: var(--submenu-secondary, #DFE753); color: var(--submenu-hover-text, #2D1D5C);">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--submenu-hover-text, #2D1D5C); opacity: 0.82;">{{ $sectionLabel }}</p>
+                            <h2 class="mt-1 font-display text-2xl font-semibold">{{ $submenuMoreInPrefix !== '' ? $submenuMoreInPrefix : 'More In' }} {{ $sectionLabel }}</h2>
+                        </div>
+                        <div class="p-4">
+                            <div class="space-y-2.5" style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
                             @foreach($activeSectionItems as $sectionItem)
-                                <a href="{{ route('public.submenu', ['section' => $sectionKey, 'slug' => $sectionItem['slug']]) }}" class="theme-mobile-submenu-link block rounded-lg px-3 py-2 text-sm transition duration-200 {{ $sectionItem['slug'] === $item['slug'] ? 'theme-mobile-submenu-link-active font-semibold' : '' }}">
-                                    {{ $sectionItem['title'] }}
+                                @php
+                                    $activeSubmenuItem = $sectionItem['slug'] === $item['slug'];
+                                @endphp
+                                <a href="{{ route('public.submenu', ['section' => $sectionKey, 'slug' => $sectionItem['slug']]) }}" class="sidebar-program-link group block rounded-2xl border px-3.5 py-3 text-sm transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2D1D5C]/35 {{ $activeSubmenuItem ? 'sidebar-program-link-active shadow-sm' : '' }}">
+                                    <span class="sidebar-program-link-title block font-semibold">{{ $sectionItem['title'] }}</span>
+                                    <span class="sidebar-program-link-meta mt-1 block text-xs">{{ $activeSubmenuItem ? 'Current page' : 'Open page' }}</span>
                                 </a>
                             @endforeach
+                            </div>
+
+                            <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Need Personal Help?</p>
+                                <p class="mt-2 text-sm text-slate-600">Talk to our admissions team for guidance on choosing the right program.</p>
+                                <a href="{{ route('public.contact') }}" class="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 ring-1 ring-slate-300 transition duration-200 hover:-translate-y-0.5 hover:ring-slate-500">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5A2.25 2.25 0 0 1 19.5 19.5H4.5a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5H4.5a2.25 2.25 0 0 0-2.25 2.25m19.5 0L12 13.5 2.25 6.75"/></svg>
+                                    Contact Team
+                                </a>
+                            </div>
                         </div>
                     </aside>
                 </div>

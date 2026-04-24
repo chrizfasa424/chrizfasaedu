@@ -5,15 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password — {{ $schoolName }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
-        .input-field { transition: all 0.2s; border: 1.5px solid #e2e8f0; }
-        .input-field:focus { outline: none; border-color: {{ $primary }}; box-shadow: 0 0 0 3px {{ $primary }}26; }
-        .submit-btn { background: {{ $primary }}; color: {{ $secondary }}; }
-        .submit-btn:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 10px 25px {{ $primary }}40; }
-        .card-shadow { box-shadow: 0 25px 60px rgba(0,0,0,0.10), 0 8px 20px rgba(0,0,0,0.06); }
-        .toggle-btn { color: {{ $primary }}; }
+        :root {
+            --portal-focus: color-mix(in srgb, {{ $primary }} 30%, transparent);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(160deg, #f8fbff 0%, #eef6ff 55%, #f9fbff 100%);
+        }
+
+        .input-field {
+            transition: all 0.2s;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: {{ $primary }};
+            box-shadow: 0 0 0 3px var(--portal-focus);
+        }
+
+        .submit-btn {
+            background: {{ $primary }};
+            color: {{ $secondary }};
+        }
+
+        .submit-btn:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px {{ $primary }}40;
+        }
+
+        .card-shadow {
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.1), 0 8px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .toggle-btn {
+            color: {{ $primary }};
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--portal-focus);
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center px-4">

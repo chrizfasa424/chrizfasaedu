@@ -18,8 +18,53 @@
         </a>
     </div>
 
-    @if(session('success'))
-        <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{{ session('success') }}</div>
+    @if(session('attendance_import_summary'))
+        @php $importSummary = session('attendance_import_summary'); @endphp
+        <div class="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-800">
+            Attendance import summary for {{ $importSummary['month_label'] ?? 'selected month' }}:
+            rows read {{ $importSummary['rows_read'] ?? 0 }},
+            students matched {{ $importSummary['students_matched'] ?? 0 }},
+            records written {{ $importSummary['records_written'] ?? 0 }},
+            skipped weekends/public holidays {{ $importSummary['excluded_marks'] ?? 0 }},
+            errors {{ $importSummary['error_count'] ?? 0 }}.
+        </div>
+    @endif
+
+    @if($errors->has('attendance_import'))
+        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {{ $errors->first('attendance_import') }}
+        </div>
+    @endif
+
+    @if(session('attendance_import_errors'))
+        @php $importErrors = session('attendance_import_errors'); @endphp
+        @if(is_array($importErrors) && count($importErrors) > 0)
+            <div class="rounded-2xl border border-red-200 bg-white shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-red-100 bg-red-50">
+                    <h2 class="text-sm font-semibold text-red-800">Attendance Import Errors</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                        <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Row</th>
+                                <th class="px-4 py-2 text-left">Column</th>
+                                <th class="px-4 py-2 text-left">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($importErrors as $error)
+                                <tr>
+                                    <td class="px-4 py-2 text-slate-700">{{ $error['row'] ?? '-' }}</td>
+                                    <td class="px-4 py-2 text-slate-600">{{ $error['column'] ?? '-' }}</td>
+                                    <td class="px-4 py-2 text-slate-700">{{ $error['message'] ?? 'Import error' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
     @endif
 
     {{-- Filter form --}}
@@ -42,6 +87,90 @@
                 class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
         </div>
         <button type="submit" class="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Load</button>
+    </form>
+
+    <form method="POST" action="{{ route('academic.attendance.import') }}" enctype="multipart/form-data"
+          class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        @csrf
+        <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+                <h2 class="text-sm font-semibold text-slate-800">Import Monthly Attendance (P/A)</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Use your attendance sheet format: Student Number, Full Name, days 1-31, with P or A.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Class <span class="text-red-500">*</span></label>
+                <select name="import_class_id" id="import_class_id" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                    <option value="">Select class</option>
+                    @foreach($classes as $c)
+                        <option value="{{ $c->id }}" {{ (string) old('import_class_id', $classId) === (string) $c->id ? 'selected' : '' }}>
+                            {{ $c->grade_level?->label() ?? $c->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Arm (Optional)</label>
+                <select name="import_arm_id" id="import_arm_id" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                    <option value="">All arms / no arm</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Month <span class="text-red-500">*</span></label>
+                <input type="month" name="attendance_month" required value="{{ old('attendance_month', now()->format('Y-m')) }}"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Session <span class="text-red-500">*</span></label>
+                <select name="import_session_id" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                    <option value="">Select session</option>
+                    @foreach($sessions as $session)
+                        <option value="{{ $session->id }}" {{ (string) old('import_session_id', $session->is_current ? $session->id : null) === (string) $session->id ? 'selected' : '' }}>
+                            {{ $session->name }}{{ $session->is_current ? ' (Current)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Term <span class="text-red-500">*</span></label>
+                <select name="import_term_id" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                    <option value="">Select term</option>
+                    @foreach($terms as $term)
+                        <option value="{{ $term->id }}" {{ (string) old('import_term_id', $term->is_current ? $term->id : null) === (string) $term->id ? 'selected' : '' }}>
+                            {{ $term->name }} - {{ $term->session->name ?? '' }}{{ $term->is_current ? ' (Current)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Attendance File <span class="text-red-500">*</span></label>
+                <input type="file" name="file" required accept=".xlsx,.xls,.csv"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            </div>
+
+            <div class="md:col-span-2 lg:col-span-3">
+                <label class="block text-xs font-medium text-slate-600 mb-1">Public Holiday Dates (Optional)</label>
+                <input type="text" name="public_holiday_dates" value="{{ old('public_holiday_dates') }}"
+                    placeholder="e.g. 18, 21 or 2026-04-18, 2026-04-21"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                <p class="mt-1 text-xs text-slate-500">
+                    These dates are saved for this school term and will be auto-ignored during attendance import. Weekends are ignored automatically.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+            <button type="submit" class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                Import Attendance Sheet
+            </button>
+        </div>
     </form>
 
     @if($classId && $students->count())
@@ -232,9 +361,59 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+@php
+    $classArms = $classes
+        ->mapWithKeys(fn ($class) => [
+            (string) $class->id => $class->arms
+                ->map(fn ($arm) => ['id' => $arm->id, 'name' => $arm->name])
+                ->values()
+                ->all(),
+        ])
+        ->all();
+@endphp
 <script>
 // ── Attendance radio button toggle UI ─────────────────────────────────────────
+const classArms = @json($classArms);
+const initialImportArmId = @json((string) old('import_arm_id', ''));
+let importArmInitialized = false;
+
 document.addEventListener('DOMContentLoaded', function () {
+    const importClassSelect = document.getElementById('import_class_id');
+    const importArmSelect = document.getElementById('import_arm_id');
+
+    const refreshImportArms = () => {
+        if (!importClassSelect || !importArmSelect) return;
+
+        const selectedClassId = String(importClassSelect.value || '');
+        const arms = classArms[selectedClassId] || [];
+        const previousArmValue = String(importArmSelect.value || '');
+        const preferredArmValue = importArmInitialized ? previousArmValue : initialImportArmId;
+
+        importArmSelect.innerHTML = '';
+
+        const blankOption = document.createElement('option');
+        blankOption.value = '';
+        blankOption.textContent = 'All arms / no arm';
+        importArmSelect.appendChild(blankOption);
+
+        arms.forEach((arm) => {
+            const option = document.createElement('option');
+            option.value = String(arm.id);
+            option.textContent = arm.name;
+            if (String(arm.id) === preferredArmValue) {
+                option.selected = true;
+            }
+            importArmSelect.appendChild(option);
+        });
+
+        importArmInitialized = true;
+    };
+
+    if (importClassSelect && importArmSelect) {
+        importClassSelect.addEventListener('change', refreshImportArms);
+        refreshImportArms();
+    }
+
     document.querySelectorAll('.att-radio').forEach(radio => {
         radio.addEventListener('change', function () {
             const row    = this.closest('tr');
@@ -268,10 +447,19 @@ function updateLiveCount() {
     document.querySelectorAll('.att-radio:checked').forEach(r => {
         if (counts[r.dataset.status] !== undefined) counts[r.dataset.status]++;
     });
-    document.getElementById('live-present').textContent = counts.present;
-    document.getElementById('live-absent').textContent  = counts.absent;
-    document.getElementById('live-late').textContent    = counts.late;
-    document.getElementById('live-excused').textContent = counts.excused;
+    const livePresent = document.getElementById('live-present');
+    const liveAbsent = document.getElementById('live-absent');
+    const liveLate = document.getElementById('live-late');
+    const liveExcused = document.getElementById('live-excused');
+
+    if (!livePresent || !liveAbsent || !liveLate || !liveExcused) {
+        return;
+    }
+
+    livePresent.textContent = counts.present;
+    liveAbsent.textContent = counts.absent;
+    liveLate.textContent = counts.late;
+    liveExcused.textContent = counts.excused;
 }
 
 function markAll(status) {
@@ -396,4 +584,3 @@ if (trendCtx) {
 @endif
 </script>
 @endpush
-@endsection

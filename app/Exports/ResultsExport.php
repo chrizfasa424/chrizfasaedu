@@ -50,8 +50,8 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
 
         // ── School info rows ────────────────────────────────────────────────────
         $rows = [];
-        $rows[] = ["RESULT SHEET — {$label} — {$termName}", '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-        $rows[] = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+        $rows[] = ["RESULT SHEET — {$label} — {$termName}", '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+        $rows[] = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
 
         // ── Header row ──────────────────────────────────────────────────────────
         $rows[] = [
@@ -62,7 +62,6 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
             'Second Test',
             'Examination',
             'Total Grades',
-            'Position',
             'Grade',
             'Remarks',
             'Total First Test',
@@ -119,7 +118,6 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
                         number_format((float) $result->ca2_score, 0),
                         number_format((float) $result->exam_score, 0),
                         number_format((float) $result->total_score, 0),
-                        $result->position_in_subject ?? '',
                         $result->grade ?? '',
                         $result->teacher_remark ?? '',
                         number_format((float) $totalCa1, 0),
@@ -139,7 +137,6 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
                         number_format((float) $result->ca2_score, 0),
                         number_format((float) $result->exam_score, 0),
                         number_format((float) $result->total_score, 0),
-                        $result->position_in_subject ?? '',
                         $result->grade ?? '',
                         $result->teacher_remark ?? '',
                         '',
@@ -153,7 +150,7 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
             }
 
             // Blank spacer row between students
-            $rows[] = array_fill(0, 16, '');
+            $rows[] = array_fill(0, 15, '');
             $studentNumber++;
         }
 
@@ -164,7 +161,7 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
     public function styles(Worksheet $sheet): array
     {
         // Title row
-        $sheet->mergeCells('A1:P1');
+        $sheet->mergeCells('A1:O1');
         $sheet->getStyle('A1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 13, 'color' => ['argb' => 'FF1E3A5F']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
@@ -172,7 +169,7 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
         ]);
 
         // Header row (row 3)
-        $sheet->getStyle('A3:P3')->applyFromArray([
+        $sheet->getStyle('A3:O3')->applyFromArray([
             'font'      => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF'], 'size' => 10],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'color' => ['argb' => 'FF2D4E8A']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'wrapText' => true],
@@ -181,8 +178,8 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
             ],
         ]);
 
-        // Summary columns header highlight (K3:P3)
-        $sheet->getStyle('K3:P3')->applyFromArray([
+        // Summary columns header highlight (J3:O3)
+        $sheet->getStyle('J3:O3')->applyFromArray([
             'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['argb' => 'FF1A3460']],
         ]);
 
@@ -190,7 +187,7 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
         $sheet->freezePane('C4');
 
         // Auto-filter on header row
-        $sheet->setAutoFilter('A3:P3');
+        $sheet->setAutoFilter('A3:O3');
 
         return [];
     }
@@ -205,15 +202,14 @@ class ResultsExport implements FromArray, WithStyles, WithColumnWidths, WithTitl
             'E' => 12,  // Second Test
             'F' => 13,  // Examination
             'G' => 13,  // Total Grades
-            'H' => 10,  // Position
-            'I' => 8,   // Grade
-            'J' => 14,  // Remarks
-            'K' => 14,  // Total First Test
-            'L' => 15,  // Total Second Test
-            'M' => 16,  // Total Examination
-            'N' => 13,  // Overall Total
-            'O' => 13,  // Mark Average
-            'P' => 13,  // Class Average
+            'H' => 8,   // Grade
+            'I' => 14,  // Remarks
+            'J' => 14,  // Total First Test
+            'K' => 15,  // Total Second Test
+            'L' => 16,  // Total Examination
+            'M' => 13,  // Overall Total
+            'N' => 13,  // Mark Average
+            'O' => 13,  // Class Average
         ];
     }
 }

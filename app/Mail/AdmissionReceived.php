@@ -14,15 +14,19 @@ class AdmissionReceived extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(
-        public Admission $admission,
-        public ?School $school = null,
-    ) {}
+    public Admission $admission;
+    public ?School $school;
+
+    public function __construct(Admission $admission, ?School $school = null)
+    {
+        $this->admission = $admission;
+        $this->school = $school ?? $admission->school;
+    }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Application Received — ' . ($this->school?->name ?? 'Our School'),
+            subject: 'Application Received - ' . ($this->school?->name ?? 'Our School'),
         );
     }
 

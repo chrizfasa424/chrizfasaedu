@@ -89,7 +89,7 @@
                 </div>
                 <div>
                     <dt class="text-xs text-slate-400">Attendance</dt>
-                    <dd class="font-semibold text-slate-800">{{ $reportCard->attendance_present ?? 0 }}</dd>
+                    <dd class="font-semibold text-slate-800">{{ $reportCard->attendance_summary ?? '—' }}</dd>
                 </div>
             </dl>
         </div>
@@ -136,7 +136,6 @@
                         <th class="px-4 py-3 text-center">First Test</th>
                         <th class="px-4 py-3 text-center">Second Test</th>
                         <th class="px-4 py-3 text-center">Total</th>
-                        <th class="px-4 py-3 text-center">Position</th>
                         <th class="px-4 py-3 text-center">Grade</th>
                         <th class="px-4 py-3 text-center">Remarks</th>
                     </tr>
@@ -158,7 +157,6 @@
                         <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->ca1_score ?? '—' }}</td>
                         <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->ca2_score ?? '—' }}</td>
                         <td class="px-4 py-2.5 text-center font-semibold text-slate-800">{{ $result->total_score }}</td>
-                        <td class="px-4 py-2.5 text-center text-slate-600">{{ $result->position_in_subject ?? '—' }}</td>
                         <td class="px-4 py-2.5 text-center">
                             <span class="rounded-full px-2.5 py-0.5 text-xs font-bold {{ $gradeColor }}">
                                 {{ $result->grade ?? '—' }}
@@ -172,12 +170,12 @@
                     <tr>
                         <td class="px-5 py-2.5 text-slate-700" colspan="4">Total</td>
                         <td class="px-4 py-2.5 text-center text-slate-800">{{ $reportCard->total_score }}</td>
-                        <td colspan="3"></td>
+                        <td colspan="2"></td>
                     </tr>
                     <tr>
                         <td class="px-5 py-2 text-slate-500 text-xs font-normal" colspan="4">Mark Average</td>
                         <td class="px-4 py-2 text-center text-slate-700 font-semibold text-xs">{{ number_format($reportCard->average_score, 2) }}</td>
-                        <td colspan="3"></td>
+                        <td colspan="2"></td>
                     </tr>
                 </tfoot>
             </table>

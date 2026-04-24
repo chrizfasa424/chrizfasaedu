@@ -113,7 +113,7 @@
                     @endif
                 </span>
             </div>
-            <div class="info-row"><span class="info-label">Attendance</span><span class="info-value">{{ $reportCard->attendance_present ?? 0 }}</span></div>
+            <div class="info-row"><span class="info-label">Attendance</span><span class="info-value">{{ $reportCard->attendance_summary ?? '—' }}</span></div>
         </div>
     </div>
 
@@ -154,7 +154,6 @@
                 <th>First Test</th>
                 <th>Second Test</th>
                 <th>Total</th>
-                <th>Position</th>
                 <th>Grade</th>
                 <th>Remarks</th>
             </tr>
@@ -170,7 +169,6 @@
                 <td>{{ $result->ca1_score ?? '—' }}</td>
                 <td>{{ $result->ca2_score ?? '—' }}</td>
                 <td><strong>{{ $result->total_score }}</strong></td>
-                <td>{{ $result->position_in_subject ?? '—' }}</td>
                 <td><span class="grade grade-{{ $result->grade }}">{{ $result->grade ?? '—' }}</span></td>
                 <td>{{ $gradeInfo['remark'] }}</td>
             </tr>
@@ -180,12 +178,12 @@
             <tr>
                 <td colspan="4">Total</td>
                 <td>{{ $reportCard->total_score }}</td>
-                <td colspan="3"></td>
+                <td colspan="2"></td>
             </tr>
             <tr>
                 <td colspan="4" style="font-weight:400; font-size:9.5px; color:#64748b;">Mark Average</td>
                 <td style="color:#4f46e5;">{{ number_format($reportCard->average_score, 2) }}</td>
-                <td colspan="3" style="font-size:9.5px; color:#94a3b8; text-align:right;">Class Average: {{ number_format($reportCard->average_score, 2) }}</td>
+                <td colspan="2" style="font-size:9.5px; color:#94a3b8; text-align:right;">Class Average: {{ number_format($reportCard->average_score, 2) }}</td>
             </tr>
         </tfoot>
     </table>

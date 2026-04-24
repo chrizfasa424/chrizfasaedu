@@ -16,18 +16,18 @@ class ReportController extends Controller
     {
         $schoolId = auth()->user()->school_id;
 
-        $totalRevenue = Payment::where('school_id', $schoolId)->where('status', 'confirmed')->sum('amount');
+        $totalRevenue = Payment::where('school_id', $schoolId)->whereIn('status', ['approved', 'confirmed'])->sum('amount');
         $outstandingFees = Invoice::where('school_id', $schoolId)->whereIn('status', ['pending', 'partial', 'overdue'])->sum('balance');
 
         $monthlyRevenue = Payment::where('school_id', $schoolId)
-            ->where('status', 'confirmed')
+            ->whereIn('status', ['approved', 'confirmed'])
             ->whereYear('paid_at', now()->year)
             ->selectRaw('MONTH(paid_at) as month, SUM(amount) as total')
             ->groupBy('month')
             ->pluck('total', 'month');
 
         $paymentsByMethod = Payment::where('school_id', $schoolId)
-            ->where('status', 'confirmed')
+            ->whereIn('status', ['approved', 'confirmed'])
             ->selectRaw('payment_method, SUM(amount) as total')
             ->groupBy('payment_method')
             ->pluck('total', 'payment_method');
@@ -67,3 +67,4 @@ class ReportController extends Controller
         return view('reporting.attendance', compact('data'));
     }
 }
+

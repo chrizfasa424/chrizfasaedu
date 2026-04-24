@@ -63,15 +63,103 @@
         };
     </script>
 <style>
+    :root {
+        --theme-focus: rgba(15, 118, 110, 0.25);
+    }
+
+    body {
+        text-align: justify;
+        text-justify: inter-word;
+    }
+
+    body * {
+        border-color: var(--submenu-primary, var(--primary, #2D1D5C)) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        text-align: left;
+        text-justify: auto;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea {
+        transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px var(--theme-focus);
+    }
+
+    .theme-nav-link,
+    .theme-submenu-link,
+    .theme-mobile-submenu-link {
+        border-radius: 0.7rem;
+    }
+
     .theme-nav-link {
         color: #475569;
     }
 
+    @keyframes fx-menu-hover-blink {
+        0%, 49% {
+            box-shadow: none;
+        }
+        50%, 100% {
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--submenu-secondary, #DFE753) 78%, transparent),
+                        0 0 15px color-mix(in srgb, var(--submenu-secondary, #DFE753) 40%, transparent);
+        }
+    }
+
+    .theme-nav-link:hover,
+    .theme-nav-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
+    .theme-nav-link-active {
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
+    }
+
     .theme-nav-link:hover,
     .theme-nav-link:focus-visible,
-    .theme-nav-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+    .theme-submenu-link:hover,
+    .theme-submenu-link:focus-visible,
+    .theme-mobile-submenu-link:hover,
+    .theme-mobile-submenu-link:focus-visible {
+        animation: fx-menu-hover-blink 0.14s steps(2, end) infinite;
     }
 
     .theme-header-action-outline {
@@ -142,12 +230,13 @@
     }
 
     .theme-submenu-panel {
-        background-color: var(--submenu-primary);
-        border-color: var(--submenu-secondary);
+        background-color: var(--submenu-primary, #2D1D5C);
+        border-color: var(--submenu-primary, #2D1D5C);
     }
 
     .theme-submenu-heading {
         color: rgba(255, 255, 255, 0.72);
+        opacity: 0.78;
     }
 
     .theme-submenu-link {
@@ -155,10 +244,14 @@
     }
 
     .theme-submenu-link:hover,
-    .theme-submenu-link:focus-visible,
+    .theme-submenu-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
     .theme-submenu-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
     }
 
     .theme-mobile-submenu-link {
@@ -166,10 +259,14 @@
     }
 
     .theme-mobile-submenu-link:hover,
-    .theme-mobile-submenu-link:focus-visible,
+    .theme-mobile-submenu-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
     .theme-mobile-submenu-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
     }
 
     .text-slate-950,
@@ -300,6 +397,22 @@
         font-size: 1rem;
         line-height: 1.7;
     }
+    .academics-heading,
+    .academics-heading * {
+        text-align: left !important;
+        text-justify: auto !important;
+    }
+    .academics-heading h1,
+    .academics-heading h2,
+    .academics-heading h3,
+    .academics-heading h4,
+    .academics-heading p:first-child {
+        font-size: clamp(1.25rem, 2.2vw, 1.5rem) !important;
+        line-height: 1.35 !important;
+        font-weight: 700 !important;
+        letter-spacing: normal !important;
+        word-spacing: normal !important;
+    }
     .rich-text-section-intro h2,
     .rich-text-section-intro h3,
     .rich-text-section-intro h4,
@@ -324,6 +437,441 @@
     .rich-text-content-inverse figcaption {
         color: #ffffff;
     }
+
+    @keyframes fx-student-life-bg-flash {
+        0%, 100% {
+            opacity: 0.72;
+        }
+        50% {
+            opacity: 0.96;
+        }
+    }
+
+    @keyframes fx-student-life-border-blink {
+        0%, 49% {
+            border-color: #2D1D5C;
+            box-shadow: 0 0 0 1px rgba(45, 29, 92, 0.65);
+        }
+        50%, 100% {
+            border-color: rgba(45, 29, 92, 0.22);
+            box-shadow: 0 0 0 1px rgba(45, 29, 92, 0.16);
+        }
+    }
+
+    @keyframes fx-student-life-title-neon {
+        0%, 100% {
+            text-shadow:
+                0 0 0 rgba(223, 231, 83, 0),
+                0 0 0 rgba(223, 231, 83, 0);
+        }
+        50% {
+            text-shadow:
+                0 0 10px rgba(223, 231, 83, 0.95),
+                0 0 22px rgba(223, 231, 83, 0.65);
+        }
+    }
+
+    .student-life-fx-card {
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        border-color: var(--submenu-secondary, #DFE753) !important;
+        box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
+    }
+
+    .student-life-fx-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: #2D1D5C;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .student-life-fx-card > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .student-life-fx-card .student-life-fx-title {
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
+    .student-life-fx-card .student-life-fx-text {
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
+    .student-life-fx-card:hover,
+    .student-life-fx-card:focus-within {
+        transform: translateY(-10px);
+        animation: fx-student-life-border-blink 0.12s steps(2, end) infinite;
+    }
+
+    .student-life-fx-card:hover::after,
+    .student-life-fx-card:focus-within::after {
+        opacity: 0.86;
+        animation: fx-student-life-bg-flash 0.22s ease-in-out 2;
+    }
+
+    .student-life-fx-card:hover .student-life-fx-title,
+    .student-life-fx-card:focus-within .student-life-fx-title {
+        color: #ffffff !important;
+        animation: fx-student-life-title-neon 0.7s ease-in-out infinite;
+    }
+
+    .student-life-fx-card:hover .student-life-fx-text,
+    .student-life-fx-card:focus-within .student-life-fx-text {
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .contact-primary-card {
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        border-color: var(--submenu-primary, #2D1D5C) !important;
+        box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
+    }
+
+    .contact-primary-title {
+        color: #ffffff !important;
+    }
+
+    .contact-primary-text,
+    .contact-primary-text p,
+    .contact-primary-text span,
+    .contact-primary-text a,
+    .contact-primary-text strong,
+    .contact-primary-card .rich-text-content,
+    .contact-primary-card .rich-text-content * {
+        color: rgba(255, 255, 255, 0.92) !important;
+    }
+
+    #academics [class*="border"] {
+        border-color: var(--submenu-primary, #2D1D5C) !important;
+    }
+
+    #parents [class*="border"] {
+        border-color: var(--submenu-primary, #2D1D5C) !important;
+    }
+
+    .academics-primary-card {
+        position: relative;
+        overflow: hidden;
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        border-color: var(--submenu-secondary, #DFE753) !important;
+        box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
+        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .academics-primary-card::before {
+        content: none;
+    }
+
+    .academics-primary-card::after {
+        content: none;
+    }
+
+    .academics-primary-card > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    .academics-primary-card h3,
+    .academics-primary-card .rich-text-content,
+    .academics-primary-card .rich-text-content * {
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
+    .academics-primary-card:hover,
+    .academics-primary-card:focus-within {
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        border-color: var(--submenu-primary, #2D1D5C) !important;
+    }
+
+    #academics .academics-primary-card {
+        border-color: var(--submenu-secondary, #DFE753) !important;
+    }
+
+    #academics .academics-primary-card:hover,
+    #academics .academics-primary-card:focus-within {
+        border-color: var(--submenu-primary, #2D1D5C) !important;
+    }
+
+    .academics-primary-card:hover h3,
+    .academics-primary-card:hover .rich-text-content,
+    .academics-primary-card:hover .rich-text-content *,
+    .academics-primary-card:focus-within h3,
+    .academics-primary-card:focus-within .rich-text-content,
+    .academics-primary-card:focus-within .rich-text-content * {
+        color: #ffffff !important;
+    }
+
+    @keyframes fx-academics-gold-bg-flash {
+        0%, 100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 0.58;
+        }
+    }
+
+    @keyframes fx-academics-gold-border-blink {
+        0%, 49% {
+            border-color: #DFE753;
+            box-shadow: 0 0 0 1px rgba(223, 231, 83, 0.72);
+        }
+        50%, 100% {
+            border-color: rgba(223, 231, 83, 0.18);
+            box-shadow: 0 0 0 1px rgba(223, 231, 83, 0.12);
+        }
+    }
+
+    @keyframes fx-academics-heading-neon {
+        0%, 100% {
+            text-shadow:
+                0 0 0 rgba(223, 231, 83, 0),
+                0 0 0 rgba(223, 231, 83, 0);
+        }
+        50% {
+            text-shadow:
+                0 0 10px rgba(223, 231, 83, 0.95),
+                0 0 22px rgba(223, 231, 83, 0.65);
+        }
+    }
+
+    .teacher-marquee-section {
+        background:
+            radial-gradient(circle at top right, rgba(223, 231, 83, 0.12), transparent 35%),
+            radial-gradient(circle at bottom left, rgba(45, 29, 92, 0.08), transparent 44%),
+            linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+    }
+
+    .teacher-marquee-shell {
+        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            0 26px 62px -44px rgba(15, 23, 42, 0.45);
+    }
+
+    .teacher-marquee-kicker {
+        color: var(--submenu-primary, #2D1D5C);
+        font-weight: 800;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+    }
+
+    .teacher-marquee-window {
+        overflow: hidden;
+        border-color: var(--submenu-primary, #2D1D5C) !important;
+        background: var(--submenu-primary, #2D1D5C) !important;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    @keyframes teacher-marquee-scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    .teacher-marquee-track {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        width: max-content;
+        padding: 1rem 1.1rem;
+        animation: teacher-marquee-scroll 34s linear infinite;
+        will-change: transform;
+    }
+
+    .teacher-marquee-track:hover {
+        animation-play-state: paused;
+    }
+
+    .teacher-marquee-track.is-static {
+        width: 100%;
+        justify-content: center;
+        animation: none;
+    }
+
+    .teacher-marquee-card {
+        display: flex;
+        min-width: 260px;
+        align-items: center;
+        gap: 0.8rem;
+        border: 1px solid rgba(223, 231, 83, 0.38) !important;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 0.55rem 0.8rem;
+    }
+
+    .teacher-marquee-avatar {
+        display: flex;
+        height: 3.3rem;
+        width: 3.3rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid rgba(223, 231, 83, 0.7) !important;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2D1D5C, #4c3892);
+        color: #f8fafc;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+    }
+
+    .teacher-marquee-meta {
+        min-width: 0;
+    }
+
+    .teacher-marquee-name {
+        color: #ffffff !important;
+        font-size: 0.98rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+    }
+
+    .teacher-marquee-role {
+        color: rgba(255, 255, 255, 0.82) !important;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 767px) {
+        .teacher-marquee-card {
+            min-width: 220px;
+        }
+    }
+
+    .why-enhance-section {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top left, rgba(45, 29, 92, 0.08), transparent 36%),
+            radial-gradient(circle at bottom right, rgba(223, 231, 83, 0.14), transparent 44%),
+            linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+    }
+
+    .why-enhance-shell {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
+        border-radius: 2rem;
+        background: linear-gradient(165deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.86));
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.88),
+            0 28px 72px -42px rgba(15, 23, 42, 0.45);
+    }
+
+    .why-enhance-shell::before {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.52), transparent 35%);
+    }
+
+    .why-enhance-kicker {
+        color: var(--submenu-primary, #2D1D5C);
+        font-weight: 800;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+    }
+
+    .why-enhance-intro {
+        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
+        border-radius: 1.35rem;
+        background: #ffffff;
+        padding: 1.1rem 1.2rem;
+        box-shadow: 0 14px 36px -28px rgba(15, 23, 42, 0.38);
+    }
+
+    .why-enhance-intro p {
+        color: #334155 !important;
+        line-height: 1.68;
+    }
+
+    .why-enhance-intro h2,
+    .why-enhance-intro h3,
+    .why-enhance-intro h4,
+    .why-enhance-intro strong {
+        color: #0f172a !important;
+    }
+
+    .why-enhance-intro ul {
+        margin: 0.8rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.7rem;
+    }
+
+    .why-enhance-intro li {
+        position: relative;
+        border: 1px solid rgba(45, 29, 92, 0.26);
+        border-radius: 0.9rem;
+        background: var(--submenu-secondary, #DFE753);
+        padding: 0.72rem 0.86rem 0.72rem 2.18rem;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
+    .why-enhance-intro li strong {
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
+    .why-enhance-intro li::before {
+        content: "";
+        position: absolute;
+        left: 0.72rem;
+        top: 0.9rem;
+        width: 0.82rem;
+        height: 0.82rem;
+        border-radius: 999px;
+        background: var(--submenu-primary, #2D1D5C);
+        box-shadow: 0 0 0 3px rgba(223, 231, 83, 0.4);
+    }
+
+    .why-enhance-card {
+        min-height: 12.5rem;
+        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
+        border-radius: 1.2rem;
+        overflow: hidden;
+        box-shadow: 0 14px 34px -26px rgba(15, 23, 42, 0.45);
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .why-enhance-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 48px -28px rgba(15, 23, 42, 0.5);
+    }
+
+    .why-enhance-card-body {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        min-height: 100%;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1rem;
+    }
+
+    .why-enhance-card-body h3 {
+        color: #ffffff !important;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .why-enhance-card-body .rich-text-content,
+    .why-enhance-card-body .rich-text-content * {
+        color: rgba(255, 255, 255, 0.94) !important;
+    }
 </style>
 </head>
 <?php
@@ -332,6 +880,9 @@
     $whyChooseUs = $publicPage['why_choose_us'] ?? [];
     $whyChooseUsLabel = trim((string) ($publicPage['why_choose_us_label'] ?? 'Why Choose Us'));
     $whyChooseUsIntro = trim((string) ($publicPage['why_choose_us_intro'] ?? ''));
+    $teachersMarqueeLabel = trim((string) ($publicPage['teachers_marquee_label'] ?? 'Our Teachers'));
+    $teachersMarqueeHeading = trim((string) ($publicPage['teachers_marquee_heading'] ?? 'Meet Our Teaching Team'));
+    $teachersMarqueeIntro = trim((string) ($publicPage['teachers_marquee_intro'] ?? 'Experienced teachers guiding learners with care, discipline, and excellence.'));
     $programsLabel = trim((string) ($publicPage['programs_label'] ?? 'Programs'));
     $admissionsLabel = trim((string) ($publicPage['admissions_label'] ?? 'Admissions'));
     $admissionsProcessLabel = trim((string) ($publicPage['admissions_process_label'] ?? 'Admissions Process'));
@@ -411,6 +962,68 @@
             ->values();
     }
 
+    $whyChooseUsFromList = collect($whyChooseUs)
+        ->map(function ($text, int $index) {
+            return [
+                'image' => '',
+                'title' => 'Why Choose Us ' . ($index + 1),
+                'description' => trim((string) $text),
+            ];
+        })
+        ->filter(fn (array $item) => $item['description'] !== '')
+        ->values();
+
+    $whyChooseUsDefaults = collect([
+        ['image' => '', 'title' => 'Structured Curriculum', 'description' => 'A progressive curriculum that builds strong literacy, numeracy, and critical thinking skills.'],
+        ['image' => '', 'title' => 'Safe and Inclusive Campus', 'description' => 'A secure school environment where every learner is respected, supported, and encouraged.'],
+        ['image' => '', 'title' => 'Digital Learning Culture', 'description' => 'Technology-supported classrooms and modern learning tools that improve engagement and outcomes.'],
+        ['image' => '', 'title' => 'Balanced Development', 'description' => 'Academics, discipline, leadership, and creativity developed together for all-round growth.'],
+        ['image' => '', 'title' => 'Qualified Educators', 'description' => 'Dedicated teachers with strong instructional practice and consistent learner support.'],
+        ['image' => '', 'title' => 'Character and Values', 'description' => 'Intentional moral instruction, responsibility, and service-based leadership training.'],
+    ]);
+
+    $whyChooseUsExistingTitles = $whyChooseUsBanners
+        ->pluck('title')
+        ->map(fn ($title) => \Illuminate\Support\Str::lower(trim((string) $title)))
+        ->filter()
+        ->values();
+
+    $whyChooseUsBanners = $whyChooseUsBanners
+        ->merge(
+            $whyChooseUsFromList->reject(function (array $item) use ($whyChooseUsExistingTitles) {
+                return $whyChooseUsExistingTitles->contains(
+                    \Illuminate\Support\Str::lower(trim((string) ($item['title'] ?? '')))
+                );
+            })
+        )
+        ->merge(
+            $whyChooseUsDefaults->reject(function (array $item) use ($whyChooseUsExistingTitles) {
+                return $whyChooseUsExistingTitles->contains(
+                    \Illuminate\Support\Str::lower(trim((string) ($item['title'] ?? '')))
+                );
+            })
+        )
+        ->take(6)
+        ->values();
+
+    $teachersMarqueeItems = collect($publicPage['teachers_marquee'] ?? [])
+        ->map(function ($item) {
+            return [
+                'image' => trim((string) ($item['image'] ?? ($item['path'] ?? ''))),
+                'name' => trim((string) ($item['name'] ?? '')),
+                'role' => trim((string) ($item['role'] ?? '')),
+            ];
+        })
+        ->filter(function (array $item) {
+            return $item['image'] !== '' || $item['name'] !== '' || $item['role'] !== '';
+        })
+        ->take(6)
+        ->values();
+
+    $teachersMarqueeLoopItems = $teachersMarqueeItems->count() > 1
+        ? $teachersMarqueeItems->concat($teachersMarqueeItems)->values()
+        : $teachersMarqueeItems;
+
     $aboutBanners = collect($publicPage['about_banners'] ?? [])
         ->map(function ($item) {
             return [
@@ -475,6 +1088,50 @@
     $parentsItems = $parentsBanners
         ->map(fn (array $item) => ['title' => $item['title'], 'description' => $item['description']])
         ->filter(fn (array $item) => $item['title'] !== '')
+        ->values()
+        ->all();
+
+    $studentLifeItems = collect($studentLifeItems)
+        ->map(function ($item) {
+            if (is_array($item)) {
+                return [
+                    'title' => trim((string) ($item['title'] ?? '')),
+                    'description' => trim((string) ($item['description'] ?? '')),
+                ];
+            }
+
+            return [
+                'title' => trim((string) $item),
+                'description' => '',
+            ];
+        })
+        ->filter(fn (array $item) => $item['title'] !== '' || $item['description'] !== '')
+        ->values();
+
+    $studentLifeDefaults = collect([
+        ['title' => 'Sports and Athletics', 'description' => 'Inter-house sports, fitness programs, and teamwork-focused competitions for all age groups.'],
+        ['title' => 'Arts and Creativity', 'description' => 'Music, drama, visual arts, and creative showcases that build confidence and expression.'],
+        ['title' => 'Leadership and Mentorship', 'description' => 'Student leadership opportunities, peer support systems, and character-building activities.'],
+        ['title' => 'STEM and Innovation', 'description' => 'Hands-on science, coding, robotics, and practical innovation projects beyond the classroom.'],
+        ['title' => 'Debate and Communication', 'description' => 'Public speaking, debate clubs, and communication practice for confident self-expression.'],
+        ['title' => 'Community and Service', 'description' => 'Service initiatives that foster empathy, responsibility, and positive social impact.'],
+    ]);
+
+    $existingStudentLifeTitles = $studentLifeItems
+        ->pluck('title')
+        ->map(fn ($title) => \Illuminate\Support\Str::lower(trim((string) $title)))
+        ->filter()
+        ->values();
+
+    $studentLifeItems = $studentLifeItems
+        ->merge(
+            $studentLifeDefaults->reject(function (array $item) use ($existingStudentLifeTitles) {
+                return $existingStudentLifeTitles->contains(
+                    \Illuminate\Support\Str::lower(trim((string) ($item['title'] ?? '')))
+                );
+            })
+        )
+        ->take(6)
         ->values()
         ->all();
 
@@ -727,13 +1384,81 @@
 <?php unset($__componentOriginale74ef38c4f718abe5610e24f5e2f3fa8); ?>
 <?php endif; ?>
 
-            <section class="border-t border-slate-200 bg-white py-14">
+            <?php if($teachersMarqueeItems->isNotEmpty()): ?>
+                <section class="teacher-marquee-section border-t border-slate-200 py-10">
+                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div class="teacher-marquee-shell rounded-3xl p-5 lg:p-6">
+                            <div class="mb-4">
+                                <p class="teacher-marquee-kicker text-xs"><?php echo e($teachersMarqueeLabel !== '' ? $teachersMarqueeLabel : 'Our Teachers'); ?></p>
+                                <h2 class="mt-2 font-display text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                                    <?php echo e($teachersMarqueeHeading !== '' ? $teachersMarqueeHeading : 'Meet Our Teaching Team'); ?>
+
+                                </h2>
+                                <?php if($teachersMarqueeIntro !== ''): ?>
+                                    <p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base"><?php echo e($teachersMarqueeIntro); ?></p>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="teacher-marquee-window rounded-2xl border">
+                                <div class="teacher-marquee-track <?php echo e($teachersMarqueeItems->count() > 1 ? '' : 'is-static'); ?>">
+                                    <?php $__currentLoopData = $teachersMarqueeLoopItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
+                                            $name = trim((string) ($item['name'] ?? ''));
+                                            $role = trim((string) ($item['role'] ?? ''));
+                                            $imagePath = trim((string) ($item['image'] ?? ''));
+                                            $hasImage = $imagePath !== '';
+                                            $imageUrl = $hasImage
+                                                ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/' . ltrim($imagePath, '/')))
+                                                : null;
+                                            $initials = \Illuminate\Support\Str::upper(
+                                                collect(preg_split('/\s+/', $name !== '' ? $name : 'Teacher'))
+                                                    ->filter()
+                                                    ->take(2)
+                                                    ->map(fn ($word) => \Illuminate\Support\Str::substr($word, 0, 1))
+                                                    ->implode('')
+                                            );
+                                        ?>
+                                        <article class="teacher-marquee-card">
+                                            <div class="teacher-marquee-avatar">
+                                                <?php if($hasImage): ?>
+                                                    <img src="<?php echo e($imageUrl); ?>" alt="<?php echo e($name !== '' ? $name : 'Teacher profile'); ?>" class="h-full w-full object-cover">
+                                                <?php else: ?>
+                                                    <span><?php echo e($initials !== '' ? $initials : 'T'); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="teacher-marquee-meta">
+                                                <p class="teacher-marquee-name"><?php echo e($name !== '' ? $name : 'Teacher'); ?></p>
+                                                <?php if($role !== ''): ?>
+                                                    <p class="teacher-marquee-role"><?php echo e($role); ?></p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </article>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <section class="why-enhance-section border-t border-slate-200 py-14">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700"><?php echo e($whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us'); ?></h2>
-                    <?php if($whyChooseUsIntro !== ''): ?>
-                        <div class="rich-text-content mt-2 max-w-3xl text-sm font-medium text-slate-600"><?php echo \App\Support\RichText::render($whyChooseUsIntro); ?></div>
-                    <?php endif; ?>
-                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="why-enhance-shell p-5 lg:p-7">
+                        <div class="relative z-10 mb-6">
+                            <p class="why-enhance-kicker text-xs"><?php echo e($whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us'); ?></p>
+                            <h2 class="mt-2 font-display text-3xl font-extrabold text-slate-900 sm:text-4xl">What Sets Us Apart</h2>
+                            <p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">A clear learning philosophy, disciplined delivery, and values-driven mentorship that shapes confident, capable learners.</p>
+                        </div>
+
+                        <div class="relative z-10 grid gap-6 lg:grid-cols-12">
+                            <div class="lg:col-span-5">
+                                <?php if($whyChooseUsIntro !== ''): ?>
+                                    <div class="why-enhance-intro rich-text-content text-sm"><?php echo \App\Support\RichText::render($whyChooseUsIntro); ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="lg:col-span-7">
+                                <div class="grid gap-4 sm:grid-cols-2">
                         <?php $__currentLoopData = $whyChooseUsBanners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <?php
                                 $bannerId = \Illuminate\Support\Str::slug($item['title'] ?: ('why-choose-us-' . $loop->index));
@@ -743,21 +1468,25 @@
                                     ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/' . ltrim($imagePath, '/')))
                                     : null;
                             ?>
-                            <article id="why-choose-us-<?php echo e($bannerId); ?>" class="group relative min-h-44 overflow-hidden rounded-xl border border-slate-200 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md">
+                            <article id="why-choose-us-<?php echo e($bannerId); ?>" class="why-enhance-card group relative">
                                 <?php if($hasImage): ?>
                                     <img src="<?php echo e($imageUrl); ?>" alt="<?php echo e($item['title'] ?: (($whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us') . ' Banner')); ?>" class="absolute inset-0 h-full w-full object-cover">
                                 <?php else: ?>
                                     <div class="absolute inset-0 bg-gradient-to-br from-brand-700 via-brand-600 to-secondary-500"></div>
+                                    <div class="absolute -right-10 -top-8 h-36 w-36 rounded-full border border-white/10 bg-white/10 blur-sm"></div>
                                 <?php endif; ?>
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/35 to-transparent"></div>
-                                <div class="relative flex h-full flex-col justify-end p-4">
-                                    <h3 class="text-lg font-extrabold text-white"><?php echo e($item['title'] ?: ($whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us')); ?></h3>
+                                <div class="why-enhance-card-body">
+                                    <h3 class="text-lg"><?php echo e($item['title'] ?: ($whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us')); ?></h3>
                                     <?php if(!empty($item['description'])): ?>
                                         <div class="rich-text-content rich-text-content-inverse mt-1 text-sm font-semibold leading-relaxed text-white/95"><?php echo \App\Support\RichText::render($item['description']); ?></div>
                                     <?php endif; ?>
                                 </div>
                             </article>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -776,14 +1505,14 @@
                                     <?php echo e($academicsLabel !== '' ? $academicsLabel : 'Academic Excellence'); ?>
 
                                 </p>
-                                <div class="rich-text-content rich-text-display mt-2 text-slate-900 font-[Georgia,serif]"><?php echo \App\Support\RichText::render($publicPage['academics_intro'] ?? 'A Structured Learning Culture With Mentorship At The Center.'); ?></div>
+                                <div class="academics-heading rich-text-content rich-text-display mt-2 text-slate-900 font-[Georgia,serif]"><?php echo \App\Support\RichText::render($publicPage['academics_intro'] ?? 'A Structured Learning Culture With Mentorship At The Center.'); ?></div>
                                 <div class="rich-text-content mt-3 text-base leading-relaxed text-slate-700"><?php echo \App\Support\RichText::render($academicsSupportText !== '' ? $academicsSupportText : 'Our school culture is built around consistent learning outcomes, high accountability, and teacher-student mentorship that develops confidence and character.'); ?></div>
 
                                 <div class="mt-4 grid gap-3 sm:grid-cols-2">
                                     <?php $__currentLoopData = $academicHighlights; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <article id="academics-<?php echo e(\Illuminate\Support\Str::slug($item['title'] ?? ('academic-highlight-'.$loop->index))); ?>" class="rounded-2xl border border-slate-200 bg-slate-50 p-3.5">
-                                            <h3 class="text-xl font-bold text-slate-900"><?php echo e($item['title'] ?? ''); ?></h3>
-                                            <div class="rich-text-content mt-1.5 text-base leading-relaxed text-slate-700"><?php echo \App\Support\RichText::render($item['description'] ?? ''); ?></div>
+                                        <article id="academics-<?php echo e(\Illuminate\Support\Str::slug($item['title'] ?? ('academic-highlight-'.$loop->index))); ?>" class="academics-primary-card rounded-2xl border p-3.5">
+                                            <h3 class="text-xl font-bold"><?php echo e($item['title'] ?? ''); ?></h3>
+                                            <div class="rich-text-content mt-1.5 text-base leading-relaxed"><?php echo \App\Support\RichText::render($item['description'] ?? ''); ?></div>
                                         </article>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
@@ -822,121 +1551,126 @@
                     </div>
                     <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         <?php $__currentLoopData = $studentLifeItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div id="student-life-<?php echo e(\Illuminate\Support\Str::slug($item['title'] ?? ('student-life-'.$loop->index))); ?>" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md">
-                                <h3 class="text-lg font-semibold text-slate-900"><?php echo e($item['title'] ?? ''); ?></h3>
-                                <div class="rich-text-content mt-2 text-sm text-slate-600"><?php echo \App\Support\RichText::render($item['description'] ?? ''); ?></div>
+                            <div id="student-life-<?php echo e(\Illuminate\Support\Str::slug($item['title'] ?? ('student-life-'.$loop->index))); ?>" class="student-life-fx-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                                <h3 class="student-life-fx-title text-lg font-semibold text-slate-900"><?php echo e($item['title'] ?? ''); ?></h3>
+                                <div class="student-life-fx-text rich-text-content mt-2 text-sm text-slate-600"><?php echo \App\Support\RichText::render($item['description'] ?? ''); ?></div>
                             </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
             </section>
 
-            <section id="parents" class="relative w-full border-y border-slate-300 bg-gradient-to-r from-[#DFE753] via-[#f3f4ff] to-[#cfc7e8] py-16">
-                <div id="testimonials" class="mx-auto max-w-6xl px-6">
-                    <div class="mx-auto max-w-4xl text-center">
-                        <h6 class="text-[30px] font-black uppercase tracking-[0.26em] text-[#2D1D5C]">
-                            <?php echo e($testimonialsBadgeText !== '' ? $testimonialsBadgeText : 'Testimonials'); ?>
+            <section id="parents" class="relative overflow-hidden border-y border-slate-200 bg-[#eef6ff] py-14 sm:py-16">
+                <div class="pointer-events-none absolute inset-0 opacity-60" style="background-image: linear-gradient(rgba(45, 29, 92, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 29, 92, 0.08) 1px, transparent 1px); background-size: 34px 34px;"></div>
+                <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.68),_transparent_38%)]"></div>
+                <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.4),_transparent_34%)]"></div>
+                <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+                    <div id="testimonials" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
+                        <div class="mx-auto max-w-4xl text-center">
+                            <p class="text-base font-bold uppercase tracking-[0.24em] text-blue-700">
+                                <?php echo e($testimonialsBadgeText !== '' ? $testimonialsBadgeText : 'Testimonials'); ?>
 
-                        </h6>
-                        <h2 class="mt-3 font-display text-4xl font-extrabold text-slate-900">
-                            <?php echo e($testimonialsHeading !== '' ? $testimonialsHeading : 'What Parents and Student Say'); ?>
+                            </p>
+                            <h2 class="mt-3 font-display text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                                <?php echo e($testimonialsHeading !== '' ? $testimonialsHeading : 'What Parents and Student Say'); ?>
 
-                        </h2>
-                        <p class="mt-4 text-base leading-relaxed text-slate-600">
-                            <?php echo e($testimonialsSubheading !== '' ? $testimonialsSubheading : 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.'); ?>
+                            </h2>
+                            <p class="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
+                                <?php echo e($testimonialsSubheading !== '' ? $testimonialsSubheading : 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.'); ?>
 
-                        </p>
-                    </div>
-
-                    <div class="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                        <div class="mb-6 flex items-center justify-between gap-3">
-                            <h3 class="text-3xl font-extrabold text-slate-900">
-                                <?php echo e($testimonialsSliderTitle !== '' ? $testimonialsSliderTitle : 'Approved Testimonials'); ?>
-
-                            </h3>
-                            <?php if($testimonials->count() > 1): ?>
-                                <div class="flex items-center gap-2">
-                                    <button type="button" data-testimonial-prev class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-lg font-bold text-slate-700 transition hover:bg-slate-100" aria-label="Previous testimonial">&lt;</button>
-                                    <button type="button" data-testimonial-next class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-lg font-bold text-slate-700 transition hover:bg-slate-100" aria-label="Next testimonial">&gt;</button>
-                                </div>
-                            <?php endif; ?>
+                            </p>
                         </div>
 
-                        <?php if($testimonials->isEmpty()): ?>
-                            <div class="rounded-xl border border-dashed border-slate-300 px-4 py-10 text-center text-base font-medium text-slate-600">
-                                <?php echo e($testimonialsEmptyText !== '' ? $testimonialsEmptyText : 'No testimonials have been approved yet. Be the first to share your experience.'); ?>
+                        <div class="mt-8 rounded-2xl border border-slate-200 bg-slate-50/70 p-5 sm:p-6">
+                            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+                                <h3 class="text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                                    <?php echo e($testimonialsSliderTitle !== '' ? $testimonialsSliderTitle : 'Approved Testimonials'); ?>
 
+                                </h3>
+                                <?php if($testimonials->count() > 1): ?>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-testimonial-prev class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-lg font-bold text-slate-700 transition hover:border-brand-300 hover:bg-slate-100" aria-label="Previous testimonial">&lt;</button>
+                                        <button type="button" data-testimonial-next class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-lg font-bold text-slate-700 transition hover:border-brand-300 hover:bg-slate-100" aria-label="Next testimonial">&gt;</button>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                        <?php else: ?>
-                            <div data-testimonial-slider class="relative overflow-hidden rounded-2xl border border-slate-200">
-                                <div data-testimonial-track class="flex transition-transform duration-500 ease-out">
-                                    <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php
-                                            $tInitials = \Illuminate\Support\Str::upper(
-                                                collect(preg_split('/\s+/', trim($testimonial->full_name)))
-                                                    ->filter()->take(2)
-                                                    ->map(fn($w) => \Illuminate\Support\Str::substr($w, 0, 1))
-                                                    ->implode('')
-                                            ) ?: '?';
-                                            $tStars = max(1, min(5, (int) $testimonial->rating));
-                                        ?>
-                                        <article class="w-full shrink-0 p-6 sm:p-8">
-                                            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
 
-                                                
-                                                <div class="mb-4 flex items-center gap-1">
-                                                    <?php for($s = 1; $s <= 5; $s++): ?>
-                                                        <svg class="h-4 w-4 <?php echo e($s <= $tStars ? 'text-amber-400' : 'text-slate-200'); ?>" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                        </svg>
-                                                    <?php endfor; ?>
-                                                    <span class="ml-1 text-xs text-slate-400"><?php echo e($tStars); ?>/5</span>
-                                                </div>
+                            <?php if($testimonials->isEmpty()): ?>
+                                <div class="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-base font-medium text-slate-600">
+                                    <?php echo e($testimonialsEmptyText !== '' ? $testimonialsEmptyText : 'No testimonials have been approved yet. Be the first to share your experience.'); ?>
 
-                                                
-                                                <blockquote class="text-xl font-black leading-relaxed text-[#2D1D5C] sm:text-2xl">
-                                                    "<?php echo e($testimonial->message); ?>"
-                                                </blockquote>
+                                </div>
+                            <?php else: ?>
+                                <div data-testimonial-slider class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                                    <div data-testimonial-track class="flex transition-transform duration-500 ease-out">
+                                        <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
+                                                $tInitials = \Illuminate\Support\Str::upper(
+                                                    collect(preg_split('/\s+/', trim($testimonial->full_name)))
+                                                        ->filter()->take(2)
+                                                        ->map(fn($w) => \Illuminate\Support\Str::substr($w, 0, 1))
+                                                        ->implode('')
+                                                ) ?: '?';
+                                                $tStars = max(1, min(5, (int) $testimonial->rating));
+                                            ?>
+                                            <article class="w-full shrink-0 p-5 sm:p-7">
+                                                <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6">
 
-                                                
-                                                <div class="mt-5 flex items-center gap-3">
-                                                    <?php if($testimonial->student?->photo): ?>
-                                                        <img src="<?php echo e(asset('storage/' . $testimonial->student->photo)); ?>"
-                                                             alt="<?php echo e($testimonial->full_name); ?>"
-                                                             class="h-11 w-11 shrink-0 rounded-full object-cover shadow-sm border-2 border-white">
-                                                    <?php else: ?>
-                                                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-extrabold text-white shadow-sm"
-                                                             style="background:<?php echo e($submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C')); ?>;">
-                                                            <?php echo e($tInitials); ?>
+                                                    
+                                                    <div class="mb-4 flex items-center gap-1">
+                                                        <?php for($s = 1; $s <= 5; $s++): ?>
+                                                            <svg class="h-4 w-4 <?php echo e($s <= $tStars ? 'text-amber-400' : 'text-slate-200'); ?>" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                            </svg>
+                                                        <?php endfor; ?>
+                                                        <span class="ml-1 text-xs text-slate-400"><?php echo e($tStars); ?>/5</span>
+                                                    </div>
 
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <div>
-                                                        <p class="text-sm font-bold text-slate-800"><?php echo e($testimonial->full_name); ?></p>
-                                                        <?php if(!empty($testimonial->role_title)): ?>
-                                                        <p class="text-xs text-slate-400"><?php echo e($testimonial->role_title); ?></p>
+                                                    
+                                                    <blockquote class="text-xl font-black leading-relaxed text-[#2D1D5C] sm:text-2xl">
+                                                        "<?php echo e($testimonial->message); ?>"
+                                                    </blockquote>
+
+                                                    
+                                                    <div class="mt-5 flex items-center gap-3">
+                                                        <?php if($testimonial->student?->photo): ?>
+                                                            <img src="<?php echo e(asset('storage/' . $testimonial->student->photo)); ?>"
+                                                                 alt="<?php echo e($testimonial->full_name); ?>"
+                                                                 class="h-11 w-11 shrink-0 rounded-full border-2 border-white object-cover shadow-sm">
+                                                        <?php else: ?>
+                                                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-extrabold text-white shadow-sm"
+                                                                 style="background:<?php echo e($submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C')); ?>;">
+                                                                <?php echo e($tInitials); ?>
+
+                                                            </div>
                                                         <?php endif; ?>
+                                                        <div>
+                                                            <p class="text-sm font-bold text-slate-800"><?php echo e($testimonial->full_name); ?></p>
+                                                            <?php if(!empty($testimonial->role_title)): ?>
+                                                            <p class="text-xs text-slate-400"><?php echo e($testimonial->role_title); ?></p>
+                                                            <?php endif; ?>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </article>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </article>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </div>
                                 </div>
-                            </div>
-                            <?php if($testimonials->count() > 1): ?>
-                                <div class="mt-4 flex flex-wrap items-center justify-center gap-2" data-testimonial-dots>
-                                    <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <button
-                                            type="button"
-                                            data-testimonial-dot
-                                            data-index="<?php echo e($loop->index); ?>"
-                                            class="h-2.5 w-8 rounded-full <?php echo e($loop->first ? 'bg-[#2D1D5C]' : 'bg-slate-300'); ?> transition duration-200"
-                                            aria-label="Go to testimonial <?php echo e($loop->iteration); ?>"
-                                        ></button>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </div>
+                                <?php if($testimonials->count() > 1): ?>
+                                    <div class="mt-4 flex flex-wrap items-center justify-center gap-2" data-testimonial-dots>
+                                        <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <button
+                                                type="button"
+                                                data-testimonial-dot
+                                                data-index="<?php echo e($loop->index); ?>"
+                                                class="h-2.5 w-8 rounded-full <?php echo e($loop->first ? 'bg-brand-700' : 'bg-slate-300'); ?> transition duration-200"
+                                                aria-label="Go to testimonial <?php echo e($loop->iteration); ?>"
+                                            ></button>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </div>
+                                <?php endif; ?>
                             <?php endif; ?>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -950,15 +1684,15 @@
                     <div class="grid gap-6 lg:grid-cols-2">
                         <div class="grid gap-4 sm:grid-cols-2">
                             <?php $__currentLoopData = $contactItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div id="contact-<?php echo e(\Illuminate\Support\Str::slug($item['title'] ?? ('contact-'.$loop->index))); ?>" class="rounded-xl border border-slate-200 bg-white p-4 transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-sm">
-                                    <h3 class="text-sm font-bold uppercase tracking-wide text-brand-700"><?php echo e($item['title'] ?? ''); ?></h3>
-                                    <div class="rich-text-content mt-2 text-sm text-slate-600"><?php echo \App\Support\RichText::render($item['description'] ?? ''); ?></div>
+                                <div id="contact-<?php echo e(\Illuminate\Support\Str::slug($item['title'] ?? ('contact-'.$loop->index))); ?>" class="contact-primary-card rounded-xl border p-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-sm">
+                                    <h3 class="contact-primary-title text-sm font-bold uppercase tracking-wide"><?php echo e($item['title'] ?? ''); ?></h3>
+                                    <div class="contact-primary-text rich-text-content mt-2 text-sm"><?php echo \App\Support\RichText::render($item['description'] ?? ''); ?></div>
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                            <h3 class="font-semibold text-slate-900"><?php echo e($quickContactLabel !== '' ? $quickContactLabel : 'Quick Contact'); ?></h3>
-                            <div class="mt-3 space-y-2 text-sm text-slate-600">
+                        <div class="contact-primary-card rounded-2xl border p-5 shadow-sm">
+                            <h3 class="contact-primary-title font-semibold"><?php echo e($quickContactLabel !== '' ? $quickContactLabel : 'Quick Contact'); ?></h3>
+                            <div class="contact-primary-text mt-3 space-y-2 text-sm">
                                 <p><span class="font-semibold"><?php echo e($contactPhoneLabel !== '' ? $contactPhoneLabel : 'Phone'); ?>:</span> <?php echo e($school?->phone ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet')); ?></p>
                                 <p><span class="font-semibold"><?php echo e($contactWhatsappLabel !== '' ? $contactWhatsappLabel : 'WhatsApp'); ?>:</span> <?php echo e(($publicPage['whatsapp'] ?? '') ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet')); ?></p>
                                 <p><span class="font-semibold"><?php echo e($contactEmailLabel !== '' ? $contactEmailLabel : 'Email'); ?>:</span> <?php echo e($school?->email ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet')); ?></p>

@@ -6,11 +6,20 @@ use App\Models\School;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 
 class SchoolSeeder extends Seeder
 {
     public function run(): void
     {
+        $seedPassword = (string) env('SEED_DEFAULT_PASSWORD', '');
+        if ($seedPassword === '' && !app()->environment(['local', 'testing'])) {
+            throw new RuntimeException('Set SEED_DEFAULT_PASSWORD before running SchoolSeeder outside local/testing.');
+        }
+        if ($seedPassword === '') {
+            $seedPassword = 'password';
+        }
+
         // Create the main school brand
         $school = School::create([
             'name' => 'ChrizFasa Academy',
@@ -43,7 +52,8 @@ class SchoolSeeder extends Seeder
             'first_name' => 'Adeyemi',
             'last_name' => 'Johnson',
             'email' => 'admin@chrizfasa.ng',
-            'password' => Hash::make('password'),
+            'password' => Hash::make($seedPassword),
+            'must_change_password' => true,
             'role' => 'school_admin',
             'email_verified_at' => now(),
         ]);
@@ -54,7 +64,8 @@ class SchoolSeeder extends Seeder
             'first_name' => 'Mrs. Folake',
             'last_name' => 'Adeyemo',
             'email' => 'principal@chrizfasa.ng',
-            'password' => Hash::make('password'),
+            'password' => Hash::make($seedPassword),
+            'must_change_password' => true,
             'role' => 'principal',
             'email_verified_at' => now(),
         ]);

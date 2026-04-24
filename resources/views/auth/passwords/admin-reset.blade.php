@@ -5,16 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password — {{ config('app.name') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
-        .input-field { transition: all 0.2s; border: 1.5px solid #334155; background: #0f172a; color: #f1f5f9; }
-        .input-field::placeholder { color: #475569; }
-        .input-field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-        .submit-btn { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-        .submit-btn:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 10px 25px rgba(99,102,241,0.35); }
-        .toggle-btn { color: #6366f1; }
-        .toggle-btn:hover { color: #a5b4fc; }
+        :root {
+            --auth-focus: rgba(14, 165, 233, 0.2);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.18), transparent 34%),
+                radial-gradient(circle at 84% 84%, rgba(15, 118, 110, 0.16), transparent 36%),
+                linear-gradient(135deg, #0b1324 0%, #0f172a 48%, #111827 100%);
+        }
+
+        .input-field {
+            transition: all 0.2s;
+            border: 1.5px solid #334155;
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .input-field::placeholder {
+            color: #64748b;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px var(--auth-focus);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #0891b2, #0ea5e9);
+        }
+
+        .submit-btn:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.35);
+        }
+
+        .toggle-btn {
+            color: #38bdf8;
+        }
+
+        .toggle-btn:hover {
+            color: #bae6fd;
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--auth-focus);
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center px-4">
@@ -22,8 +67,8 @@
     <div class="w-full max-w-md">
         <div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
 
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl mx-auto mb-6" style="background:rgba(99,102,241,0.2);border:1px solid rgba(165,180,252,0.3);">
-                <svg class="h-7 w-7 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl mx-auto mb-6" style="background:rgba(14,165,233,0.2);border:1px solid rgba(125,211,252,0.3);">
+                <svg class="h-7 w-7 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
                 </svg>
             </div>

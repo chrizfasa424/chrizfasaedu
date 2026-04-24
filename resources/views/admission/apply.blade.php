@@ -12,6 +12,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     @include('public.partials.nav-styles')
     <style>
+        :root {
+            --admission-focus: color-mix(in srgb, var(--primary) 24%, transparent);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
         * { font-family: 'Manrope', sans-serif; box-sizing: border-box; }
         :root {
             --primary: {{ $primary }};
@@ -29,7 +44,7 @@
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .field-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent); }
+        .field-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--admission-focus); }
         .field-input.error { border-color: #ef4444; background: #fff5f5; }
         .field-label { display: block; font-size: 0.8125rem; font-weight: 700; color: #475569; margin-bottom: 0.375rem; text-transform: uppercase; letter-spacing: 0.06em; }
         .step-panel { display: none; }
@@ -49,6 +64,15 @@
         .file-drop:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 4%, transparent); }
         .error-msg { display: none; color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; font-weight: 600; }
         .error-msg.show { display: block; }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--admission-focus);
+        }
 
         /* Grid pattern background */
         body {
@@ -189,6 +213,12 @@
                     <div>
                         <label class="field-label">Previous School</label>
                         <input type="text" name="previous_school" value="{{ old('previous_school') }}" class="field-input" placeholder="Name of last school attended (optional)">
+                    </div>
+                    <div>
+                        <label class="field-label">Student Email (For Portal Login)</label>
+                        <input type="email" name="email" id="f_email" value="{{ old('email') }}" class="field-input" placeholder="e.g. student@example.com" autocomplete="email">
+                        <span class="error-msg" id="err-email">Please enter a valid student email</span>
+                        <p class="text-xs mt-1.5" style="color:{{ $muted }};">This email will be used as the student's login email when enrolling.</p>
                     </div>
                 </div>
             </div>
@@ -359,6 +389,7 @@
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Religion</p><p class="font-semibold text-slate-800" id="rv-religion">—</p></div>
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Class</p><p class="font-semibold text-slate-800" id="rv-class">—</p></div>
                         <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Previous School</p><p class="font-semibold text-slate-800" id="rv-prev-school">—</p></div>
+                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Student Email (Portal Login)</p><p class="font-semibold text-slate-800" id="rv-student-email">—</p></div>
                     </div>
                 </div>
 
@@ -533,6 +564,17 @@ function validateStep(step) {
         if (bad) valid = false;
     });
 
+    if (step === 1) {
+        const studentEmail = document.querySelector('[name="email"]');
+        const studentEmailErr = document.getElementById('err-email');
+        if (studentEmail) {
+            const badStudentEmail = studentEmail.value.trim() !== '' && !isValidEmail(studentEmail.value);
+            studentEmail.classList.toggle('error', badStudentEmail);
+            if (studentEmailErr) studentEmailErr.classList.toggle('show', badStudentEmail);
+            if (badStudentEmail) valid = false;
+        }
+    }
+
     return valid;
 }
 
@@ -608,6 +650,7 @@ function buildReview() {
     g('rv-religion').textContent = v('religion');
     g('rv-class').textContent = v('class_applied_for');
     g('rv-prev-school').textContent = v('previous_school');
+    g('rv-student-email').textContent = v('email');
     g('rv-parent-name').textContent = v('parent_name');
     g('rv-parent-phone').textContent = v('parent_phone');
     g('rv-parent-email').textContent = v('parent_email');
@@ -647,7 +690,7 @@ document.querySelectorAll('.field-input').forEach(el => {
     // Force the page to show the correct step on server-side errors
     const failedFields = @json($errors->keys());
     const stepMap = {
-        'first_name':1,'last_name':1,'gender':1,'date_of_birth':1,'class_applied_for':1,
+        'first_name':1,'last_name':1,'gender':1,'date_of_birth':1,'class_applied_for':1,'email':1,
         'parent_name':2,'parent_phone':2,'parent_email':2,
         'state_of_origin':3,'lga':3,
         'photo':4,'birth_certificate':4,'previous_result':4,

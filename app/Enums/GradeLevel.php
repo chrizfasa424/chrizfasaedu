@@ -30,9 +30,9 @@ enum GradeLevel: string
     public function label(): string
     {
         return match($this) {
-            self::KG1 => 'Kindergarten 1',
-            self::KG2 => 'Kindergarten 2',
-            self::KG3 => 'Kindergarten 3',
+            self::KG1 => 'KG 1',
+            self::KG2 => 'KG 2',
+            self::KG3 => 'KG 3',
             self::PRIMARY_1 => 'Primary 1',
             self::PRIMARY_2 => 'Primary 2',
             self::PRIMARY_3 => 'Primary 3',
@@ -42,19 +42,18 @@ enum GradeLevel: string
             self::JSS_1 => 'JSS 1',
             self::JSS_2 => 'JSS 2',
             self::JSS_3 => 'JSS 3',
-            self::SSS_1 => 'SSS 1',
-            self::SSS_2 => 'SSS 2',
-            self::SSS_3 => 'SSS 3',
+            self::SSS_1 => 'SS 1',
+            self::SSS_2 => 'SS 2',
+            self::SSS_3 => 'SS 3',
         };
     }
 
     public function section(): string
     {
         return match(true) {
-            in_array($this, [self::KG1, self::KG2, self::KG3]) => 'Kindergarten',
+            in_array($this, [self::KG1, self::KG2, self::KG3]) => 'KG',
             in_array($this, [self::PRIMARY_1, self::PRIMARY_2, self::PRIMARY_3, self::PRIMARY_4, self::PRIMARY_5, self::PRIMARY_6]) => 'Primary',
-            in_array($this, [self::JSS_1, self::JSS_2, self::JSS_3]) => 'Junior Secondary',
-            in_array($this, [self::SSS_1, self::SSS_2, self::SSS_3]) => 'Senior Secondary',
+            in_array($this, [self::JSS_1, self::JSS_2, self::JSS_3, self::SSS_1, self::SSS_2, self::SSS_3]) => 'Secondary',
         };
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Models\Admission;
 use App\Models\AcademicSession;
 use App\Models\School;
+use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\ParentGuardian;
@@ -71,6 +72,7 @@ class AdmissionController extends Controller
             'first_name'          => 'required|string|max:100',
             'last_name'           => 'required|string|max:100',
             'other_names'         => 'nullable|string|max:100',
+            'email'               => 'nullable|email:rfc,filter|max:255',
             'gender'              => 'required|in:male,female',
             'date_of_birth'       => 'required|date|before:today',
             'blood_group'         => 'nullable|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
@@ -104,9 +106,15 @@ class AdmissionController extends Controller
             ]
         );
 
-        foreach (['photo', 'birth_certificate', 'previous_result'] as $fileField) {
+        $uploadTargets = [
+            'photo' => ['directory' => 'admissions/photos', 'disk' => 'public'],
+            'birth_certificate' => ['directory' => 'admissions/private/birth-certificates', 'disk' => 'local'],
+            'previous_result' => ['directory' => 'admissions/private/previous-results', 'disk' => 'local'],
+        ];
+
+        foreach ($uploadTargets as $fileField => $target) {
             if ($request->hasFile($fileField)) {
-                $data[$fileField] = $request->file($fileField)->store("admissions/{$fileField}s", 'public');
+                $data[$fileField] = $request->file($fileField)->store($target['directory'], $target['disk']);
             }
         }
 
@@ -205,6 +213,26 @@ class AdmissionController extends Controller
         return view('admission.show', compact('admission'));
     }
 
+    public function showDocument(Admission $admission, string $document)
+    {
+        abort_unless(in_array($document, ['photo', 'birth_certificate', 'previous_result'], true), 404);
+
+        $path = (string) data_get($admission, $document, '');
+        abort_if($path === '', 404, 'Document not found.');
+
+        $candidateDisks = $document === 'photo'
+            ? ['public']
+            : ['local', 'public']; // Backward compatibility for older records saved on public disk.
+
+        foreach ($candidateDisks as $disk) {
+            if (Storage::disk($disk)->exists($path)) {
+                return Storage::disk($disk)->response($path);
+            }
+        }
+
+        abort(404, 'Document not found.');
+    }
+
     // ── Admin: review (approve / reject / screening) ───────────────
     public function review(Request $request, Admission $admission)
     {
@@ -247,8 +275,19 @@ class AdmissionController extends Controller
     public function destroy(Admission $admission)
     {
         foreach (['photo', 'birth_certificate', 'previous_result'] as $fileField) {
-            if ($admission->$fileField) {
-                Storage::disk('public')->delete($admission->$fileField);
+            $path = (string) ($admission->$fileField ?? '');
+            if ($path === '') {
+                continue;
+            }
+
+            $candidateDisks = $fileField === 'photo'
+                ? ['public']
+                : ['local', 'public']; // Backward compatibility for previously public uploads.
+
+            foreach ($candidateDisks as $disk) {
+                if (Storage::disk($disk)->exists($path)) {
+                    Storage::disk($disk)->delete($path);
+                }
             }
         }
 
@@ -263,12 +302,32 @@ class AdmissionController extends Controller
     {
         abort_if($admission->status !== AdmissionStatus::APPROVED, 403, 'Only approved applications can be enrolled.');
 
+        $candidateEmails = collect([
+            $admission->email,
+            $admission->parent_email,
+        ])->map(fn ($value) => strtolower(trim((string) $value)))
+          ->filter(fn (string $value) => $value !== '' && filter_var($value, FILTER_VALIDATE_EMAIL))
+          ->unique()
+          ->values();
+
+        if ($candidateEmails->isEmpty()) {
+            return back()->with('error', 'No valid application email was found. Add a valid student or parent email before enrolling this applicant.');
+        }
+
+        $loginEmail = $candidateEmails->first(
+            fn (string $email) => !User::query()->whereRaw('LOWER(email) = ?', [$email])->exists()
+        );
+
+        if (!$loginEmail) {
+            return back()->with('error', 'All available application emails are already used by other portal accounts. Please update the admission email to a unique real email and enroll again.');
+        }
+
         $plainPassword = Str::random(10);
-        $loginEmail    = $admission->parent_email
-            ?? strtolower($admission->first_name . '.' . $admission->last_name . '@student.school.ng');
 
         DB::transaction(function () use ($admission, $plainPassword, $loginEmail) {
             $schoolId = $admission->school_id;
+            $resolvedClassId = $this->resolveAdmissionClassId($admission, (int) $schoolId);
+            $generatedNumber = Student::generateAdmissionNumber((int) $schoolId);
 
             $user = User::create([
                 'school_id'  => $schoolId,
@@ -283,6 +342,7 @@ class AdmissionController extends Controller
                 'school_id'        => $schoolId,
                 'user_id'          => $user->id,
                 'admission_id'     => $admission->id,
+                'class_id'         => $resolvedClassId,
                 'first_name'       => $admission->first_name,
                 'last_name'        => $admission->last_name,
                 'other_names'      => $admission->other_names,
@@ -293,22 +353,39 @@ class AdmissionController extends Controller
                 'address'          => $admission->address,
                 'photo'            => $admission->photo,
                 'previous_school'  => $admission->previous_school,
-                'admission_number' => Student::generateAdmissionNumber($schoolId),
+                'admission_number' => $generatedNumber,
+                'registration_number' => $generatedNumber,
                 'session_admitted' => $admission->session?->name,
                 'status'           => 'active',
             ]);
 
             $nameParts = explode(' ', $admission->parent_name, 2);
-            $parent = ParentGuardian::create([
-                'school_id'  => $schoolId,
-                'first_name' => $nameParts[0],
-                'last_name'  => $nameParts[1] ?? $nameParts[0],
-                'phone'      => $admission->parent_phone,
-                'email'      => $admission->parent_email,
-                'occupation' => $admission->parent_occupation,
-            ]);
+            $parent = ParentGuardian::query()
+                ->where('school_id', (int) $schoolId)
+                ->where(function ($q) use ($admission) {
+                    $q->where('phone', (string) $admission->parent_phone);
 
-            $student->parents()->attach($parent->id, ['relationship' => 'parent']);
+                    if ($admission->parent_email) {
+                        $q->orWhere(function ($sub) use ($admission) {
+                            $sub->whereNotNull('email')
+                                ->whereRaw('LOWER(email) = ?', [strtolower((string) $admission->parent_email)]);
+                        });
+                    }
+                })
+                ->first();
+
+            if (!$parent) {
+                $parent = ParentGuardian::create([
+                    'school_id'  => $schoolId,
+                    'first_name' => $nameParts[0],
+                    'last_name'  => $nameParts[1] ?? $nameParts[0],
+                    'phone'      => $admission->parent_phone,
+                    'email'      => $admission->parent_email,
+                    'occupation' => $admission->parent_occupation,
+                ]);
+            }
+
+            $student->parents()->syncWithoutDetaching([$parent->id => ['relationship' => 'parent']]);
 
             $admission->update([
                 'status'           => AdmissionStatus::ENROLLED,
@@ -319,9 +396,11 @@ class AdmissionController extends Controller
         // Send credentials email
         $school    = auth()->user()?->school;
         $loginUrl  = route('portal.login');
+        $mailTo    = $candidateEmails->all();
+        $sentTo    = implode(', ', $mailTo);
         $emailSent = false;
         try {
-            Mail::to($loginEmail)->send(new StudentEnrolled($admission, $school, $loginEmail, $plainPassword, $loginUrl));
+            Mail::to($mailTo)->send(new StudentEnrolled($admission, $school, $loginEmail, $plainPassword, $loginUrl));
             $emailSent = true;
         } catch (\Throwable $e) {
             Log::warning('Student enrolment email failed', [
@@ -337,11 +416,109 @@ class AdmissionController extends Controller
                 'email'      => $loginEmail,
                 'password'   => $plainPassword,
                 'login_url'  => $loginUrl,
+                'sent_to'    => $sentTo,
                 'email_sent' => $emailSent,
             ]);
     }
 
+    public function syncStudentLoginEmail(Admission $admission)
+    {
+        abort_if($admission->status !== AdmissionStatus::ENROLLED, 403, 'Only enrolled applications can sync login email.');
+
+        $admission->loadMissing('student.user');
+        $user = $admission->student?->user;
+        if (!$user) {
+            return back()->with('error', 'No enrolled student account was found for this admission.');
+        }
+
+        $candidateEmails = collect([
+            $admission->email,
+            $admission->parent_email,
+        ])->map(fn ($value) => strtolower(trim((string) $value)))
+          ->filter(fn (string $value) => $value !== '' && filter_var($value, FILTER_VALIDATE_EMAIL))
+          ->unique()
+          ->values();
+
+        if ($candidateEmails->isEmpty()) {
+            return back()->with('error', 'No valid application email is available to sync.');
+        }
+
+        $targetEmail = $candidateEmails->first(function (string $email) use ($user) {
+            $owner = User::query()->whereRaw('LOWER(email) = ?', [$email])->first();
+            return !$owner || (int) $owner->id === (int) $user->id;
+        });
+
+        if (!$targetEmail) {
+            return back()->with('error', 'None of the application emails can be used because they are already assigned to other users.');
+        }
+
+        $currentEmail = strtolower((string) $user->email);
+        if ($currentEmail === $targetEmail) {
+            return back()->with('success', 'Login email is already synced to the correct application email.');
+        }
+
+        $oldEmail = $user->email;
+        $user->update(['email' => $targetEmail]);
+
+        return back()->with('success', "Student login email updated from {$oldEmail} to {$targetEmail}.");
+    }
+
+    public function updateStudentEmail(Request $request, Admission $admission)
+    {
+        $validated = $request->validate([
+            'email' => 'nullable|email:rfc,filter|max:255',
+        ]);
+
+        $email = isset($validated['email']) ? strtolower(trim((string) $validated['email'])) : null;
+        $admission->update([
+            'email' => $email !== '' ? $email : null,
+        ]);
+
+        return back()->with('success', $email
+            ? "Student portal email updated to {$email}. You can now sync login email."
+            : 'Student portal email cleared.');
+    }
+
     // ── Helpers ───────────────────────────────────────────────────
+    private function resolveAdmissionClassId(Admission $admission, int $schoolId): ?int
+    {
+        $appliedFor = trim((string) $admission->class_applied_for);
+        if ($appliedFor === '') {
+            return null;
+        }
+
+        $token = $this->normalizeClassToken($appliedFor);
+        if ($token === '') {
+            return null;
+        }
+
+        $classes = SchoolClass::query()
+            ->where('school_id', $schoolId)
+            ->where('is_active', true)
+            ->get(['id', 'name', 'grade_level']);
+
+        $matched = $classes->first(function (SchoolClass $class) use ($token) {
+            if ($this->normalizeClassToken((string) $class->name) === $token) {
+                return true;
+            }
+
+            $grade = $class->grade_level;
+            if ($grade) {
+                return $this->normalizeClassToken((string) $grade->value) === $token
+                    || $this->normalizeClassToken((string) $grade->label()) === $token;
+            }
+
+            return false;
+        });
+
+        return $matched ? (int) $matched->id : null;
+    }
+
+    private function normalizeClassToken(string $value): string
+    {
+        return (string) preg_replace('/[^a-z0-9]/', '', strtolower(trim($value)));
+    }
+
     private function resolvePublicSchool(Request $request): ?School
     {
         if (SchoolContext::isSingleSchoolMode()) {

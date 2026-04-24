@@ -33,6 +33,37 @@ class ReportCard extends Model
         'is_published' => 'boolean',
     ];
 
+    public function getAttendanceDisplayAttribute(): ?string
+    {
+        if (!$this->attendance_total) {
+            return null;
+        }
+
+        return ((int) $this->attendance_present) . '/' . ((int) $this->attendance_total);
+    }
+
+    public function getAttendancePercentageAttribute(): ?float
+    {
+        if (!$this->attendance_total) {
+            return null;
+        }
+
+        return round((((float) $this->attendance_present) / ((float) $this->attendance_total)) * 100, 1);
+    }
+
+    public function getAttendanceSummaryAttribute(): ?string
+    {
+        if (!$this->attendance_display) {
+            return null;
+        }
+
+        if ($this->attendance_percentage === null) {
+            return $this->attendance_display;
+        }
+
+        return $this->attendance_display . ' (' . $this->attendance_percentage . '%)';
+    }
+
     public function student() { return $this->belongsTo(Student::class); }
     public function schoolClass() { return $this->belongsTo(SchoolClass::class, 'class_id'); }
     public function session() { return $this->belongsTo(AcademicSession::class, 'session_id'); }

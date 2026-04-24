@@ -84,6 +84,34 @@ class PublicPageController extends Controller
         ]);
     }
 
+    public function privacyPage(Request $request)
+    {
+        $school = $this->resolveSchool($request);
+        $publicPage = PublicPageContent::forSchool($school);
+        $schoolName = $school?->name ?? 'ChrizFasa Academy';
+
+        return view('public.privacy', [
+            'school' => $school,
+            'schoolName' => $schoolName,
+            'publicPage' => $publicPage,
+            'effectiveDate' => now()->toFormattedDateString(),
+        ]);
+    }
+
+    public function cookiesPage(Request $request)
+    {
+        $school = $this->resolveSchool($request);
+        $publicPage = PublicPageContent::forSchool($school);
+        $schoolName = $school?->name ?? 'ChrizFasa Academy';
+
+        return view('public.cookies', [
+            'school' => $school,
+            'schoolName' => $schoolName,
+            'publicPage' => $publicPage,
+            'effectiveDate' => now()->toFormattedDateString(),
+        ]);
+    }
+
     public function submitContact(Request $request)
     {
         $validated = $request->validate([

@@ -14,6 +14,9 @@ use Illuminate\Support\Str;
 
 class PasswordResetController extends Controller
 {
+    private const PORTAL_RESET_LINK_STATUS = 'If your portal account is eligible, a password reset link will be sent to that email.';
+    private const INVALID_PORTAL_RESET_CREDENTIALS = 'Invalid credentials.';
+
     // ── Admin: Forgot Password ─────────────────────────────
     public function showAdminForgotForm()
     {
@@ -80,11 +83,17 @@ class PasswordResetController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::broker('users')->sendResetLink($request->only('email'));
+        $portalUser = User::query()
+            ->whereRaw('LOWER(email) = ?', [Str::lower(trim((string) $request->input('email')))])
+            ->first();
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', 'Password reset link sent! Check your email.')
-            : back()->withErrors(['email' => __($status)]);
+        if (!$this->canUsePortalReset($portalUser)) {
+            return back()->with('status', self::PORTAL_RESET_LINK_STATUS);
+        }
+
+        Password::broker('users')->sendResetLink($request->only('email'));
+
+        return back()->with('status', self::PORTAL_RESET_LINK_STATUS);
     }
 
     // ── Portal: Reset Password ─────────────────────────────
@@ -114,6 +123,14 @@ class PasswordResetController extends Controller
             'password_confirmation' => 'required',
         ]);
 
+        $portalUser = User::query()
+            ->whereRaw('LOWER(email) = ?', [Str::lower(trim((string) $request->input('email')))])
+            ->first();
+
+        if (!$this->canUsePortalReset($portalUser)) {
+            return back()->withErrors(['email' => self::INVALID_PORTAL_RESET_CREDENTIALS])->onlyInput('email');
+        }
+
         $status = Password::broker('users')->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
@@ -126,6 +143,13 @@ class PasswordResetController extends Controller
 
         return $status === Password::PASSWORD_RESET
             ? redirect()->route('portal.login')->with('status', 'Password reset successfully. Please sign in.')
-            : back()->withErrors(['email' => __($status)]);
+            : back()->withErrors(['email' => self::INVALID_PORTAL_RESET_CREDENTIALS])->onlyInput('email');
+    }
+
+    private function canUsePortalReset(?User $user): bool
+    {
+        return $user
+            && (bool) $user->is_active
+            && ($user->isStudent() || $user->isParent());
     }
 }

@@ -803,138 +803,146 @@
         </form>
     </section>
 
-    <section id="system-preferences" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 class="text-lg font-semibold text-gray-900">System Preferences</h3>
-        <p class="text-sm text-gray-500 mt-1">Operational settings for results and communication.</p>
+    <section id="system-preferences" class="scroll-mt-28 relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.08)]">
+        <div class="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-indigo-100/60 blur-3xl"></div>
+        <div class="pointer-events-none absolute -bottom-20 -left-12 h-56 w-56 rounded-full bg-cyan-100/60 blur-3xl"></div>
 
-        <form action="{{ route('settings.system') }}" method="POST" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            @csrf
-            @method('PUT')
+        @php
+            $system = $school->settings ?? [];
+            $smtp = $system['smtp'] ?? [];
+            $smtpEncryption = old('smtp_encryption', $smtp['encryption'] ?? 'tls');
+        @endphp
 
-            @php
-                $system = $school->settings ?? [];
-                $smtp = $system['smtp'] ?? [];
-            @endphp
+        <div class="relative border-b border-slate-200 bg-gradient-to-r from-[#20124d] via-[#2D1D5C] to-[#3f2a7d] px-6 py-7 md:px-8">
+            <span class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/90">Control Center</span>
+            <h3 class="mt-3 text-2xl font-semibold text-white">System Preferences</h3>
+            <p class="mt-1 text-sm text-indigo-100">Configure grading, notifications, and SMTP delivery from one premium console.</p>
+        </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Grading System</label>
-                <select name="grading_system" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
-                    <option value="">Select grading system</option>
-                    <option value="waec" {{ old('grading_system', $system['grading_system'] ?? '') === 'waec' ? 'selected' : '' }}>WAEC</option>
-                    <option value="custom" {{ old('grading_system', $system['grading_system'] ?? '') === 'custom' ? 'selected' : '' }}>Custom</option>
-                </select>
-            </div>
+        <div class="relative p-6 md:p-8">
+            <form action="{{ route('settings.system') }}" method="POST" class="space-y-6">
+                @csrf
+                @method('PUT')
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Currency Symbol</label>
-                <input type="text" name="currency_symbol" value="{{ old('currency_symbol', $system['currency_symbol'] ?? 'NGN') }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
-            </div>
-
-            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                <label class="inline-flex items-center text-sm text-gray-700">
-                    <input type="checkbox" name="result_approval_required" value="1" class="rounded border-gray-300 mr-2" {{ old('result_approval_required', $system['result_approval_required'] ?? false) ? 'checked' : '' }}>
-                    Result approval required
-                </label>
-                <label class="inline-flex items-center text-sm text-gray-700">
-                    <input type="checkbox" name="online_admission_enabled" value="1" class="rounded border-gray-300 mr-2" {{ old('online_admission_enabled', $system['online_admission_enabled'] ?? true) ? 'checked' : '' }}>
-                    Online admission enabled
-                </label>
-                <label class="inline-flex items-center text-sm text-gray-700">
-                    <input type="checkbox" name="sms_notifications_enabled" value="1" class="rounded border-gray-300 mr-2" {{ old('sms_notifications_enabled', $system['sms_notifications_enabled'] ?? false) ? 'checked' : '' }}>
-                    SMS notifications enabled
-                </label>
-                <label class="inline-flex items-center text-sm text-gray-700">
-                    <input type="checkbox" name="email_notifications_enabled" value="1" class="rounded border-gray-300 mr-2" {{ old('email_notifications_enabled', $system['email_notifications_enabled'] ?? false) ? 'checked' : '' }}>
-                    Email notifications enabled
-                </label>
-            </div>
-
-            <div class="md:col-span-2 mt-2 rounded-xl border border-gray-200 bg-gray-50 p-4">
-                <h4 class="text-sm font-semibold text-gray-900">SMTP Setup (Admin Controlled)</h4>
-                <p class="mt-1 text-xs text-gray-500">These credentials are used for Contact Us form email delivery.</p>
-
-                <div class="mt-4">
-                    <label class="inline-flex items-center text-sm text-gray-700">
-                        <input type="checkbox" name="smtp_enabled" value="1" class="rounded border-gray-300 mr-2" {{ old('smtp_enabled', $smtp['enabled'] ?? false) ? 'checked' : '' }}>
-                        Enable SMTP sending for Contact Us form
-                    </label>
-                </div>
-
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">SMTP Host</label>
-                        <input type="text" name="smtp_host" value="{{ old('smtp_host', $smtp['host'] ?? '') }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="smtp.example.com">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">SMTP Port</label>
-                        <input type="number" name="smtp_port" value="{{ old('smtp_port', $smtp['port'] ?? 587) }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="587">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Encryption</label>
-                        <select name="smtp_encryption" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
-                            @php $smtpEncryption = old('smtp_encryption', $smtp['encryption'] ?? 'tls'); @endphp
-                            <option value="tls" {{ $smtpEncryption === 'tls' ? 'selected' : '' }}>TLS</option>
-                            <option value="ssl" {{ $smtpEncryption === 'ssl' ? 'selected' : '' }}>SSL</option>
-                            <option value="none" {{ $smtpEncryption === 'none' ? 'selected' : '' }}>None</option>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                        <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">Grading System</label>
+                        <select name="grading_system" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">Select grading system</option>
+                            <option value="waec" {{ old('grading_system', $system['grading_system'] ?? '') === 'waec' ? 'selected' : '' }}>WAEC</option>
+                            <option value="custom" {{ old('grading_system', $system['grading_system'] ?? '') === 'custom' ? 'selected' : '' }}>Custom</option>
                         </select>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">SMTP Username</label>
-                        <input type="text" name="smtp_username" value="{{ old('smtp_username', $smtp['username'] ?? '') }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">SMTP Password</label>
-                        <input type="password" name="smtp_password" value="" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="Leave blank to keep existing password">
-                        <p class="mt-1 text-xs text-gray-500">Leave blank to retain the current saved password.</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">From Email</label>
-                        <input type="email" name="smtp_from_address" value="{{ old('smtp_from_address', $smtp['from_address'] ?? '') }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="noreply@school.com">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">From Name</label>
-                        <input type="text" name="smtp_from_name" value="{{ old('smtp_from_name', $smtp['from_name'] ?? ($school->name ?? '')) }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="School Name">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Contact Recipient Email</label>
-                        <input type="email" name="smtp_to_address" value="{{ old('smtp_to_address', $smtp['to_address'] ?? ($school->email ?? '')) }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="admissions@school.com">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                        <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">Currency Symbol</label>
+                        <input type="text" name="currency_symbol" value="{{ old('currency_symbol', $system['currency_symbol'] ?? 'NGN') }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="NGN">
                     </div>
                 </div>
-            </div>
 
-            <div class="md:col-span-2">
-                <button type="submit" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold transition duration-200 hover:-translate-y-0.5 hover:bg-emerald-700">
-                    Save System Preferences
-                </button>
-            </div>
-        </form>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Operational Toggles</p>
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+                        <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+                            <input type="checkbox" name="result_approval_required" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" {{ old('result_approval_required', $system['result_approval_required'] ?? false) ? 'checked' : '' }}>
+                            Result approval required
+                        </label>
+                        <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+                            <input type="checkbox" name="online_admission_enabled" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" {{ old('online_admission_enabled', $system['online_admission_enabled'] ?? true) ? 'checked' : '' }}>
+                            Online admission enabled
+                        </label>
+                        <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+                            <input type="checkbox" name="sms_notifications_enabled" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" {{ old('sms_notifications_enabled', $system['sms_notifications_enabled'] ?? false) ? 'checked' : '' }}>
+                            SMS notifications enabled
+                        </label>
+                        <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+                            <input type="checkbox" name="email_notifications_enabled" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" {{ old('email_notifications_enabled', $system['email_notifications_enabled'] ?? false) ? 'checked' : '' }}>
+                            Email notifications enabled
+                        </label>
+                    </div>
+                </div>
 
-        @if($errors->has('smtp_test'))
-            <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                {{ $errors->first('smtp_test') }}
-            </div>
-        @endif
+                <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div class="border-b border-slate-200 bg-gradient-to-r from-cyan-50 to-indigo-50 px-4 py-4 md:px-5">
+                        <h4 class="text-base font-semibold text-slate-900">SMTP Setup (Admin Controlled)</h4>
+                        <p class="mt-1 text-xs text-slate-600">These credentials are used for Contact Us form email delivery.</p>
+                    </div>
 
-        <form action="{{ route('settings.smtp-test') }}" method="POST" class="mt-4 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
-            @csrf
-            @php $smtp = $system['smtp'] ?? []; @endphp
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Test Recipient Email</label>
-                <input type="email" name="smtp_test_recipient" value="{{ old('smtp_test_recipient', $smtp['to_address'] ?? ($school->email ?? '')) }}" class="w-full rounded-lg border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" placeholder="recipient@school.com">
-            </div>
-            <div class="md:self-end">
-                <button type="submit" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-semibold transition duration-200 hover:-translate-y-0.5 hover:bg-black">
-                    Send Test SMTP Email
-                </button>
-            </div>
-        </form>
+                    <div class="p-4 md:p-5">
+                        <label class="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700">
+                            <input type="checkbox" name="smtp_enabled" value="1" class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500" {{ old('smtp_enabled', $smtp['enabled'] ?? false) ? 'checked' : '' }}>
+                            Enable SMTP sending for Contact Us form
+                        </label>
+
+                        <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            <div>
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">SMTP Host</label>
+                                <input type="text" name="smtp_host" value="{{ old('smtp_host', $smtp['host'] ?? '') }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="smtp.example.com">
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">SMTP Port</label>
+                                <input type="number" name="smtp_port" value="{{ old('smtp_port', $smtp['port'] ?? 587) }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="587">
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">Encryption</label>
+                                <select name="smtp_encryption" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="tls" {{ $smtpEncryption === 'tls' ? 'selected' : '' }}>TLS</option>
+                                    <option value="ssl" {{ $smtpEncryption === 'ssl' ? 'selected' : '' }}>SSL</option>
+                                    <option value="none" {{ $smtpEncryption === 'none' ? 'selected' : '' }}>None</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">SMTP Username</label>
+                                <input type="text" name="smtp_username" value="{{ old('smtp_username', $smtp['username'] ?? '') }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">SMTP Password</label>
+                                <input type="password" name="smtp_password" value="" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Leave blank to keep existing password">
+                                <p class="mt-1 text-xs text-slate-500">Leave blank to retain the current saved password.</p>
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">From Email</label>
+                                <input type="email" name="smtp_from_address" value="{{ old('smtp_from_address', $smtp['from_address'] ?? '') }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="noreply@school.com">
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">From Name</label>
+                                <input type="text" name="smtp_from_name" value="{{ old('smtp_from_name', $smtp['from_name'] ?? ($school->name ?? '')) }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="School Name">
+                            </div>
+                            <div class="md:col-span-2 xl:col-span-2">
+                                <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">Contact Recipient Email</label>
+                                <input type="email" name="smtp_to_address" value="{{ old('smtp_to_address', $smtp['to_address'] ?? ($school->email ?? '')) }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="admissions@school.com">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="inline-flex items-center rounded-xl bg-gradient-to-r from-[#2D1D5C] to-[#4a2fa1] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-indigo-300">
+                        Save System Preferences
+                    </button>
+                </div>
+            </form>
+
+            @if($errors->has('smtp_test'))
+                <div class="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                    {{ $errors->first('smtp_test') }}
+                </div>
+            @endif
+
+            <form action="{{ route('settings.smtp-test') }}" method="POST" class="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                @csrf
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                    <div>
+                        <label class="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">Test Recipient Email</label>
+                        <input type="email" name="smtp_test_recipient" value="{{ old('smtp_test_recipient', $smtp['to_address'] ?? ($school->email ?? '')) }}" class="w-full rounded-xl border-slate-300 bg-slate-50 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500" placeholder="recipient@school.com">
+                    </div>
+                    <div class="md:self-end">
+                        <button type="submit" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-indigo-500 hover:text-indigo-700">
+                            Send Test SMTP Email
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </section>
 </div>
 <script>

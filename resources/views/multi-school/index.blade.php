@@ -25,6 +25,38 @@
         </div>
     </section>
 
+    <section class="grid gap-6 lg:grid-cols-2">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="mb-4 flex items-start justify-between gap-3">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.28em] text-violet-700">Gender Distribution</p>
+                    <h3 class="mt-2 text-xl font-semibold text-slate-900">Students</h3>
+                </div>
+                <span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+                    {{ number_format($summary['totalStudents']) }} Total
+                </span>
+            </div>
+            <div class="h-72">
+                <canvas id="multiSchoolStudentGenderChart"></canvas>
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="mb-4 flex items-start justify-between gap-3">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.28em] text-violet-700">Gender Distribution</p>
+                    <h3 class="mt-2 text-xl font-semibold text-slate-900">Staff</h3>
+                </div>
+                <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
+                    {{ number_format($summary['totalStaff']) }} Total
+                </span>
+            </div>
+            <div class="h-72">
+                <canvas id="multiSchoolStaffGenderChart"></canvas>
+            </div>
+        </div>
+    </section>
+
     <section class="flex flex-wrap items-center gap-3">
         <a href="{{ route('multi-school.domains') }}" class="inline-flex items-center rounded-full bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
             Open Domain Manager
@@ -119,7 +151,7 @@
                 </div>
 
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                    The first school admin account will be created with a temporary password of <span class="font-semibold">changeme123</span>.
+                    The first school admin account will receive an auto-generated temporary password. Share it securely and require immediate password change after first login.
                 </div>
 
                 <button type="submit" class="inline-flex items-center rounded-full bg-[#2D1D5C] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
@@ -196,4 +228,81 @@
     </section>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof Chart === 'undefined') {
+        return;
+    }
+
+    const studentGenderData = @json($studentGenderDistribution ?? []);
+    const staffGenderData = @json($staffGenderDistribution ?? []);
+
+    const buildGenderChart = function (canvasId, sourceData, palette) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) {
+            return;
+        }
+
+        const labels = sourceData.map(item => item.label);
+        const values = sourceData.map(item => Number(item.count || 0));
+        const hasData = values.some(value => value > 0);
+        const finalValues = hasData ? values : [1, 1, 1];
+
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    data: finalValues,
+                    backgroundColor: palette,
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            padding: 18,
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                if (!hasData) {
+                                    return context.label + ': 0';
+                                }
+                                return context.label + ': ' + context.parsed;
+                            }
+                        }
+                    }
+                },
+                cutout: '62%'
+            }
+        });
+    };
+
+    buildGenderChart(
+        'multiSchoolStudentGenderChart',
+        studentGenderData,
+        ['#6366F1', '#EC4899', '#06B6D4']
+    );
+
+    buildGenderChart(
+        'multiSchoolStaffGenderChart',
+        staffGenderData,
+        ['#0EA5E9', '#8B5CF6', '#14B8A6']
+    );
+});
+</script>
+@endpush
 

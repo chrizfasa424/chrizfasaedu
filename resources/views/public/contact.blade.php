@@ -60,15 +60,103 @@
         };
     </script>
 <style>
+    :root {
+        --theme-focus: rgba(15, 118, 110, 0.25);
+    }
+
+    body {
+        text-align: justify;
+        text-justify: inter-word;
+    }
+
+    body * {
+        border-color: var(--submenu-primary, var(--primary, #2D1D5C)) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        text-align: left;
+        text-justify: auto;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea {
+        transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px var(--theme-focus);
+    }
+
+    .theme-nav-link,
+    .theme-submenu-link,
+    .theme-mobile-submenu-link {
+        border-radius: 0.7rem;
+    }
+
     .theme-nav-link {
         color: #475569;
     }
 
+    @keyframes fx-menu-hover-blink {
+        0%, 49% {
+            box-shadow: none;
+        }
+        50%, 100% {
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--submenu-secondary, #DFE753) 78%, transparent),
+                        0 0 15px color-mix(in srgb, var(--submenu-secondary, #DFE753) 40%, transparent);
+        }
+    }
+
+    .theme-nav-link:hover,
+    .theme-nav-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
+    .theme-nav-link-active {
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
+    }
+
     .theme-nav-link:hover,
     .theme-nav-link:focus-visible,
-    .theme-nav-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+    .theme-submenu-link:hover,
+    .theme-submenu-link:focus-visible,
+    .theme-mobile-submenu-link:hover,
+    .theme-mobile-submenu-link:focus-visible {
+        animation: fx-menu-hover-blink 0.14s steps(2, end) infinite;
     }
 
     .theme-header-action-outline {
@@ -139,12 +227,13 @@
     }
 
     .theme-submenu-panel {
-        background-color: var(--submenu-primary);
-        border-color: var(--submenu-secondary);
+        background-color: var(--submenu-primary, #2D1D5C);
+        border-color: var(--submenu-primary, #2D1D5C);
     }
 
     .theme-submenu-heading {
         color: rgba(255, 255, 255, 0.72);
+        opacity: 0.78;
     }
 
     .theme-submenu-link {
@@ -152,10 +241,14 @@
     }
 
     .theme-submenu-link:hover,
-    .theme-submenu-link:focus-visible,
+    .theme-submenu-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
     .theme-submenu-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
     }
 
     .theme-mobile-submenu-link {
@@ -163,10 +256,14 @@
     }
 
     .theme-mobile-submenu-link:hover,
-    .theme-mobile-submenu-link:focus-visible,
+    .theme-mobile-submenu-link:focus-visible {
+        background-color: var(--submenu-secondary, #DFE753) !important;
+        color: var(--submenu-hover-text, #2D1D5C) !important;
+    }
+
     .theme-mobile-submenu-link-active {
-        background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        background-color: var(--submenu-primary, #2D1D5C) !important;
+        color: #ffffff !important;
     }
     .text-slate-950,
     .text-slate-900,
