@@ -9,8 +9,12 @@
         text-justify: inter-word;
     }
 
-    body * {
-        border-color: var(--submenu-primary, var(--primary, #2D1D5C)) !important;
+    .bg-pattern-grid {
+        background-color: #22323C;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
     }
 
     h1,

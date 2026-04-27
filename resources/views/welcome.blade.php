@@ -72,8 +72,12 @@
         text-justify: inter-word;
     }
 
-    body * {
-        border-color: var(--submenu-primary, var(--primary, #2D1D5C)) !important;
+    .bg-pattern-grid {
+        background-color: #22323C;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
     }
 
     h1,
@@ -449,12 +453,10 @@
 
     @keyframes fx-student-life-border-blink {
         0%, 49% {
-            border-color: #2D1D5C;
-            box-shadow: 0 0 0 1px rgba(45, 29, 92, 0.65);
+            box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.5);
         }
         50%, 100% {
-            border-color: rgba(45, 29, 92, 0.22);
-            box-shadow: 0 0 0 1px rgba(45, 29, 92, 0.16);
+            box-shadow: 0 22px 44px -30px rgba(15, 23, 42, 0.55);
         }
     }
 
@@ -476,7 +478,7 @@
         overflow: hidden;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         background-color: var(--submenu-secondary, #DFE753) !important;
-        border-color: var(--submenu-secondary, #DFE753) !important;
+        border: 0 !important;
         box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
     }
 
@@ -529,7 +531,7 @@
 
     .contact-primary-card {
         background-color: var(--submenu-primary, #2D1D5C) !important;
-        border-color: var(--submenu-primary, #2D1D5C) !important;
+        border: 0 !important;
         box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
     }
 
@@ -547,21 +549,13 @@
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    #academics [class*="border"] {
-        border-color: var(--submenu-primary, #2D1D5C) !important;
-    }
-
-    #parents [class*="border"] {
-        border-color: var(--submenu-primary, #2D1D5C) !important;
-    }
-
     .academics-primary-card {
         position: relative;
         overflow: hidden;
         background-color: var(--submenu-secondary, #DFE753) !important;
-        border-color: var(--submenu-secondary, #DFE753) !important;
+        border: 0 !important;
         box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
-        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .academics-primary-card::before {
@@ -586,16 +580,6 @@
     .academics-primary-card:hover,
     .academics-primary-card:focus-within {
         background-color: var(--submenu-primary, #2D1D5C) !important;
-        border-color: var(--submenu-primary, #2D1D5C) !important;
-    }
-
-    #academics .academics-primary-card {
-        border-color: var(--submenu-secondary, #DFE753) !important;
-    }
-
-    #academics .academics-primary-card:hover,
-    #academics .academics-primary-card:focus-within {
-        border-color: var(--submenu-primary, #2D1D5C) !important;
     }
 
     .academics-primary-card:hover h3,
@@ -618,12 +602,10 @@
 
     @keyframes fx-academics-gold-border-blink {
         0%, 49% {
-            border-color: #DFE753;
-            box-shadow: 0 0 0 1px rgba(223, 231, 83, 0.72);
+            box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.5);
         }
         50%, 100% {
-            border-color: rgba(223, 231, 83, 0.18);
-            box-shadow: 0 0 0 1px rgba(223, 231, 83, 0.12);
+            box-shadow: 0 22px 44px -30px rgba(15, 23, 42, 0.55);
         }
     }
 
@@ -648,11 +630,8 @@
     }
 
     .teacher-marquee-shell {
-        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
         background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92));
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.9),
-            0 26px 62px -44px rgba(15, 23, 42, 0.45);
+        box-shadow: 0 26px 62px -44px rgba(15, 23, 42, 0.45);
     }
 
     .teacher-marquee-kicker {
@@ -664,9 +643,7 @@
 
     .teacher-marquee-window {
         overflow: hidden;
-        border-color: var(--submenu-primary, #2D1D5C) !important;
         background: var(--submenu-primary, #2D1D5C) !important;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
     @keyframes teacher-marquee-scroll {
@@ -703,7 +680,6 @@
         min-width: 260px;
         align-items: center;
         gap: 0.8rem;
-        border: 1px solid rgba(223, 231, 83, 0.38) !important;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.04);
         padding: 0.55rem 0.8rem;
@@ -717,7 +693,6 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        border: 2px solid rgba(223, 231, 83, 0.7) !important;
         border-radius: 999px;
         background: linear-gradient(135deg, #2D1D5C, #4c3892);
         color: #f8fafc;
@@ -761,12 +736,9 @@
     .why-enhance-shell {
         position: relative;
         overflow: hidden;
-        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
         border-radius: 2rem;
         background: linear-gradient(165deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.86));
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.88),
-            0 28px 72px -42px rgba(15, 23, 42, 0.45);
+        box-shadow: 0 28px 72px -42px rgba(15, 23, 42, 0.45);
     }
 
     .why-enhance-shell::before {
@@ -786,7 +758,6 @@
     }
 
     .why-enhance-intro {
-        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
         border-radius: 1.35rem;
         background: #ffffff;
         padding: 1.1rem 1.2rem;
@@ -815,7 +786,6 @@
 
     .why-enhance-intro li {
         position: relative;
-        border: 1px solid rgba(45, 29, 92, 0.26);
         border-radius: 0.9rem;
         background: var(--submenu-secondary, #DFE753);
         padding: 0.72rem 0.86rem 0.72rem 2.18rem;
@@ -840,7 +810,6 @@
 
     .why-enhance-card {
         min-height: 12.5rem;
-        border: 1px solid var(--submenu-primary, #2D1D5C) !important;
         border-radius: 1.2rem;
         overflow: hidden;
         box-shadow: 0 14px 34px -26px rgba(15, 23, 42, 0.45);
@@ -1255,7 +1224,7 @@
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
-        <header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur" style="background-color: {{ $headerBgColor ?? ($theme['header'] ?? '#2D1D5C') }};">
+        <header class="sticky top-0 z-50 backdrop-blur" style="background-color: {{ $headerBgColor ?? ($theme['header'] ?? '#2D1D5C') }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
@@ -1266,7 +1235,7 @@
                         </div>
                     @endif
                 </a>
-                <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
+                <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
                     @foreach($menuSections as $section)
                         @php
                             $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
@@ -1278,7 +1247,7 @@
                                 </button>
                                 <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
                                     <div
-                                        class="theme-submenu-panel rounded-2xl border p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
+                                        class="theme-submenu-panel rounded-2xl p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
                                         style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};"
                                     >
                                         <p class="theme-submenu-heading px-3 pb-1 text-xs font-bold uppercase tracking-[0.16em]">{{ $section['label'] }}</p>
@@ -1317,7 +1286,7 @@
             <div data-mobile-menu-backdrop class="pointer-events-none fixed inset-0 z-40 bg-slate-950/40 opacity-0 transition duration-300 xl:hidden"></div>
 
             <aside id="mobile-menu" data-mobile-menu class="pointer-events-none fixed inset-y-0 right-0 z-50 w-full max-w-sm translate-x-full overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition duration-300 xl:hidden">
-                <div class="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur">
+                <div class="sticky top-0 flex items-center justify-between bg-white/95 px-5 py-4 backdrop-blur">
                     <p class="font-display text-lg font-semibold text-slate-900">{{ $mobileMenuTitle !== '' ? $mobileMenuTitle : 'Menu' }}</p>
                     <button type="button" data-mobile-menu-close class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition duration-200 hover:bg-slate-100">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -1333,7 +1302,7 @@
 
                     <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
                         @foreach($menuSections as $section)
-                            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                            <div class="rounded-xl bg-white shadow-sm">
                                 @if(!empty($section['items']))
                                     <button type="button" data-mobile-submenu-toggle data-target="mobile-submenu-{{ $section['id'] }}" aria-expanded="false" class="theme-nav-link flex w-full items-center justify-between px-4 py-3.5 text-left text-sm font-semibold transition duration-200">
                                         <span>{{ $section['label'] }}</span>
@@ -1357,66 +1326,10 @@
             </aside>
         </header>
 
-        <main class="relative z-0">
+        <main class="relative z-0 bg-pattern-grid">
             <x-hero-slider :school="$school" :public-page="$publicPage" />
 
-            @if($teachersMarqueeItems->isNotEmpty())
-                <section class="teacher-marquee-section border-t border-slate-200 py-10">
-                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div class="teacher-marquee-shell rounded-3xl p-5 lg:p-6">
-                            <div class="mb-4">
-                                <p class="teacher-marquee-kicker text-xs">{{ $teachersMarqueeLabel !== '' ? $teachersMarqueeLabel : 'Our Teachers' }}</p>
-                                <h2 class="mt-2 font-display text-2xl font-extrabold text-slate-900 sm:text-3xl">
-                                    {{ $teachersMarqueeHeading !== '' ? $teachersMarqueeHeading : 'Meet Our Teaching Team' }}
-                                </h2>
-                                @if($teachersMarqueeIntro !== '')
-                                    <p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">{{ $teachersMarqueeIntro }}</p>
-                                @endif
-                            </div>
-
-                            <div class="teacher-marquee-window rounded-2xl border">
-                                <div class="teacher-marquee-track {{ $teachersMarqueeItems->count() > 1 ? '' : 'is-static' }}">
-                                    @foreach($teachersMarqueeLoopItems as $item)
-                                        @php
-                                            $name = trim((string) ($item['name'] ?? ''));
-                                            $role = trim((string) ($item['role'] ?? ''));
-                                            $imagePath = trim((string) ($item['image'] ?? ''));
-                                            $hasImage = $imagePath !== '';
-                                            $imageUrl = $hasImage
-                                                ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/' . ltrim($imagePath, '/')))
-                                                : null;
-                                            $initials = \Illuminate\Support\Str::upper(
-                                                collect(preg_split('/\s+/', $name !== '' ? $name : 'Teacher'))
-                                                    ->filter()
-                                                    ->take(2)
-                                                    ->map(fn ($word) => \Illuminate\Support\Str::substr($word, 0, 1))
-                                                    ->implode('')
-                                            );
-                                        @endphp
-                                        <article class="teacher-marquee-card">
-                                            <div class="teacher-marquee-avatar">
-                                                @if($hasImage)
-                                                    <img src="{{ $imageUrl }}" alt="{{ $name !== '' ? $name : 'Teacher profile' }}" class="h-full w-full object-cover">
-                                                @else
-                                                    <span>{{ $initials !== '' ? $initials : 'T' }}</span>
-                                                @endif
-                                            </div>
-                                            <div class="teacher-marquee-meta">
-                                                <p class="teacher-marquee-name">{{ $name !== '' ? $name : 'Teacher' }}</p>
-                                                @if($role !== '')
-                                                    <p class="teacher-marquee-role">{{ $role }}</p>
-                                                @endif
-                                            </div>
-                                        </article>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            @endif
-
-            <section class="why-enhance-section border-t border-slate-200 py-14">
+            <section class="why-enhance-section py-14">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="why-enhance-shell p-5 lg:p-7">
                         <div class="relative z-10 mb-6">
@@ -1468,12 +1381,12 @@
 
             <div id="admissions" class="sr-only" aria-hidden="true"></div>
 
-            <section id="academics" class="relative overflow-hidden border-t border-slate-200 bg-[#eef6ff] py-10">
+            <section id="academics" class="relative overflow-hidden bg-[#eef6ff] py-10">
                 <div class="pointer-events-none absolute inset-0 opacity-60" style="background-image: linear-gradient(rgba(45, 29, 92, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 29, 92, 0.08) 1px, transparent 1px); background-size: 34px 34px;"></div>
                 <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.68),_transparent_38%)]"></div>
                 <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.4),_transparent_34%)]"></div>
                 <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
+                    <div class="rounded-3xl bg-white p-5 shadow-sm lg:p-6">
                         <div class="grid gap-4 lg:grid-cols-12 lg:items-stretch">
                             <div class="lg:col-span-6">
                                 <p class="text-base font-bold uppercase tracking-[0.24em] text-blue-700">
@@ -1484,7 +1397,7 @@
 
                                 <div class="mt-4 grid gap-3 sm:grid-cols-2">
                                     @foreach($academicHighlights as $item)
-                                        <article id="academics-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('academic-highlight-'.$loop->index)) }}" class="academics-primary-card rounded-2xl border p-3.5">
+                                        <article id="academics-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('academic-highlight-'.$loop->index)) }}" class="academics-primary-card rounded-2xl p-3.5">
                                             <h3 class="text-xl font-bold">{{ $item['title'] ?? '' }}</h3>
                                             <div class="rich-text-content mt-1.5 text-base leading-relaxed">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
                                         </article>
@@ -1496,7 +1409,7 @@
                                 <div class="grid h-full grid-cols-2 gap-4">
                                     @for($i = 0; $i < 2; $i++)
                                         @php $visual = $academicsVisuals->get($i); @endphp
-                                        <div class="min-h-[240px] lg:min-h-[260px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-900">
+                                        <div class="min-h-[240px] lg:min-h-[260px] overflow-hidden rounded-2xl bg-slate-900">
                                             @if($visual)
                                                 <img src="{{ $visual }}" alt="Academic Excellence Visual {{ $i + 1 }}" class="h-full w-full object-cover">
                                             @else
@@ -1517,7 +1430,7 @@
 
             <div id="about" class="sr-only" aria-hidden="true"></div>
 
-            <section id="student-life" class="border-t border-slate-200 bg-slate-50 py-16">
+            <section id="student-life" class="bg-slate-50 py-16">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="mb-10 max-w-3xl">
                         <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life' }}</p>
@@ -1525,7 +1438,7 @@
                     </div>
                     <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach($studentLifeItems as $item)
-                            <div id="student-life-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('student-life-'.$loop->index)) }}" class="student-life-fx-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                            <div id="student-life-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('student-life-'.$loop->index)) }}" class="student-life-fx-card rounded-2xl bg-white p-5 shadow-sm">
                                 <h3 class="student-life-fx-title text-lg font-semibold text-slate-900">{{ $item['title'] ?? '' }}</h3>
                                 <div class="student-life-fx-text rich-text-content mt-2 text-sm text-slate-600">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
                             </div>
@@ -1534,12 +1447,12 @@
                 </div>
             </section>
 
-            <section id="parents" class="relative overflow-hidden border-y border-slate-200 bg-[#eef6ff] py-14 sm:py-16">
+            <section id="parents" class="relative overflow-hidden bg-[#eef6ff] py-14 sm:py-16">
                 <div class="pointer-events-none absolute inset-0 opacity-60" style="background-image: linear-gradient(rgba(45, 29, 92, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 29, 92, 0.08) 1px, transparent 1px); background-size: 34px 34px;"></div>
                 <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.68),_transparent_38%)]"></div>
                 <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.4),_transparent_34%)]"></div>
                 <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <div id="testimonials" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
+                    <div id="testimonials" class="rounded-3xl bg-white p-5 shadow-sm lg:p-6">
                         <div class="mx-auto max-w-4xl text-center">
                             <p class="text-base font-bold uppercase tracking-[0.24em] text-blue-700">
                                 {{ $testimonialsBadgeText !== '' ? $testimonialsBadgeText : 'Testimonials' }}
@@ -1552,7 +1465,7 @@
                             </p>
                         </div>
 
-                        <div class="mt-8 rounded-2xl border border-slate-200 bg-slate-50/70 p-5 sm:p-6">
+                        <div class="mt-8 rounded-2xl bg-slate-50/70 p-5 sm:p-6">
                             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                                 <h3 class="text-2xl font-extrabold text-slate-900 sm:text-3xl">
                                     {{ $testimonialsSliderTitle !== '' ? $testimonialsSliderTitle : 'Approved Testimonials' }}
@@ -1566,11 +1479,11 @@
                             </div>
 
                             @if($testimonials->isEmpty())
-                                <div class="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-base font-medium text-slate-600">
+                                <div class="rounded-xl bg-white px-4 py-10 text-center text-base font-medium text-slate-600">
                                     {{ $testimonialsEmptyText !== '' ? $testimonialsEmptyText : 'No testimonials have been approved yet. Be the first to share your experience.' }}
                                 </div>
                             @else
-                                <div data-testimonial-slider class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                                <div data-testimonial-slider class="relative overflow-hidden rounded-2xl bg-white">
                                     <div data-testimonial-track class="flex transition-transform duration-500 ease-out">
                                         @foreach($testimonials as $testimonial)
                                             @php
@@ -1583,7 +1496,7 @@
                                                 $tStars = max(1, min(5, (int) $testimonial->rating));
                                             @endphp
                                             <article class="w-full shrink-0 p-5 sm:p-7">
-                                                <div class="rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6">
+                                                <div class="rounded-xl bg-slate-50 p-5 shadow-sm sm:p-6">
 
                                                     {{-- Rating stars --}}
                                                     <div class="mb-4 flex items-center gap-1">
@@ -1643,7 +1556,7 @@
                 </div>
             </section>
 
-            <section id="contact" class="border-t border-slate-200 bg-slate-50 py-16">
+            <section id="contact" class="bg-slate-50 py-16">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="mb-10 max-w-3xl">
                         <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $contactLabel !== '' ? $contactLabel : 'Contact' }}</p>
@@ -1652,13 +1565,13 @@
                     <div class="grid gap-6 lg:grid-cols-2">
                         <div class="grid gap-4 sm:grid-cols-2">
                             @foreach($contactItems as $item)
-                                <div id="contact-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('contact-'.$loop->index)) }}" class="contact-primary-card rounded-xl border p-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-sm">
+                                <div id="contact-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('contact-'.$loop->index)) }}" class="contact-primary-card rounded-xl p-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-sm">
                                     <h3 class="contact-primary-title text-sm font-bold uppercase tracking-wide">{{ $item['title'] ?? '' }}</h3>
                                     <div class="contact-primary-text rich-text-content mt-2 text-sm">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
                                 </div>
                             @endforeach
                         </div>
-                        <div class="contact-primary-card rounded-2xl border p-5 shadow-sm">
+                        <div class="contact-primary-card rounded-2xl p-5 shadow-sm">
                             <h3 class="contact-primary-title font-semibold">{{ $quickContactLabel !== '' ? $quickContactLabel : 'Quick Contact' }}</h3>
                             <div class="contact-primary-text mt-3 space-y-2 text-sm">
                                 <p><span class="font-semibold">{{ $contactPhoneLabel !== '' ? $contactPhoneLabel : 'Phone' }}:</span> {{ $school?->phone ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
@@ -1673,7 +1586,7 @@
                                 <a href="{{ route('admission.apply') }}" class="theme-cta-outline rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $quickApplyButtonText !== '' ? $quickApplyButtonText : 'Apply Now' }}</a>
                             </div>
                             @if(!empty($publicPage['map_embed_url']))
-                                <div class="mt-5 overflow-hidden rounded-xl border border-slate-200">
+                                <div class="mt-5 overflow-hidden rounded-xl">
                                     <iframe src="{{ $publicPage['map_embed_url'] }}" title="{{ $mapEmbedTitleText !== '' ? $mapEmbedTitleText : 'School map' }}" class="h-60 w-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                                 </div>
                             @endif
@@ -1681,6 +1594,62 @@
                     </div>
                 </div>
             </section>
+
+            @if($teachersMarqueeItems->isNotEmpty())
+                <section class="teacher-marquee-section py-10">
+                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div class="teacher-marquee-shell rounded-3xl p-5 lg:p-6">
+                            <div class="mb-4">
+                                <p class="teacher-marquee-kicker text-xs">{{ $teachersMarqueeLabel !== '' ? $teachersMarqueeLabel : 'Our Teachers' }}</p>
+                                <h2 class="mt-2 font-display text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                                    {{ $teachersMarqueeHeading !== '' ? $teachersMarqueeHeading : 'Meet Our Teaching Team' }}
+                                </h2>
+                                @if($teachersMarqueeIntro !== '')
+                                    <p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">{{ $teachersMarqueeIntro }}</p>
+                                @endif
+                            </div>
+
+                            <div class="teacher-marquee-window rounded-2xl">
+                                <div class="teacher-marquee-track {{ $teachersMarqueeItems->count() > 1 ? '' : 'is-static' }}">
+                                    @foreach($teachersMarqueeLoopItems as $item)
+                                        @php
+                                            $name = trim((string) ($item['name'] ?? ''));
+                                            $role = trim((string) ($item['role'] ?? ''));
+                                            $imagePath = trim((string) ($item['image'] ?? ''));
+                                            $hasImage = $imagePath !== '';
+                                            $imageUrl = $hasImage
+                                                ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/' . ltrim($imagePath, '/')))
+                                                : null;
+                                            $initials = \Illuminate\Support\Str::upper(
+                                                collect(preg_split('/\s+/', $name !== '' ? $name : 'Teacher'))
+                                                    ->filter()
+                                                    ->take(2)
+                                                    ->map(fn ($word) => \Illuminate\Support\Str::substr($word, 0, 1))
+                                                    ->implode('')
+                                            );
+                                        @endphp
+                                        <article class="teacher-marquee-card">
+                                            <div class="teacher-marquee-avatar">
+                                                @if($hasImage)
+                                                    <img src="{{ $imageUrl }}" alt="{{ $name !== '' ? $name : 'Teacher profile' }}" class="h-full w-full object-cover">
+                                                @else
+                                                    <span>{{ $initials !== '' ? $initials : 'T' }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="teacher-marquee-meta">
+                                                <p class="teacher-marquee-name">{{ $name !== '' ? $name : 'Teacher' }}</p>
+                                                @if($role !== '')
+                                                    <p class="teacher-marquee-role">{{ $role }}</p>
+                                                @endif
+                                            </div>
+                                        </article>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            @endif
         </main>
 
         @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])

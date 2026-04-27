@@ -43,7 +43,7 @@
     };
 @endphp
 
-<footer class="border-t border-slate-200 text-slate-200" style="background-color: {{ $footerBgColor }}; color: {{ $footerMutedColor }};">
+<footer class="text-slate-200" style="background-color: {{ $footerBgColor }}; color: {{ $footerMutedColor }};">
     <div class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div class="grid gap-10 lg:grid-cols-4">
             <div class="lg:col-span-1">
@@ -198,8 +198,7 @@
 </footer>
 
 <div id="cookie-consent-banner" class="pointer-events-none fixed inset-x-0 bottom-4 z-[90] hidden px-4 sm:px-6">
-    <div class="pointer-events-auto mx-auto w-full max-w-5xl rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur sm:p-5"
-         style="border-color: var(--submenu-primary, #2D1D5C);">
+    <div class="pointer-events-auto mx-auto w-full max-w-5xl rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur sm:p-5">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div class="max-w-3xl">
                 <p class="text-sm font-bold uppercase tracking-[0.16em] text-slate-700">{{ $cookieBannerTitle }}</p>

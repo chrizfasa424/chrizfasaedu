@@ -69,10 +69,6 @@
         text-justify: inter-word;
     }
 
-    body * {
-        border-color: var(--submenu-primary, var(--primary, #2D1D5C)) !important;
-    }
-
     h1,
     h2,
     h3,
@@ -411,7 +407,7 @@
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
-        <header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur" style="background-color: {{ $headerBgColor }};">
+        <header class="sticky top-0 z-50 backdrop-blur" style="background-color: {{ $headerBgColor }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
@@ -422,7 +418,7 @@
                         </div>
                     @endif
                 </a>
-                <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
                     @foreach($menuSections as $section)
                         @php
                             $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
@@ -435,7 +431,7 @@
                                 </button>
                                 <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
                                     <div
-                                        class="theme-submenu-panel rounded-2xl border p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
+                                        class="theme-submenu-panel rounded-2xl p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
                                         style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};"
                                     >
                                         <p class="theme-submenu-heading px-3 pb-1 text-xs font-bold uppercase tracking-[0.16em]">{{ $section['label'] }}</p>
@@ -474,7 +470,7 @@
             <div data-mobile-menu-backdrop class="pointer-events-none fixed inset-0 z-40 bg-slate-950/40 opacity-0 transition duration-300 xl:hidden"></div>
 
             <aside id="mobile-menu" data-mobile-menu class="pointer-events-none fixed inset-y-0 right-0 z-50 w-full max-w-sm translate-x-full overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition duration-300 xl:hidden">
-                <div class="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur">
+                <div class="sticky top-0 flex items-center justify-between bg-white/95 px-5 py-4 backdrop-blur">
                     <p class="font-display text-lg font-semibold text-slate-900">{{ $mobileMenuTitle !== '' ? $mobileMenuTitle : 'Menu' }}</p>
                     <button type="button" data-mobile-menu-close class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition duration-200 hover:bg-slate-100">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -490,7 +486,7 @@
 
                     <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
                         @foreach($menuSections as $section)
-                            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                            <div class="rounded-xl bg-white shadow-sm">
                                 @if(!empty($section['items']))
                                     <button type="button" data-mobile-submenu-toggle data-target="mobile-submenu-{{ $section['id'] }}" aria-expanded="false" class="theme-nav-link flex w-full items-center justify-between px-4 py-3.5 text-left text-sm font-semibold transition duration-200 {{ $section['id'] === $sectionKey ? 'theme-nav-link-active' : '' }}">
                                         <span>{{ $section['label'] }}</span>
@@ -514,7 +510,7 @@
             </aside>
         </header>
 
-        <main class="relative z-0">
+        <main class="relative z-0 bg-pattern-grid">
             @php
                 $contactHeroImage = trim((string) ($publicPage['contact_hero_image'] ?? ''));
             @endphp
@@ -561,7 +557,7 @@
                 @endif
 
                 <div class="grid gap-8 lg:grid-cols-2">
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+                    <div class="rounded-2xl bg-white p-6 shadow-soft">
                         <h2 class="font-display text-2xl font-semibold text-slate-900">{{ $contactFormTitle !== '' ? $contactFormTitle : 'Contact Us Form' }}</h2>
                         <form action="{{ route('public.contact.submit') }}" method="POST" class="mt-5 space-y-4">
                             @csrf
@@ -611,7 +607,7 @@
                         </form>
                     </div>
 
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+                    <div class="rounded-2xl bg-white p-6 shadow-soft">
                         <h2 class="font-display text-2xl font-semibold text-slate-900">{{ $contactInfoTitle !== '' ? $contactInfoTitle : 'Contact Information' }}</h2>
                         <div class="mt-5 space-y-3 text-sm text-slate-700">
                             <p><span class="font-semibold">{{ $contactAddressLabel !== '' ? $contactAddressLabel : 'Address' }}:</span> {{ $school?->address ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
@@ -621,11 +617,11 @@
                         </div>
 
                         @if(!empty($contactItems))
-                            <div class="mt-7 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <div class="mt-7 rounded-xl bg-slate-50 p-4">
                                 <h3 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $contactMoreDetailsTitle !== '' ? $contactMoreDetailsTitle : 'More Contact Details' }}</h3>
                                 <div class="mt-3 space-y-2">
                                     @foreach($contactItems as $contactItem)
-                                        <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">
+                                        <div class="rounded-lg bg-white px-3 py-2">
                                             <p class="text-sm font-semibold text-slate-900">{{ $contactItem['title'] }}</p>
                                             <div class="rich-text-content mt-1 text-sm text-slate-600">{!! \App\Support\RichText::render($contactItem['description']) !!}</div>
                                         </div>

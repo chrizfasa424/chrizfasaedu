@@ -68,8 +68,8 @@
     <div class="min-h-screen">
         @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
-        <main>
-            <section class="border-b border-slate-200 bg-gradient-to-br from-slate-50 to-white">
+        <main class="bg-pattern-grid">
+            <section class="bg-gradient-to-br from-slate-50 to-white">
                 <div class="mx-auto max-w-5xl px-6 py-14 lg:px-8 lg:py-16">
                     <p class="text-sm font-bold uppercase tracking-[0.2em] text-brand-700">Legal</p>
                     <h1 class="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">{{ $cookiesTitle }}</h1>
@@ -81,7 +81,7 @@
             </section>
 
             <section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
-                <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" style="background-color: {{ $surfaceColor }};">
+                <div class="rounded-3xl bg-white p-6 shadow-sm sm:p-8" style="background-color: {{ $surfaceColor }};">
                     <div class="policy-rich-text text-base leading-relaxed text-muted">{!! \App\Support\RichText::render($cookiesContent) !!}</div>
                 </div>
             </section>

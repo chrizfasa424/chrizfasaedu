@@ -44,7 +44,7 @@
     ];
 @endphp
 
-<header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur"
+<header class="sticky top-0 z-50 backdrop-blur"
         style="background-color:{{ $navHeader }};--submenu-primary:{{ $navPrimary }};--submenu-secondary:{{ $navSecondary }};--submenu-hover-text:{{ $navHoverText }};">
 
     <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
@@ -62,7 +62,7 @@
         </a>
 
         {{-- Desktop nav --}}
-        <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex"
+        <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex"
              style="--submenu-secondary:{{ $navSecondary }};--submenu-hover-text:{{ $navHoverText }};">
             @foreach($navSections as $section)
             @php $alignClass = ($loop->last || $loop->iteration >= count($navSections) - 1) ? 'right-0' : 'left-0'; @endphp
@@ -73,7 +73,7 @@
                         {{ $section['label'] }}
                     </button>
                     <div id="nav-submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
-                        <div class="theme-submenu-panel rounded-2xl border p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
+                        <div class="theme-submenu-panel rounded-2xl p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
                              style="--submenu-primary:{{ $navPrimary }};--submenu-secondary:{{ $navSecondary }};--submenu-hover-text:{{ $navHoverText }};">
                             <p class="theme-submenu-heading px-3 pb-1 text-xs font-bold uppercase tracking-[0.16em]">{{ $section['label'] }}</p>
                             <a href="{{ $section['link'] }}" class="theme-submenu-link block rounded-lg px-3 py-2 text-sm font-semibold transition duration-200">
@@ -131,7 +131,7 @@
     {{-- Mobile drawer --}}
     <aside id="public-mobile-menu" data-mobile-menu
            class="pointer-events-none fixed inset-y-0 right-0 z-50 w-full max-w-sm translate-x-full overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition duration-300 xl:hidden">
-        <div class="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur">
+        <div class="sticky top-0 flex items-center justify-between bg-white/95 px-5 py-4 backdrop-blur">
             <p class="text-lg font-semibold text-slate-900">{{ $navMobileMenuTitle ?: 'Menu' }}</p>
             <button type="button" data-mobile-menu-close
                     class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition duration-200 hover:bg-slate-100">
@@ -155,7 +155,7 @@
             <div class="space-y-2"
                  style="--submenu-secondary:{{ $navSecondary }};--submenu-hover-text:{{ $navHoverText }};">
                 @foreach($navSections as $section)
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="rounded-xl bg-white shadow-sm">
                     @if(!empty($section['items']))
                         <button type="button" data-mobile-submenu-toggle data-target="nav-mobile-sub-{{ $section['id'] }}"
                                 aria-expanded="false"

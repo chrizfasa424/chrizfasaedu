@@ -141,19 +141,24 @@ class LoginController extends Controller
         $isStaffContext = $loginMode === 'staff' || in_array($roleValue, $staffFacingRoles, true);
         $redirectRoute = $isStaffContext ? 'staff.login' : $defaultRedirectRoute;
 
-        Auth::guard('web')->logout();
-        $request->session()->migrate(true);
-        $request->session()->regenerateToken();
+        $this->logoutAllGuards($request);
 
         return redirect()->route($redirectRoute);
     }
 
     public function portalLogout(Request $request)
     {
+        $this->logoutAllGuards($request);
+        return redirect()->route('portal.login');
+    }
+
+    private function logoutAllGuards(Request $request): void
+    {
+        Auth::guard('web')->logout();
         Auth::guard('portal')->logout();
+        $request->session()->forget('auth.login_mode');
         $request->session()->migrate(true);
         $request->session()->regenerateToken();
-        return redirect()->route('portal.login');
     }
 
     protected function redirectPath($user): string

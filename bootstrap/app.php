@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Auth;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -74,6 +75,30 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (TokenMismatchException $exception, Request $request) {
+            // Allow stale-token logout attempts to still sign out and redirect.
+            // This prevents 419 loops when multiple tabs/guards share one browser session.
+            if ($request->isMethod('post') && (
+                $request->is('logout')
+                || $request->is('staff/logout')
+                || $request->is('portal/logout')
+            )) {
+                $redirectRoute = 'login';
+
+                if ($request->is('portal/logout')) {
+                    $redirectRoute = 'portal.login';
+                } elseif ($request->is('staff/logout') || (string) $request->session()->get('auth.login_mode', '') === 'staff') {
+                    $redirectRoute = 'staff.login';
+                }
+
+                Auth::guard('web')->logout();
+                Auth::guard('portal')->logout();
+                $request->session()->forget('auth.login_mode');
+                $request->session()->migrate(true);
+                $request->session()->regenerateToken();
+
+                return redirect()->route($redirectRoute);
+            }
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Session expired. Please refresh and try again.',

@@ -58,9 +58,9 @@ Route::get('/staff-access', [LoginController::class, 'showStaffLoginForm']);
 Route::post('/staff-access', [LoginController::class, 'staffLogin'])->middleware('throttle:8,1');
 Route::get('/portal', [LoginController::class, 'showPortalLoginForm'])->name('portal.login');
 Route::post('/portal', [LoginController::class, 'portalLogin'])->name('portal.login.submit')->middleware('throttle:8,1');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/staff/logout', [LoginController::class, 'staffLogout'])->name('staff.logout');
-Route::post('/portal/logout', [LoginController::class, 'portalLogout'])->name('portal.logout');
+Route::match(['get', 'post'], '/logout', [LoginController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/staff/logout', [LoginController::class, 'staffLogout'])->name('staff.logout');
+Route::match(['get', 'post'], '/portal/logout', [LoginController::class, 'portalLogout'])->name('portal.logout');
 Route::get('/csrf-token', function (Request $request) {
     $request->session()->regenerateToken();
 

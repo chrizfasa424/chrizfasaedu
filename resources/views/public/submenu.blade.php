@@ -69,10 +69,6 @@
         text-justify: inter-word;
     }
 
-    body * {
-        border-color: var(--submenu-primary, var(--primary, #2D1D5C)) !important;
-    }
-
     h1,
     h2,
     h3,
@@ -392,7 +388,7 @@
     }
 
     .sidebar-program-link {
-        border-color: #cbd5e1;
+        border: 1px solid #22323C;
         background-color: #ffffff;
     }
 
@@ -407,7 +403,7 @@
     .sidebar-program-link:hover,
     .sidebar-program-link:focus-visible,
     .sidebar-program-link-active {
-        border-color: #2D1D5C !important;
+        border-color: #22323C !important;
         background-color: #2D1D5C !important;
     }
 
@@ -486,7 +482,7 @@
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
-        <header class="sticky top-0 z-50 border-b border-white/10 backdrop-blur" style="background-color: {{ $headerBgColor }};">
+        <header class="sticky top-0 z-50 backdrop-blur" style="background-color: {{ $headerBgColor }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
@@ -497,7 +493,7 @@
                         </div>
                     @endif
                 </a>
-                <nav class="hidden items-center justify-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
+                <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
                     @foreach($menuSections as $section)
                         @php
                             $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
@@ -510,7 +506,7 @@
                                 </button>
                                 <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
                                     <div
-                                        class="theme-submenu-panel rounded-2xl border p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
+                                        class="theme-submenu-panel rounded-2xl p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
                                         style="--submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};"
                                     >
                                         <p class="theme-submenu-heading px-3 pb-1 text-xs font-bold uppercase tracking-[0.16em]">{{ $section['label'] }}</p>
@@ -549,7 +545,7 @@
             <div data-mobile-menu-backdrop class="pointer-events-none fixed inset-0 z-40 bg-slate-950/40 opacity-0 transition duration-300 xl:hidden"></div>
 
             <aside id="mobile-menu" data-mobile-menu class="pointer-events-none fixed inset-y-0 right-0 z-50 w-full max-w-sm translate-x-full overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition duration-300 xl:hidden">
-                <div class="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur">
+                <div class="sticky top-0 flex items-center justify-between bg-white/95 px-5 py-4 backdrop-blur">
                     <p class="font-display text-lg font-semibold text-slate-900">{{ $mobileMenuTitle !== '' ? $mobileMenuTitle : 'Menu' }}</p>
                     <button type="button" data-mobile-menu-close class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition duration-200 hover:bg-slate-100">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -565,7 +561,7 @@
 
                     <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }};">
                         @foreach($menuSections as $section)
-                            <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                            <div class="rounded-xl bg-white shadow-sm">
                                 @if(!empty($section['items']))
                                     <button type="button" data-mobile-submenu-toggle data-target="mobile-submenu-{{ $section['id'] }}" aria-expanded="false" class="theme-nav-link flex w-full items-center justify-between px-4 py-3.5 text-left text-sm font-semibold transition duration-200 {{ $section['id'] === $sectionKey ? 'theme-nav-link-active' : '' }}">
                                         <span>{{ $section['label'] }}</span>
@@ -589,7 +585,7 @@
             </aside>
         </header>
 
-        <main class="relative z-0">
+        <main class="relative z-0 bg-pattern-grid">
             {{-- Full-width hero section --}}
             <div class="relative w-full overflow-hidden" style="min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;">
                 @if(!empty($item['image']))
@@ -668,7 +664,7 @@
                     </div>
 
                     {{-- No results notice --}}
-                    <div id="faq-no-results" class="hidden rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
+                    <div id="faq-no-results" class="hidden rounded-2xl bg-slate-50 py-12 text-center">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto mb-3 h-9 w-9 text-slate-300"><circle cx="11" cy="11" r="7.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/></svg>
                         <p class="text-sm font-semibold text-slate-500">No matching questions found.</p>
                         <p class="mt-1 text-xs text-slate-400">Try a different keyword or browse all categories.</p>
@@ -690,7 +686,7 @@
 
                         <div class="space-y-2">
                             @foreach($cat['items'] as $idx => $faq)
-                            <div class="faq-item rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all duration-200"
+                            <div class="faq-item rounded-2xl bg-white shadow-sm overflow-hidden transition-all duration-200"
                                  data-question="{{ strtolower($faq['q']) }}"
                                  data-cat="{{ $cat['id'] }}">
                                 <button type="button"
@@ -774,14 +770,14 @@
                     $plainDescription = trim(strip_tags((string) \App\Support\RichText::render($displayDescription)));
                     $readingMinutes = max(1, (int) ceil(str_word_count($plainDescription) / 170));
                 @endphp
-                <div class="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/95 p-6 shadow-[0_24px_50px_-38px_rgba(15,23,42,0.5)] lg:p-8">
+                <div class="relative overflow-hidden rounded-[2rem] bg-white/95 p-6 shadow-[0_24px_50px_-38px_rgba(15,23,42,0.5)] lg:p-8">
                     <div class="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full bg-brand-100/70 blur-3xl"></div>
                     <div class="pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-secondary-100/70 blur-3xl"></div>
 
                     <div class="relative space-y-8">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-brand-700">{{ $sectionLabel }}</span>
-                            <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{{ $readingMinutes }} min read</span>
+                            <span class="inline-flex items-center rounded-full bg-white px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{{ $readingMinutes }} min read</span>
                         </div>
 
                         <div class="rich-text-content max-w-4xl text-base leading-relaxed text-muted sm:text-lg">{!! \App\Support\RichText::render($displayDescription) !!}</div>
@@ -793,14 +789,14 @@
                         @if($pageImgOne !== '' || $pageImgTwo !== '')
                         <div class="grid gap-4 sm:grid-cols-12">
                             @if($pageImgOne !== '')
-                            <figure class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm {{ $pageImgTwo !== '' ? 'sm:col-span-8' : 'sm:col-span-12' }}">
+                            <figure class="overflow-hidden rounded-3xl bg-white shadow-sm {{ $pageImgTwo !== '' ? 'sm:col-span-8' : 'sm:col-span-12' }}">
                                 <img src="{{ asset('storage/' . ltrim($pageImgOne, '/')) }}"
                                      alt="{{ $item['title'] }}"
                                      class="h-64 w-full object-cover transition duration-500 hover:scale-105 sm:h-[20rem]">
                             </figure>
                             @endif
                             @if($pageImgTwo !== '')
-                            <figure class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm sm:col-span-4">
+                            <figure class="overflow-hidden rounded-3xl bg-white shadow-sm sm:col-span-4">
                                 <img src="{{ asset('storage/' . ltrim($pageImgTwo, '/')) }}"
                                      alt="{{ $item['title'] }}"
                                      class="h-64 w-full object-cover transition duration-500 hover:scale-105 sm:h-[20rem]">
@@ -810,14 +806,14 @@
                         @endif
 
                         <div class="grid gap-4 lg:grid-cols-2">
-                            <article class="rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-white p-5 shadow-sm">
+                            <article class="rounded-2xl bg-gradient-to-br from-brand-50 via-white to-white p-5 shadow-sm">
                                 <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 12.75 10.5 18l8.25-12"/></svg>
                                 </div>
                                 <h2 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $h1Title }}</h2>
                                 <div class="rich-text-content mt-2 text-sm leading-relaxed text-slate-600">{!! \App\Support\RichText::render($h1Text) !!}</div>
                             </article>
-                            <article class="rounded-2xl border border-secondary-200 bg-gradient-to-br from-secondary-50 via-white to-white p-5 shadow-sm">
+                            <article class="rounded-2xl bg-gradient-to-br from-secondary-50 via-white to-white p-5 shadow-sm">
                                 <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                                 </div>
@@ -844,7 +840,7 @@
                 </div>
                 @endif
 
-                    <aside class="self-start overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_24px_50px_-40px_rgba(15,23,42,0.55)] lg:sticky lg:top-28">
+                    <aside class="self-start overflow-hidden rounded-[1.75rem] border bg-white shadow-[0_24px_50px_-40px_rgba(15,23,42,0.55)] lg:sticky lg:top-28" style="border-color:#22323C;">
                         <div class="px-5 py-4" style="background-color: var(--submenu-secondary, #DFE753); color: var(--submenu-hover-text, #2D1D5C);">
                             <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--submenu-hover-text, #2D1D5C); opacity: 0.82;">{{ $sectionLabel }}</p>
                             <h2 class="mt-1 font-display text-2xl font-semibold">{{ $submenuMoreInPrefix !== '' ? $submenuMoreInPrefix : 'More In' }} {{ $sectionLabel }}</h2>
@@ -855,14 +851,14 @@
                                 @php
                                     $activeSubmenuItem = $sectionItem['slug'] === $item['slug'];
                                 @endphp
-                                <a href="{{ route('public.submenu', ['section' => $sectionKey, 'slug' => $sectionItem['slug']]) }}" class="sidebar-program-link group block rounded-2xl border px-3.5 py-3 text-sm transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2D1D5C]/35 {{ $activeSubmenuItem ? 'sidebar-program-link-active shadow-sm' : '' }}">
+                                <a href="{{ route('public.submenu', ['section' => $sectionKey, 'slug' => $sectionItem['slug']]) }}" class="sidebar-program-link group block rounded-2xl px-3.5 py-3 text-sm transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#22323C]/35 {{ $activeSubmenuItem ? 'sidebar-program-link-active shadow-sm' : '' }}">
                                     <span class="sidebar-program-link-title block font-semibold">{{ $sectionItem['title'] }}</span>
                                     <span class="sidebar-program-link-meta mt-1 block text-xs">{{ $activeSubmenuItem ? 'Current page' : 'Open page' }}</span>
                                 </a>
                             @endforeach
                             </div>
 
-                            <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <div class="mt-4 rounded-2xl border bg-slate-50 p-4" style="border-color:#22323C;">
                                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Need Personal Help?</p>
                                 <p class="mt-2 text-sm text-slate-600">Talk to our admissions team for guidance on choosing the right program.</p>
                                 <a href="{{ route('public.contact') }}" class="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 ring-1 ring-slate-300 transition duration-200 hover:-translate-y-0.5 hover:ring-slate-500">

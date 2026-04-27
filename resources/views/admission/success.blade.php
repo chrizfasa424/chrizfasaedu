@@ -38,7 +38,7 @@
 @include('public.partials.page-loader', ['school' => $school, 'primary' => $primary])
 @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
-    <div class="min-h-[calc(100vh-68px)] flex items-center justify-center py-16 px-4">
+    <div class="bg-pattern-grid min-h-[calc(100vh-68px)] flex items-center justify-center py-16 px-4">
         <div class="w-full max-w-lg">
             {{-- Success card --}}
             <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
