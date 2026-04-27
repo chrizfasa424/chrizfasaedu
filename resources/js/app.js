@@ -1,0 +1,1 @@
+// Frontend entrypoint for Vite-managed assets.

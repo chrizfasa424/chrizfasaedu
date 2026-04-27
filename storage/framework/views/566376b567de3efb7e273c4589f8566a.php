@@ -14,51 +14,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '<?php echo e($theme['primary']['50']); ?>',
-                            100: '<?php echo e($theme['primary']['100']); ?>',
-                            200: '<?php echo e($theme['primary']['200']); ?>',
-                            300: '<?php echo e($theme['primary']['300']); ?>',
-                            400: '<?php echo e($theme['primary']['400']); ?>',
-                            500: '<?php echo e($theme['primary']['500']); ?>',
-                            600: '<?php echo e($theme['primary']['600']); ?>',
-                            700: '<?php echo e($theme['primary']['700']); ?>'
-                        },
-                        secondary: {
-                            50: '<?php echo e($theme['secondary']['50']); ?>',
-                            100: '<?php echo e($theme['secondary']['100']); ?>',
-                            200: '<?php echo e($theme['secondary']['200']); ?>',
-                            300: '<?php echo e($theme['secondary']['300']); ?>',
-                            400: '<?php echo e($theme['secondary']['400']); ?>',
-                            500: '<?php echo e($theme['secondary']['500']); ?>',
-                            600: '<?php echo e($theme['secondary']['600']); ?>',
-                            700: '<?php echo e($theme['secondary']['700']); ?>'
-                        },
-                        accent: {
-                            300: '<?php echo e($theme['accent']['300']); ?>',
-                            400: '<?php echo e($theme['accent']['400']); ?>',
-                            500: '<?php echo e($theme['accent']['500']); ?>'
-                        },
-                        ink: '<?php echo e($theme['ink']); ?>',
-                        muted: '<?php echo e($theme['muted']); ?>'
-                    },
-                    fontFamily: {
-                        sans: ['Manrope', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif']
-                    },
-                    boxShadow: {
-                        soft: '0 12px 40px -18px rgba(15, 23, 42, 0.25)'
-                    }
-                }
-            }
-        };
-    </script>
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+    <?php
+        $tailwindThemeVars = \App\Support\ThemePalette::tailwindCssVars($theme);
+    ?>
 <style>
     :root {
         --theme-focus: rgba(15, 118, 110, 0.25);
@@ -476,7 +435,7 @@
     $submenuBackButtonPrefix = trim((string) ($publicPage['submenu_back_button_prefix'] ?? 'Back to'));
     $submenuMoreInPrefix = trim((string) ($publicPage['submenu_more_in_prefix'] ?? 'More In'));
 ?>
-<body class="text-ink antialiased" style="background-color: <?php echo e($siteBackgroundColor); ?>; color: <?php echo e($themeBodyColor); ?>; --submenu-primary: <?php echo e($submenuPrimaryColor); ?>; --submenu-secondary: <?php echo e($submenuSecondaryColor); ?>; --submenu-hover-text: <?php echo e($submenuHoverTextColor); ?>; --theme-heading: <?php echo e($themeHeadingColor); ?>; --theme-body: <?php echo e($themeBodyColor); ?>; --theme-surface: <?php echo e($themeSurfaceColor); ?>; --theme-soft-surface: <?php echo e($themeSoftSurfaceColor); ?>;">
+<body class="text-ink antialiased" style="background-color: <?php echo e($siteBackgroundColor); ?>; color: <?php echo e($themeBodyColor); ?>; --submenu-primary: <?php echo e($submenuPrimaryColor); ?>; --submenu-secondary: <?php echo e($submenuSecondaryColor); ?>; --submenu-hover-text: <?php echo e($submenuHoverTextColor); ?>; --theme-heading: <?php echo e($themeHeadingColor); ?>; --theme-body: <?php echo e($themeBodyColor); ?>; --theme-surface: <?php echo e($themeSurfaceColor); ?>; --theme-soft-surface: <?php echo e($themeSoftSurfaceColor); ?>; <?php echo e($tailwindThemeVars); ?>;">
     <?php echo $__env->make('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <div class="relative min-h-screen overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>

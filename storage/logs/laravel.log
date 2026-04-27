@@ -13296,3 +13296,60 @@
 "} 
 [2026-04-24 18:44:56] production.WARNING: Admission status email failed {"admission_id":6,"error":"Failed to authenticate on SMTP server with username \"noreply@intrinsictrustcreditunion.com\" using the following authenticators: \"LOGIN\", \"PLAIN\". Authenticator \"LOGIN\" returned \"Expected response code \"235\" but got code \"535\", with message \"535 Incorrect authentication data\".\". Authenticator \"PLAIN\" returned \"Expected response code \"235\" but got code \"535\", with message \"535 Incorrect authentication data\".\"."} 
 [2026-04-26 12:56:54] production.WARNING: Payment approved but notification delivery failed. {"payment_id":7,"student_id":1,"student_user_id":5,"student_email":"hongligreg@gmail.com","error":"Failed to authenticate on SMTP server with username \"noreply@intrinsictrustcreditunion.com\" using the following authenticators: \"LOGIN\", \"PLAIN\". Authenticator \"LOGIN\" returned \"Expected response code \"235\" but got code \"535\", with message \"535 Incorrect authentication data\".\". Authenticator \"PLAIN\" returned \"Expected response code \"235\" but got code \"535\", with message \"535 Incorrect authentication data\".\"."} 
+[2026-04-27 13:44:24] production.ERROR: Writing to C:/Users/Ohwofasa/AppData/Roaming/PsySH/psysh_history is not allowed. {"exception":"[object] (ErrorException(code: 0): Writing to C:/Users/Ohwofasa/AppData/Roaming/PsySH/psysh_history is not allowed. at C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/ConfigPaths.php:480)
+[stacktrace]
+#0 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate/Foundation/Bootstrap/HandleExceptions->handleError(1024, 'Writing to C:/U...', 'C://wamp64//www//c...', 480)
+#1 [internal function]: Illuminate/Foundation/Bootstrap/HandleExceptions->Illuminate/Foundation/Bootstrap/{closure}(1024, 'Writing to C:/U...', 'C://wamp64//www//c...', 480)
+#2 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/ConfigPaths.php(480): trigger_error('Writing to C:/U...', 1024)
+#3 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Configuration.php(1076): Psy/ConfigPaths::touchFileWithMkdir('C:/Users/Ohwofa...')
+#4 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Configuration.php(1114): Psy/Configuration->setHistoryFile('C:/Users/Ohwofa...')
+#5 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Configuration.php(1293): Psy/Configuration->getHistoryFile()
+#6 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Shell.php(191): Psy/Configuration->getReadline()
+#7 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Shell.php(2171): Psy/Shell->boot()
+#8 C:/wamp64/www/chrizfasaedu/vendor/laravel/tinker/src/Console/TinkerCommand.php(77): Psy/Shell->execute('use Illuminate//...')
+#9 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Laravel/Tinker/Console/TinkerCommand->handle()
+#10 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::Illuminate/Container/{closure}()
+#11 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(95): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#12 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#13 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/Container.php(696): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#14 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Console/Command.php(213): Illuminate/Container/Container->call(Array)
+#15 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#16 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Console/Command.php(182): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#17 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#18 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Laravel/Tinker/Console/TinkerCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#19 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#20 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#21 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#22 C:/wamp64/www/chrizfasaedu/artisan(9): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#23 {main}
+"} 
+[2026-04-27 13:44:35] production.ERROR: Writing to C:/Users/Ohwofasa/AppData/Roaming/PsySH/psysh_history is not allowed. {"exception":"[object] (ErrorException(code: 0): Writing to C:/Users/Ohwofasa/AppData/Roaming/PsySH/psysh_history is not allowed. at C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/ConfigPaths.php:480)
+[stacktrace]
+#0 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(258): Illuminate/Foundation/Bootstrap/HandleExceptions->handleError(1024, 'Writing to C:/U...', 'C://wamp64//www//c...', 480)
+#1 [internal function]: Illuminate/Foundation/Bootstrap/HandleExceptions->Illuminate/Foundation/Bootstrap/{closure}(1024, 'Writing to C:/U...', 'C://wamp64//www//c...', 480)
+#2 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/ConfigPaths.php(480): trigger_error('Writing to C:/U...', 1024)
+#3 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Configuration.php(1076): Psy/ConfigPaths::touchFileWithMkdir('C:/Users/Ohwofa...')
+#4 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Configuration.php(1114): Psy/Configuration->setHistoryFile('C:/Users/Ohwofa...')
+#5 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Configuration.php(1293): Psy/Configuration->getHistoryFile()
+#6 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Shell.php(191): Psy/Configuration->getReadline()
+#7 C:/wamp64/www/chrizfasaedu/vendor/psy/psysh/src/Shell.php(2171): Psy/Shell->boot()
+#8 C:/wamp64/www/chrizfasaedu/vendor/laravel/tinker/src/Console/TinkerCommand.php(77): Psy/Shell->execute('use Illuminate//...')
+#9 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Laravel/Tinker/Console/TinkerCommand->handle()
+#10 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::Illuminate/Container/{closure}()
+#11 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(95): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#12 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#13 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Container/Container.php(696): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#14 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Console/Command.php(213): Illuminate/Container/Container->call(Array)
+#15 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#16 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Console/Command.php(182): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#17 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#18 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Laravel/Tinker/Console/TinkerCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#19 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#20 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#21 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#22 C:/wamp64/www/chrizfasaedu/artisan(9): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#23 {main}
+"} 
+[2026-04-27 13:45:49] production.ERROR: SMTP test email failed {"school_id":1,"error":"Connection could not be established with host \"ssl://mail.evansinternationalschool.com.ng:465\": stream_socket_client(): Peer certificate CN=`c1.my-control-panel.com' did not match expected CN=`mail.evansinternationalschool.com.ng'"} 
+[2026-04-27 13:46:36] production.ERROR: SMTP test email failed {"school_id":1,"error":"Connection could not be established with host \"ssl://mail.evansinternationalschool.com.ng:465\": stream_socket_client(): Peer certificate CN=`c1.my-control-panel.com' did not match expected CN=`mail.evansinternationalschool.com.ng'"} 
+[2026-04-27 13:51:16] production.ERROR: SMTP test email failed {"school_id":1,"error":"Connection could not be established with host \"ssl://mail.evansinternationalschool.com.ng:465\": stream_socket_client(): Peer certificate CN=`c1.my-control-panel.com' did not match expected CN=`mail.evansinternationalschool.com.ng'"} 

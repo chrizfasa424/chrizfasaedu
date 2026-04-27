@@ -1,0 +1,2 @@
+first_name,last_name,other_names,email,gender,date_of_birth,blood_group,genotype,religion,class_applied_for,parent_name,parent_phone,parent_email,parent_occupation,state_of_origin,lga,address,previous_school
+John,Doe,Michael,john.doe.student@example.com,male,2012-05-10,O+,AA,Christianity,"JSS 1","Mr. Ade Doe",08012345678,parent.doe@example.com,Engineer,Lagos,Ikeja,"12 Sample Street, Ikeja, Lagos","Bright Future Primary School"

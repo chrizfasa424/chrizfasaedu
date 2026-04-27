@@ -14,21 +14,28 @@
     @if($layoutFavicon)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($layoutFavicon, '/')) }}">
     @endif
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ui-bg: #f3f7fb;
-            --ui-bg-accent: #eaf4ff;
+            --ui-bg: #edf2fa;
+            --ui-bg-accent: #e6effc;
             --ui-surface: #ffffff;
-            --ui-border: #dbe5f0;
+            --ui-border: #d5dfed;
             --ui-ink: #0f172a;
             --ui-muted: #475569;
-            --ui-brand: #0f766e;
-            --ui-brand-soft: #dff7f4;
-            --ui-focus: rgba(15, 118, 110, 0.28);
+            --ui-brand: #1e3a8a;
+            --ui-brand-soft: #dbe7ff;
+            --ui-focus: rgba(30, 58, 138, 0.28);
+            --ui-radius-card: 1.25rem;
+            --ui-radius-control: 0.95rem;
+            --ui-shadow-sm: 0 8px 20px -16px rgba(15, 23, 42, 0.38);
+            --ui-shadow-md: 0 16px 30px -22px rgba(15, 23, 42, 0.42);
+            --ui-shadow-lg: 0 26px 48px -30px rgba(15, 23, 42, 0.5);
+            --sidebar-width: 290px;
+            --sidebar-collapsed-width: 96px;
         }
 
         html {
@@ -54,8 +61,8 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--ui-ink);
             background:
-                radial-gradient(circle at 0% 0%, rgba(58, 141, 222, 0.12), transparent 32%),
-                radial-gradient(circle at 100% 100%, rgba(15, 118, 110, 0.10), transparent 30%),
+                radial-gradient(circle at 0% 0%, rgba(58, 107, 214, 0.12), transparent 32%),
+                radial-gradient(circle at 100% 100%, rgba(14, 116, 144, 0.1), transparent 30%),
                 linear-gradient(180deg, var(--ui-bg) 0%, #f8fbff 100%);
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
@@ -80,7 +87,7 @@
         input,
         select,
         textarea {
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
         }
 
         a:focus-visible,
@@ -148,18 +155,225 @@
             }
         }
 
-        @keyframes fx-menu-hover-blink {
-            0%, 49% {
-                box-shadow: none;
-            }
-            50%, 100% {
-                box-shadow: 0 0 0 1px rgba(223, 231, 83, 0.85), 0 0 16px rgba(223, 231, 83, 0.42);
-            }
+        .sidebar-shell {
+            --sidebar-bg: #131d38;
+            --sidebar-bg-soft: #1a2748;
+            --sidebar-border: rgba(148, 163, 184, 0.2);
+            --sidebar-text: #dde7fb;
+            --sidebar-muted: #a9b8dc;
+            --sidebar-active-bg: rgba(30, 94, 214, 0.2);
+            --sidebar-active-border: rgba(114, 175, 255, 0.54);
+            --sidebar-active-text: #f8fbff;
+            --sidebar-accent: #72afff;
+            --sidebar-focus: rgba(114, 175, 255, 0.4);
+            background:
+                radial-gradient(circle at 8% 0%, rgba(114, 175, 255, 0.14), transparent 32%),
+                radial-gradient(circle at 94% 84%, rgba(84, 124, 210, 0.14), transparent 34%),
+                linear-gradient(180deg, var(--sidebar-bg-soft) 0%, var(--sidebar-bg) 100%);
+            border-right-color: var(--sidebar-border);
         }
 
-        .fx-menu-blink:hover,
-        .fx-menu-blink:focus-visible {
-            animation: fx-menu-hover-blink 0.14s steps(2, end) infinite;
+        .sidebar-section-label {
+            color: var(--sidebar-muted);
+            font-size: 0.68rem;
+            letter-spacing: 0.2em;
+        }
+
+        .sidebar-link,
+        .sidebar-child-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 2.75rem;
+            border-radius: 0.95rem;
+            color: var(--sidebar-text);
+            border: 1px solid transparent;
+            background: transparent;
+            transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;
+        }
+
+        .sidebar-link::before,
+        .sidebar-child-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.42rem;
+            bottom: 0.42rem;
+            width: 0.18rem;
+            border-radius: 999px;
+            background: transparent;
+            transition: background-color 0.18s ease;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link:focus-visible,
+        .sidebar-child-link:hover,
+        .sidebar-child-link:focus-visible {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(148, 163, 184, 0.18);
+            color: #f8fbff;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
+        }
+
+        .sidebar-link-icon {
+            display: inline-flex;
+            height: 2rem;
+            width: 2rem;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.08);
+            color: #bfe9ff;
+            transition: background-color 0.18s ease, color 0.18s ease;
+        }
+
+        .sidebar-link:hover .sidebar-link-icon,
+        .sidebar-child-link:hover .sidebar-link-icon {
+            background: rgba(56, 189, 248, 0.2);
+            color: #e5f6ff;
+        }
+
+        .sidebar-link-active,
+        .sidebar-child-link-active {
+            color: var(--sidebar-active-text);
+            border-color: var(--sidebar-active-border);
+            background: var(--sidebar-active-bg);
+            box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.16);
+        }
+
+        .sidebar-link-active::before,
+        .sidebar-child-link-active::before {
+            background: var(--sidebar-accent);
+        }
+
+        .sidebar-link-active .sidebar-link-icon,
+        .sidebar-child-link-active .sidebar-link-icon {
+            background: rgba(56, 189, 248, 0.24);
+            color: #f3fbff;
+        }
+
+        .sidebar-chevron {
+            color: var(--sidebar-muted);
+            transition: color 0.18s ease, transform 0.18s ease;
+        }
+
+        .sidebar-link:hover .sidebar-chevron,
+        .sidebar-child-link:hover .sidebar-chevron,
+        .sidebar-link-active .sidebar-chevron,
+        .sidebar-child-link-active .sidebar-chevron {
+            color: #c8ecff;
+        }
+
+        .sidebar-group {
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 1rem;
+        }
+
+        .sidebar-group[open] {
+            border-color: rgba(56, 189, 248, 0.36);
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .sidebar-group[open] > summary .sidebar-chevron {
+            transform: rotate(180deg);
+        }
+
+        .sidebar-children {
+            margin-top: 0.2rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.14);
+            padding: 0.55rem 0.55rem 0.6rem;
+        }
+
+        .sidebar-nav-wrap {
+            scrollbar-gutter: stable;
+        }
+
+        .sidebar-link:focus-visible,
+        .sidebar-child-link:focus-visible,
+        .sidebar-collapse-toggle:focus-visible,
+        #close-admin-sidebar:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--sidebar-focus);
+        }
+
+        .sidebar-collapse-toggle {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            background: rgba(255, 255, 255, 0.08);
+            color: #d5e2ff;
+            transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+        }
+
+        .sidebar-collapse-toggle:hover {
+            border-color: rgba(56, 189, 248, 0.55);
+            background: rgba(56, 189, 248, 0.2);
+            color: #f8fbff;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-shell {
+                width: var(--sidebar-width);
+                transform: translateX(0) !important;
+                transition: width 0.22s ease, box-shadow 0.22s ease;
+            }
+
+            #app-main {
+                margin-left: var(--sidebar-width);
+                transition: margin-left 0.22s ease;
+            }
+
+            body.sidebar-collapsed .sidebar-shell {
+                width: var(--sidebar-collapsed-width);
+            }
+
+            body.sidebar-collapsed #app-main {
+                margin-left: var(--sidebar-collapsed-width);
+            }
+
+            body.sidebar-collapsed .sidebar-brand-text,
+            body.sidebar-collapsed .sidebar-section-label,
+            body.sidebar-collapsed .sidebar-label,
+            body.sidebar-collapsed .sidebar-chevron,
+            body.sidebar-collapsed .sidebar-footer-text {
+                display: none;
+            }
+
+            body.sidebar-collapsed .sidebar-nav-wrap {
+                padding-left: 0.45rem;
+                padding-right: 0.45rem;
+            }
+
+            body.sidebar-collapsed .sidebar-link,
+            body.sidebar-collapsed .sidebar-child-link {
+                justify-content: center;
+                gap: 0;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            body.sidebar-collapsed .sidebar-link-icon {
+                margin-right: 0;
+            }
+
+            body.sidebar-collapsed .sidebar-link::before,
+            body.sidebar-collapsed .sidebar-child-link::before {
+                display: none;
+            }
+
+            body.sidebar-collapsed .sidebar-group {
+                border-color: transparent;
+                background: transparent;
+            }
+
+            body.sidebar-collapsed .sidebar-group[open] .sidebar-children {
+                display: none;
+            }
+
+            body.sidebar-collapsed .sidebar-collapse-toggle svg {
+                transform: rotate(180deg);
+            }
         }
     </style>
     @stack('styles')
@@ -423,64 +637,73 @@
 
             <div class="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm lg:hidden" id="mobile-admin-overlay" hidden></div>
 
-            <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-50 flex w-[290px] -translate-x-full flex-col overflow-hidden border-r border-[#43316F] bg-[#2D1D5C] text-white shadow-2xl transition-transform duration-300 lg:translate-x-0">
-                <div class="border-b border-white/10 bg-gradient-to-r from-[#24174A] via-[#2D1D5C] to-[#3A2872] px-6 pb-5 pt-6">
-                    <div class="relative flex items-center justify-center">
+            <aside id="admin-sidebar" class="sidebar-shell fixed inset-y-0 left-0 z-50 flex w-[290px] -translate-x-full flex-col overflow-hidden border-r text-white shadow-2xl transition-transform duration-300 lg:translate-x-0">
+                <div class="border-b border-white/10 px-4 pb-4 pt-4">
+                    <div class="flex items-center gap-3">
                         <div class="flex items-center justify-center">
                             @if($schoolLogo)
-                                <img src="{{ asset('storage/' . ltrim($schoolLogo, '/')) }}" alt="{{ $schoolBrandName }} logo" class="h-14 w-14 rounded-2xl border border-white/15 bg-white object-cover shadow-lg shadow-black/15">
+                                <img src="{{ asset('storage/' . ltrim($schoolLogo, '/')) }}" alt="{{ $schoolBrandName }} logo" class="h-12 w-12 rounded-xl border border-white/20 bg-white object-cover shadow-lg shadow-black/20">
                             @else
-                                <div class="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-xl font-extrabold tracking-[0.18em] text-[#DFE753] shadow-lg shadow-black/15">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-sm font-extrabold tracking-[0.18em] text-[#c8ecff] shadow-lg shadow-black/20">
                                     {{ $schoolInitials }}
                                 </div>
                             @endif
                         </div>
-                        <button type="button" id="close-admin-sidebar" class="absolute right-0 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/80 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C] lg:hidden">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                        <div class="sidebar-brand-text min-w-0 flex-1">
+                            <p class="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-300/80">Admin Workspace</p>
+                            <p class="truncate text-sm font-bold text-slate-50">{{ $schoolBrandName }}</p>
+                        </div>
+                        <button type="button" id="toggle-sidebar-collapse" class="sidebar-collapse-toggle hidden h-9 w-9 items-center justify-center rounded-lg lg:inline-flex" title="Collapse sidebar" aria-label="Collapse sidebar" aria-pressed="false">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" class="h-4 w-4 transition-transform duration-200">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m15 6-6 6 6 6"/>
+                            </svg>
+                        </button>
+                        <button type="button" id="close-admin-sidebar" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-white/80 transition hover:border-sky-300 hover:bg-sky-400/20 hover:text-white lg:hidden" aria-label="Close sidebar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto px-4 py-5">
-                    <nav class="space-y-6">
+                <div class="sidebar-nav-wrap flex-1 overflow-y-auto px-3 py-4">
+                    <nav class="space-y-5">
                         @foreach($navSections as $section)
                             <div>
-                                <p class="px-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/45">{{ $section['label'] }}</p>
-                                <div class="mt-3 space-y-1.5">
+                                <p class="sidebar-section-label px-3 font-semibold uppercase">{{ $section['label'] }}</p>
+                                <div class="mt-2.5 space-y-1.5">
                                     @foreach($section['items'] as $item)
                                         @php
                                             $isActive = collect($item['pattern'])->contains(fn ($pattern) => request()->routeIs($pattern));
                                         @endphp
                                         @if(!empty($item['children']))
-                                            <details class="group rounded-2xl border {{ $isActive ? 'border-[#DFE753]/60 bg-white/6' : 'border-white/8 bg-white/[0.03]' }}" {{ $isActive ? 'open' : '' }}>
-                                                <summary class="fx-menu-blink flex cursor-pointer list-none items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold transition duration-200 {{ $isActive ? 'text-[#DFE753]' : 'text-slate-100/92 hover:bg-white/6 hover:text-white' }}">
-                                                    <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $isActive ? 'bg-[#DFE753]/12 text-[#DFE753]' : 'bg-white/8 text-[#DFE753] group-hover:bg-white/12' }}">
+                                            <details class="sidebar-group group" {{ $isActive ? 'open' : '' }}>
+                                                <summary data-sidebar-parent class="sidebar-link cursor-pointer list-none px-3 py-2.5 text-sm font-semibold {{ $isActive ? 'sidebar-link-active' : '' }}" title="{{ $item['label'] }}">
+                                                    <span class="sidebar-link-icon">
                                                         {!! $renderNavIcon($item['icon']) !!}
                                                     </span>
-                                                    <span class="flex-1 leading-relaxed">{{ $item['label'] }}</span>
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4 text-current transition duration-200 group-open:rotate-180"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                                                    <span class="sidebar-label flex-1 truncate leading-relaxed">{{ $item['label'] }}</span>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="sidebar-chevron h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
                                                 </summary>
-                                                <div class="space-y-1 px-3 pb-3">
+                                                <div class="sidebar-children space-y-1">
                                                     @foreach($item['children'] as $child)
                                                         @php
                                                             $childActive = request()->routeIs('settings.page') && (($child['page'] ?? null) === request()->route('page'));
                                                         @endphp
-                                                        <a href="{{ $child['route'] }}" class="fx-menu-blink group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition duration-200 {{ $childActive ? 'border-[#DFE753]/70 bg-[#DFE753] text-[#2D1D5C]' : 'border-transparent text-slate-200/88 hover:border-white/8 hover:bg-white/8 hover:text-white' }}">
-                                                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/6 text-[#DFE753]">
+                                                        <a href="{{ $child['route'] }}" class="sidebar-child-link px-3 py-2 text-sm font-medium {{ $childActive ? 'sidebar-child-link-active' : '' }}" title="{{ $child['label'] }}" @if($childActive) aria-current="page" @endif>
+                                                            <span class="sidebar-link-icon h-7 w-7 rounded-md">
                                                                 {!! $renderNavIcon($child['icon']) !!}
                                                             </span>
-                                                            <span class="leading-relaxed">{{ $child['label'] }}</span>
+                                                            <span class="sidebar-label truncate leading-relaxed">{{ $child['label'] }}</span>
                                                         </a>
                                                     @endforeach
                                                 </div>
                                             </details>
                                         @else
-                                            <a href="{{ $item['route'] }}" class="fx-menu-blink group flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-medium transition duration-200 {{ $isActive ? 'border-[#DFE753] bg-[#DFE753] text-[#2D1D5C] shadow-lg shadow-black/10' : 'border-transparent text-slate-100/92 hover:border-white/10 hover:bg-white/8 hover:text-white' }}">
-                                                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $isActive ? 'bg-[#2D1D5C]/10 text-[#2D1D5C]' : 'bg-white/8 text-[#DFE753] group-hover:bg-white/12' }}">
+                                            <a href="{{ $item['route'] }}" class="sidebar-link px-3 py-2.5 text-sm font-medium {{ $isActive ? 'sidebar-link-active' : '' }}" title="{{ $item['label'] }}" @if($isActive) aria-current="page" @endif>
+                                                <span class="sidebar-link-icon">
                                                     {!! $renderNavIcon($item['icon']) !!}
                                                 </span>
-                                                <span class="flex-1 leading-relaxed">{{ $item['label'] }}</span>
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4 opacity-60 {{ $isActive ? 'text-[#2D1D5C]' : 'text-white/55 group-hover:text-[#DFE753]' }}"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
+                                                <span class="sidebar-label flex-1 truncate leading-relaxed">{{ $item['label'] }}</span>
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="sidebar-chevron h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
                                             </a>
                                         @endif
                                     @endforeach
@@ -490,7 +713,7 @@
                     </nav>
                 </div>
 
-                <div class="border-t border-white/10 px-4 py-4 space-y-2">
+                <div class="border-t border-white/10 px-3 py-4 space-y-1.5">
                     @php
                         $profileRoute = ($currentUser->isStudent() || $currentUser->isParent())
                             ? route('portal.profile.show')
@@ -500,23 +723,25 @@
                             ? route('portal.logout')
                             : ($currentUser->isStaff() ? route('staff.logout') : route('logout'));
                     @endphp
-                    <a href="{{ $profileRoute }}" class="flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-medium transition duration-200 {{ $profileActive ? 'border-[#DFE753] bg-[#DFE753] text-[#2D1D5C]' : 'border-white/10 bg-white/5 text-white hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C]' }}">
-                        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl {{ $profileActive ? 'bg-[#2D1D5C]/10' : 'bg-white/8' }}">
+                    <a href="{{ $profileRoute }}" class="sidebar-link px-3 py-2.5 text-sm font-medium {{ $profileActive ? 'sidebar-link-active' : '' }}" title="My Profile" @if($profileActive) aria-current="page" @endif>
+                        <span class="sidebar-link-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><circle cx="12" cy="8" r="3.75"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 20.25a8.25 8.25 0 0 1 16.5 0"/></svg>
                         </span>
-                        <span class="flex-1">My Profile</span>
+                        <span class="sidebar-footer-text">My Profile</span>
                     </a>
                     <form action="{{ $logoutRoute }}" method="POST">
                         @csrf
-                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-red-400 hover:bg-red-500 hover:text-white">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15"/><path stroke-linecap="round" stroke-linejoin="round" d="M18 12H9.75"/><path stroke-linecap="round" stroke-linejoin="round" d="m15 9 3 3-3 3"/></svg>
-                            Sign Out
+                        <button type="submit" class="sidebar-link w-full px-3 py-2.5 text-left text-sm font-semibold text-slate-100 hover:border-rose-300/40 hover:bg-rose-500/18" title="Sign Out">
+                            <span class="sidebar-link-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15"/><path stroke-linecap="round" stroke-linejoin="round" d="M18 12H9.75"/><path stroke-linecap="round" stroke-linejoin="round" d="m15 9 3 3-3 3"/></svg>
+                            </span>
+                            <span class="sidebar-footer-text">Sign Out</span>
                         </button>
                     </form>
                 </div>
             </aside>
 
-            <main class="min-h-screen flex flex-col transition-all duration-300 lg:pl-[290px]">
+            <main id="app-main" class="min-h-screen flex flex-col transition-all duration-300">
                 <header class="sticky top-0 z-30 border-b border-[#2D1D5C]/15 bg-gradient-to-r from-white/95 via-[#f5f3ff]/95 to-[#eef6ff]/95 shadow-[0_10px_30px_-20px_rgba(45,29,92,0.55)] backdrop-blur-xl">
                     <div class="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                         <div class="flex items-center gap-3">
@@ -530,8 +755,26 @@
                         </div>
 
                         <div class="flex items-center gap-3 sm:gap-4">
+                            @php
+                                $topbarProfile = match (true) {
+                                    $currentUser->isStudent() => $currentUser->student,
+                                    $currentUser->isTeacher() => $currentUser->staffProfile,
+                                    $currentUser->isParent() => $currentUser->parentProfile,
+                                    default => $currentUser->staffProfile,
+                                };
+                                $topbarPhotoPath = trim((string) ($topbarProfile?->photo ?? $currentUser->avatar ?? ''));
+                                $topbarPhotoSrc = $topbarPhotoPath !== '' ? asset('storage/' . ltrim($topbarPhotoPath, '/')) : null;
+                                $topbarInitials = \Illuminate\Support\Str::upper(
+                                    \Illuminate\Support\Str::substr((string) $currentUser->first_name, 0, 1) .
+                                    \Illuminate\Support\Str::substr((string) $currentUser->last_name, 0, 1)
+                                ) ?: 'U';
+                            @endphp
                             <a href="{{ ($currentUser->isStudent() || $currentUser->isParent()) ? route('portal.profile.show') : route('profile.show') }}" class="hidden items-center gap-2.5 rounded-2xl border border-[#2D1D5C]/10 bg-white/85 px-4 py-2 shadow-[0_8px_22px_-15px_rgba(45,29,92,0.5)] ring-1 ring-white/80 transition hover:-translate-y-0.5 hover:border-[#2D1D5C]/25 hover:shadow-[0_14px_28px_-16px_rgba(45,29,92,0.6)] md:flex">
-                                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#2D1D5C] via-[#355AA0] to-[#4F46E5] text-sm font-bold text-white shadow-inner shadow-white/10">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($currentUser->first_name, 0, 1) . \Illuminate\Support\Str::substr($currentUser->last_name, 0, 1)) }}</span>
+                                @if($topbarPhotoSrc)
+                                    <img src="{{ $topbarPhotoSrc }}" alt="{{ $currentUser->full_name }}" class="h-10 w-10 rounded-full border border-[#2D1D5C]/20 object-cover shadow-[0_8px_18px_-12px_rgba(45,29,92,0.55)]">
+                                @else
+                                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#2D1D5C] via-[#355AA0] to-[#4F46E5] text-sm font-bold text-white shadow-inner shadow-white/10">{{ $topbarInitials }}</span>
+                                @endif
                                 <div>
                                     <p class="text-sm font-semibold text-slate-900">{{ $currentUser->full_name }}</p>
                                 </div>
@@ -608,10 +851,10 @@
         </div>
 
         @auth
-            <footer class="mt-auto" style="background-color: #2D1D5C;">
+            <footer class="mt-auto bg-[#0F1B34]">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="border-t pt-5 pb-5" style="border-top-color: rgba(223,231,83,0.35);">
-                        <p class="text-xs" style="color: rgba(255,255,255,0.55);">&copy; {{ date('Y') }} {{ $schoolBrandName }}. All rights reserved.</p>
+                    <div class="border-t border-sky-300/20 py-5">
+                        <p class="text-right text-xs text-slate-300/80">&copy; {{ date('Y') }} {{ $schoolBrandName }}. All rights reserved.</p>
                     </div>
                 </div>
             </footer>
@@ -626,10 +869,45 @@
             const overlay = document.getElementById('mobile-admin-overlay');
             const openButton = document.getElementById('open-admin-sidebar');
             const closeButton = document.getElementById('close-admin-sidebar');
+            const collapseButton = document.getElementById('toggle-sidebar-collapse');
+            const parentSummaries = document.querySelectorAll('summary[data-sidebar-parent]');
+            const COLLAPSE_STORAGE_KEY = 'ems.sidebar.collapsed';
 
             if (!sidebar || !overlay || !openButton || !closeButton) {
                 return;
             }
+
+            const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
+
+            const readCollapsedPreference = () => {
+                try {
+                    return localStorage.getItem(COLLAPSE_STORAGE_KEY) === '1';
+                } catch (_) {
+                    return false;
+                }
+            };
+
+            const saveCollapsedPreference = (collapsed) => {
+                try {
+                    localStorage.setItem(COLLAPSE_STORAGE_KEY, collapsed ? '1' : '0');
+                } catch (_) {
+                    // Ignore localStorage restrictions gracefully.
+                }
+            };
+
+            const setCollapsedState = (collapsed) => {
+                if (!isDesktop()) {
+                    return;
+                }
+
+                document.body.classList.toggle('sidebar-collapsed', collapsed);
+
+                if (collapseButton) {
+                    collapseButton.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+                    collapseButton.setAttribute('title', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+                    collapseButton.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+                }
+            };
 
             const openSidebar = () => {
                 sidebar.classList.remove('-translate-x-full');
@@ -645,13 +923,48 @@
             closeButton.addEventListener('click', closeSidebar);
             overlay.addEventListener('click', closeSidebar);
 
+            if (collapseButton) {
+                collapseButton.addEventListener('click', () => {
+                    if (!isDesktop()) {
+                        return;
+                    }
+
+                    const shouldCollapse = !document.body.classList.contains('sidebar-collapsed');
+                    setCollapsedState(shouldCollapse);
+                    saveCollapsedPreference(shouldCollapse);
+                });
+            }
+
+            parentSummaries.forEach((summary) => {
+                summary.addEventListener('click', (event) => {
+                    if (!isDesktop() || !document.body.classList.contains('sidebar-collapsed')) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    setCollapsedState(false);
+                    saveCollapsedPreference(false);
+                });
+            });
+
+            if (isDesktop()) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.hidden = true;
+                setCollapsedState(readCollapsedPreference());
+            } else {
+                document.body.classList.remove('sidebar-collapsed');
+            }
+
             window.addEventListener('resize', () => {
-                if (window.innerWidth >= 1024) {
+                if (isDesktop()) {
                     overlay.hidden = true;
                     sidebar.classList.remove('-translate-x-full');
+                    setCollapsedState(readCollapsedPreference());
                 } else if (!overlay.hidden) {
+                    document.body.classList.remove('sidebar-collapsed');
                     sidebar.classList.remove('-translate-x-full');
                 } else {
+                    document.body.classList.remove('sidebar-collapsed');
                     sidebar.classList.add('-translate-x-full');
                 }
             });
@@ -756,5 +1069,6 @@
     @stack('scripts')
 </body>
 </html>
+
 
 

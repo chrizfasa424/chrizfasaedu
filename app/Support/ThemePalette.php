@@ -91,6 +91,49 @@ class ThemePalette
         return sprintf('#%02X%02X%02X', $r, $g, $b);
     }
 
+    public static function rgbTriplet(string $hex): string
+    {
+        [$r, $g, $b] = self::hexToRgb($hex);
+
+        return sprintf('%d %d %d', $r, $g, $b);
+    }
+
+    public static function tailwindCssVars(array $theme): string
+    {
+        $map = [
+            '--tw-brand-50' => data_get($theme, 'primary.50', '#F6F5FF'),
+            '--tw-brand-100' => data_get($theme, 'primary.100', '#E9E5FF'),
+            '--tw-brand-200' => data_get($theme, 'primary.200', '#D4CBFF'),
+            '--tw-brand-300' => data_get($theme, 'primary.300', '#B7A7FF'),
+            '--tw-brand-400' => data_get($theme, 'primary.400', '#8E78FF'),
+            '--tw-brand-500' => data_get($theme, 'primary.500', '#2D1D5C'),
+            '--tw-brand-600' => data_get($theme, 'primary.600', '#24174B'),
+            '--tw-brand-700' => data_get($theme, 'primary.700', '#1A1135'),
+            '--tw-secondary-50' => data_get($theme, 'secondary.50', '#FBFDEB'),
+            '--tw-secondary-100' => data_get($theme, 'secondary.100', '#F6FAD4'),
+            '--tw-secondary-200' => data_get($theme, 'secondary.200', '#EEF5B4'),
+            '--tw-secondary-300' => data_get($theme, 'secondary.300', '#E5EE8D'),
+            '--tw-secondary-400' => data_get($theme, 'secondary.400', '#DFE86C'),
+            '--tw-secondary-500' => data_get($theme, 'secondary.500', '#DFE753'),
+            '--tw-secondary-600' => data_get($theme, 'secondary.600', '#C9CF4B'),
+            '--tw-secondary-700' => data_get($theme, 'secondary.700', '#A4A93D'),
+            '--tw-accent-300' => data_get($theme, 'accent.300', '#EBEF9E'),
+            '--tw-accent-400' => data_get($theme, 'accent.400', '#E4EA77'),
+            '--tw-accent-500' => data_get($theme, 'accent.500', '#DFE753'),
+            '--tw-ink' => data_get($theme, 'ink', '#0F172A'),
+            '--tw-muted' => data_get($theme, 'muted', '#475569'),
+        ];
+
+        $parts = [];
+
+        foreach ($map as $var => $hex) {
+            $safeHex = self::sanitizeHex((string) $hex, '#000000');
+            $parts[] = $var . ': ' . self::rgbTriplet($safeHex);
+        }
+
+        return implode('; ', $parts);
+    }
+
     private static function hexToRgb(string $hex): array
     {
         $hex = ltrim(self::sanitizeHex($hex, '#000000'), '#');

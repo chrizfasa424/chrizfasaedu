@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Apply for Admission — {{ $school?->name ?? 'Our School' }}</title>
+    <title>Apply for Admission â€” {{ $school?->name ?? 'Our School' }}</title>
     @if($faviconPath)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
     @endif
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('public.partials.nav-styles')
     <style>
         :root {
@@ -126,20 +126,20 @@
     </div>
 
     {{-- Step progress text --}}
-    <p class="text-xs font-semibold text-center mb-6" style="color:{{ $muted }};" id="step-label-text">Step 1 of 5 — Student Information</p>
+    <p class="text-xs font-semibold text-center mb-6" style="color:{{ $muted }};" id="step-label-text">Step 1 of 5 â€” Student Information</p>
 
     {{-- FORM --}}
     <form id="admission-form" action="{{ route('admission.apply.store') }}" method="POST" enctype="multipart/form-data" novalidate>
         @csrf
         <input type="hidden" name="school_id" value="{{ $school?->id }}">
-        {{-- Honeypot (MUST stay empty — bots fill this) --}}
+        {{-- Honeypot (MUST stay empty â€” bots fill this) --}}
         <div aria-hidden="true" style="position:absolute;left:-9999px;overflow:hidden;height:0;opacity:0;pointer-events:none;">
             <input type="text" name="hp_website" id="hp_website" value="" autocomplete="off" tabindex="-1">
         </div>
 
-        {{-- ═══════════════════════════════════════════════
-             STEP 1 — Student Information
-        ════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             STEP 1 â€” Student Information
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="step-panel active" id="panel-1">
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
@@ -167,7 +167,7 @@
                     <div>
                         <label class="field-label">Gender <span class="text-red-500">*</span></label>
                         <select name="gender" id="f_gender" class="field-input" required>
-                            <option value="">— Select Gender —</option>
+                            <option value="">â€” Select Gender â€”</option>
                             <option value="male"   {{ old('gender') === 'male'   ? 'selected' : '' }}>Male</option>
                             <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
                         </select>
@@ -181,7 +181,7 @@
                     <div>
                         <label class="field-label">Blood Group</label>
                         <select name="blood_group" id="f_blood_group" class="field-input">
-                            <option value="">— Select Blood Group —</option>
+                            <option value="">â€” Select Blood Group â€”</option>
                             @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
                                 <option value="{{ $bg }}" {{ old('blood_group') === $bg ? 'selected' : '' }}>{{ $bg }}</option>
                             @endforeach
@@ -190,7 +190,7 @@
                     <div>
                         <label class="field-label">Genotype</label>
                         <select name="genotype" id="f_genotype" class="field-input">
-                            <option value="">— Select Genotype —</option>
+                            <option value="">â€” Select Genotype â€”</option>
                             @foreach(['AA','AS','AC','SS','SC'] as $gt)
                                 <option value="{{ $gt }}" {{ old('genotype') === $gt ? 'selected' : '' }}>{{ $gt }}</option>
                             @endforeach
@@ -199,7 +199,7 @@
                     <div>
                         <label class="field-label">Religion</label>
                         <select name="religion" id="f_religion" class="field-input">
-                            <option value="">— Select Religion —</option>
+                            <option value="">â€” Select Religion â€”</option>
                             @foreach(['Christianity','Islam','Traditional','Other'] as $rel)
                                 <option value="{{ $rel }}" {{ old('religion') === $rel ? 'selected' : '' }}>{{ $rel }}</option>
                             @endforeach
@@ -224,9 +224,9 @@
             </div>
         </div>
 
-        {{-- ═══════════════════════════════════════════════
-             STEP 2 — Parent / Guardian
-        ════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             STEP 2 â€” Parent / Guardian
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="step-panel" id="panel-2">
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
@@ -259,7 +259,7 @@
                     <div>
                         <label class="field-label">Relationship to Student</label>
                         <select name="parent_relationship" class="field-input">
-                            <option value="">— Select —</option>
+                            <option value="">â€” Select â€”</option>
                             <option value="Father" {{ old('parent_relationship') === 'Father' ? 'selected' : '' }}>Father</option>
                             <option value="Mother" {{ old('parent_relationship') === 'Mother' ? 'selected' : '' }}>Mother</option>
                             <option value="Guardian" {{ old('parent_relationship') === 'Guardian' ? 'selected' : '' }}>Guardian</option>
@@ -274,9 +274,9 @@
             </div>
         </div>
 
-        {{-- ═══════════════════════════════════════════════
-             STEP 3 — Location & Origin
-        ════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             STEP 3 â€” Location & Origin
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="step-panel" id="panel-3">
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
@@ -290,7 +290,7 @@
                     <div>
                         <label class="field-label">State of Origin <span class="text-red-500">*</span></label>
                         <select name="state_of_origin" id="f_state_of_origin" class="field-input" required onchange="populateLgas(this.value)">
-                            <option value="">— Select State —</option>
+                            <option value="">â€” Select State â€”</option>
                             @foreach(array_keys($states) as $st)
                             <option value="{{ $st }}" {{ old('state_of_origin') === $st ? 'selected' : '' }}>{{ $st }}</option>
                             @endforeach
@@ -300,7 +300,7 @@
                     <div>
                         <label class="field-label">Local Government Area <span class="text-red-500">*</span></label>
                         <select name="lga" id="f_lga" class="field-input" required disabled>
-                            <option value="">— Select State First —</option>
+                            <option value="">â€” Select State First â€”</option>
                             @if(old('state_of_origin') && old('lga'))
                                 @foreach(\App\Support\NigeriaData::lgasFor(old('state_of_origin')) as $l)
                                 <option value="{{ $l }}" {{ old('lga') === $l ? 'selected' : '' }}>{{ $l }}</option>
@@ -325,9 +325,9 @@
             </div>
         </div>
 
-        {{-- ═══════════════════════════════════════════════
-             STEP 4 — Documents
-        ════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             STEP 4 â€” Documents
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="step-panel" id="panel-4">
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
@@ -339,7 +339,7 @@
                 </div>
 
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800 font-medium mb-6">
-                    <strong>Accepted formats:</strong> JPG, PNG, WEBP for photos · PDF or image for documents
+                    <strong>Accepted formats:</strong> JPG, PNG, WEBP for photos Â· PDF or image for documents
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -361,9 +361,9 @@
             </div>
         </div>
 
-        {{-- ═══════════════════════════════════════════════
-             STEP 5 — Review & Submit
-        ════════════════════════════════════════════════ --}}
+        {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+             STEP 5 â€” Review & Submit
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
         <div class="step-panel" id="panel-5">
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
@@ -381,15 +381,15 @@
                         <button type="button" onclick="goTo(1)" class="text-xs font-semibold hover:underline" style="color:{{ $primary }};">Edit</button>
                     </div>
                     <div class="review-row text-sm">
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Full Name</p><p class="font-semibold text-slate-800" id="rv-name">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Gender</p><p class="font-semibold text-slate-800" id="rv-gender">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Date of Birth</p><p class="font-semibold text-slate-800" id="rv-dob">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Blood Group</p><p class="font-semibold text-slate-800" id="rv-blood-group">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Genotype</p><p class="font-semibold text-slate-800" id="rv-genotype">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Religion</p><p class="font-semibold text-slate-800" id="rv-religion">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Class</p><p class="font-semibold text-slate-800" id="rv-class">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Previous School</p><p class="font-semibold text-slate-800" id="rv-prev-school">—</p></div>
-                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Student Email (Portal Login)</p><p class="font-semibold text-slate-800" id="rv-student-email">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Full Name</p><p class="font-semibold text-slate-800" id="rv-name">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Gender</p><p class="font-semibold text-slate-800" id="rv-gender">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Date of Birth</p><p class="font-semibold text-slate-800" id="rv-dob">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Blood Group</p><p class="font-semibold text-slate-800" id="rv-blood-group">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Genotype</p><p class="font-semibold text-slate-800" id="rv-genotype">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Religion</p><p class="font-semibold text-slate-800" id="rv-religion">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Class</p><p class="font-semibold text-slate-800" id="rv-class">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Previous School</p><p class="font-semibold text-slate-800" id="rv-prev-school">â€”</p></div>
+                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Student Email (Portal Login)</p><p class="font-semibold text-slate-800" id="rv-student-email">â€”</p></div>
                     </div>
                 </div>
 
@@ -400,9 +400,9 @@
                         <button type="button" onclick="goTo(2)" class="text-xs font-semibold hover:underline" style="color:{{ $primary }};">Edit</button>
                     </div>
                     <div class="review-row text-sm">
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Name</p><p class="font-semibold text-slate-800" id="rv-parent-name">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Phone</p><p class="font-semibold text-slate-800" id="rv-parent-phone">—</p></div>
-                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Email</p><p class="font-semibold text-slate-800" id="rv-parent-email">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Name</p><p class="font-semibold text-slate-800" id="rv-parent-name">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Phone</p><p class="font-semibold text-slate-800" id="rv-parent-phone">â€”</p></div>
+                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Email</p><p class="font-semibold text-slate-800" id="rv-parent-email">â€”</p></div>
                     </div>
                 </div>
 
@@ -413,9 +413,9 @@
                         <button type="button" onclick="goTo(3)" class="text-xs font-semibold hover:underline" style="color:{{ $primary }};">Edit</button>
                     </div>
                     <div class="review-row text-sm">
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">State of Origin</p><p class="font-semibold text-slate-800" id="rv-state">—</p></div>
-                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">LGA</p><p class="font-semibold text-slate-800" id="rv-lga">—</p></div>
-                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Address</p><p class="font-semibold text-slate-800" id="rv-address">—</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">State of Origin</p><p class="font-semibold text-slate-800" id="rv-state">â€”</p></div>
+                        <div><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">LGA</p><p class="font-semibold text-slate-800" id="rv-lga">â€”</p></div>
+                        <div class="sm:col-span-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-0.5">Address</p><p class="font-semibold text-slate-800" id="rv-address">â€”</p></div>
                     </div>
                 </div>
 
@@ -485,7 +485,7 @@ const stepLabels = [
 let currentStep = 1;
 const totalSteps = 5;
 
-// ── Navigation ──────────────────────────────────────────────────
+// â”€â”€ Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function navStep(dir) {
     const next = currentStep + dir;
     if (dir > 0 && !validateStep(currentStep)) return;
@@ -520,7 +520,7 @@ function goTo(step) {
     }
 
     document.getElementById('step-label-text').textContent =
-        'Step ' + step + ' of ' + totalSteps + ' — ' + stepLabels[step - 1];
+        'Step ' + step + ' of ' + totalSteps + ' â€” ' + stepLabels[step - 1];
 
     document.getElementById('btn-back').classList.toggle('hidden', step === 1);
     document.getElementById('btn-next').classList.toggle('hidden', step === totalSteps);
@@ -532,7 +532,7 @@ function goTo(step) {
     currentStep = step;
 }
 
-// ── Validation ──────────────────────────────────────────────────
+// â”€â”€ Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const stepRequired = {
     1: ['first_name','last_name','gender','date_of_birth','class_applied_for'],
     2: ['parent_name','parent_phone','parent_email'],
@@ -598,10 +598,10 @@ function checkDeclaration() {
     return true;
 }
 
-// ── State / LGA ────────────────────────────────────────────────
+// â”€â”€ State / LGA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function populateLgas(state) {
     const sel = document.getElementById('f_lga');
-    sel.innerHTML = '<option value="">— Select LGA —</option>';
+    sel.innerHTML = '<option value="">â€” Select LGA â€”</option>';
     sel.disabled = !state;
     if (state && lgaMap[state]) {
         lgaMap[state].forEach(lga => {
@@ -624,7 +624,7 @@ function populateLgas(state) {
     }
 })();
 
-// ── File labels ────────────────────────────────────────────────
+// â”€â”€ File labels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function updateFileLabel(name, input) {
     const lbl = document.getElementById('file_label_' + name);
     if (input.files && input.files[0]) {
@@ -633,17 +633,17 @@ function updateFileLabel(name, input) {
     }
 }
 
-// ── Review builder ─────────────────────────────────────────────
+// â”€â”€ Review builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function buildReview() {
-    const g = id => (document.getElementById(id) || { textContent: '—' });
+    const g = id => (document.getElementById(id) || { textContent: 'â€”' });
     const v = name => {
         const el = document.querySelector('[name="' + name + '"]');
-        return el && el.value.trim() ? el.value.trim() : '—';
+        return el && el.value.trim() ? el.value.trim() : 'â€”';
     };
 
     const fn = v('first_name'), ln = v('last_name'), on = v('other_names');
-    g('rv-name').textContent = [fn, on !== '—' ? on : '', ln].filter(Boolean).join(' ');
-    g('rv-gender').textContent = v('gender') !== '—' ? v('gender').charAt(0).toUpperCase() + v('gender').slice(1) : '—';
+    g('rv-name').textContent = [fn, on !== 'â€”' ? on : '', ln].filter(Boolean).join(' ');
+    g('rv-gender').textContent = v('gender') !== 'â€”' ? v('gender').charAt(0).toUpperCase() + v('gender').slice(1) : 'â€”';
     g('rv-dob').textContent = v('date_of_birth');
     g('rv-blood-group').textContent = v('blood_group');
     g('rv-genotype').textContent = v('genotype');
@@ -676,7 +676,7 @@ function buildReview() {
     }
 }
 
-// ── Clear errors on input ──────────────────────────────────────
+// â”€â”€ Clear errors on input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.field-input').forEach(el => {
     el.addEventListener('input', function () {
         this.classList.remove('error');
@@ -710,3 +710,4 @@ document.querySelectorAll('.field-input').forEach(el => {
 </script>
 </body>
 </html>
+

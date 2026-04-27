@@ -13,55 +13,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @php
         $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
+        $tailwindThemeVars = \App\Support\ThemePalette::tailwindCssVars($theme);
     @endphp
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '{{ $theme['primary']['50'] }}',
-                            100: '{{ $theme['primary']['100'] }}',
-                            200: '{{ $theme['primary']['200'] }}',
-                            300: '{{ $theme['primary']['300'] }}',
-                            400: '{{ $theme['primary']['400'] }}',
-                            500: '{{ $theme['primary']['500'] }}',
-                            600: '{{ $theme['primary']['600'] }}',
-                            700: '{{ $theme['primary']['700'] }}'
-                        },
-                        secondary: {
-                            50: '{{ $theme['secondary']['50'] }}',
-                            100: '{{ $theme['secondary']['100'] }}',
-                            200: '{{ $theme['secondary']['200'] }}',
-                            300: '{{ $theme['secondary']['300'] }}',
-                            400: '{{ $theme['secondary']['400'] }}',
-                            500: '{{ $theme['secondary']['500'] }}',
-                            600: '{{ $theme['secondary']['600'] }}',
-                            700: '{{ $theme['secondary']['700'] }}'
-                        },
-                        accent: {
-                            300: '{{ $theme['accent']['300'] }}',
-                            400: '{{ $theme['accent']['400'] }}',
-                            500: '{{ $theme['accent']['500'] }}'
-                        },
-                        ink: '{{ $theme['ink'] }}',
-                        muted: '{{ $theme['muted'] }}'
-                    },
-                    fontFamily: {
-                        sans: ['Manrope', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif']
-                    },
-                    boxShadow: {
-                        soft: '0 12px 40px -18px rgba(15, 23, 42, 0.25)'
-                    }
-                }
-            }
-        };
-    </script>
 <style>
     :root {
         --theme-focus: rgba(15, 118, 110, 0.25);
@@ -1218,7 +1175,7 @@
     $themeSoftSurfaceColor = $theme['soft_surface'];
     $themeStyle = $theme['theme_style'];
 ?>
-<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor ?? ($theme['site_background'] ?? '#F8FAFC') }}; color: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }}; --theme-heading: {{ $themeHeadingColor ?? ($theme['ink'] ?? '#0F172A') }}; --theme-body: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --theme-surface: {{ $themeSurfaceColor ?? ($theme['surface'] ?? '#FFFFFF') }}; --theme-soft-surface: {{ $themeSoftSurfaceColor ?? ($theme['soft_surface'] ?? '#EEF6FF') }};">
+<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor ?? ($theme['site_background'] ?? '#F8FAFC') }}; color: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }}; --theme-heading: {{ $themeHeadingColor ?? ($theme['ink'] ?? '#0F172A') }}; --theme-body: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --theme-surface: {{ $themeSurfaceColor ?? ($theme['surface'] ?? '#FFFFFF') }}; --theme-soft-surface: {{ $themeSoftSurfaceColor ?? ($theme['soft_surface'] ?? '#EEF6FF') }}; {{ $tailwindThemeVars }};">
     @include('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C')])
     <div class="relative overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>

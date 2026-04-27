@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Submitted — {{ $schoolName }}</title>
+    <title>Application Submitted â€” {{ $schoolName }}</title>
     @if($faviconPath)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
     @endif
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('public.partials.nav-styles')
     <style>
         :root {
@@ -86,7 +86,7 @@
                                 </svg>
                                 <div>
                                     <p class="font-semibold text-amber-800">Application saved</p>
-                                    <p class="text-amber-700 mt-0.5">Your application was saved successfully. We were unable to send a confirmation email at this time — please keep your application number safe.</p>
+                                    <p class="text-amber-700 mt-0.5">Your application was saved successfully. We were unable to send a confirmation email at this time â€” please keep your application number safe.</p>
                                 </div>
                             </div>
                         @endif
@@ -125,3 +125,4 @@
     @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
 </body>
 </html>
+

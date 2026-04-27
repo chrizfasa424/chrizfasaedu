@@ -14,51 +14,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '{{ $theme['primary']['50'] }}',
-                            100: '{{ $theme['primary']['100'] }}',
-                            200: '{{ $theme['primary']['200'] }}',
-                            300: '{{ $theme['primary']['300'] }}',
-                            400: '{{ $theme['primary']['400'] }}',
-                            500: '{{ $theme['primary']['500'] }}',
-                            600: '{{ $theme['primary']['600'] }}',
-                            700: '{{ $theme['primary']['700'] }}'
-                        },
-                        secondary: {
-                            50: '{{ $theme['secondary']['50'] }}',
-                            100: '{{ $theme['secondary']['100'] }}',
-                            200: '{{ $theme['secondary']['200'] }}',
-                            300: '{{ $theme['secondary']['300'] }}',
-                            400: '{{ $theme['secondary']['400'] }}',
-                            500: '{{ $theme['secondary']['500'] }}',
-                            600: '{{ $theme['secondary']['600'] }}',
-                            700: '{{ $theme['secondary']['700'] }}'
-                        },
-                        accent: {
-                            300: '{{ $theme['accent']['300'] }}',
-                            400: '{{ $theme['accent']['400'] }}',
-                            500: '{{ $theme['accent']['500'] }}'
-                        },
-                        ink: '{{ $theme['ink'] }}',
-                        muted: '{{ $theme['muted'] }}'
-                    },
-                    fontFamily: {
-                        sans: ['Manrope', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif']
-                    },
-                    boxShadow: {
-                        soft: '0 12px 40px -18px rgba(15, 23, 42, 0.25)'
-                    }
-                }
-            }
-        };
-    </script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @php
+        $tailwindThemeVars = \App\Support\ThemePalette::tailwindCssVars($theme);
+    @endphp
 <style>
     :root {
         --theme-focus: rgba(15, 118, 110, 0.25);
@@ -476,7 +435,7 @@
     $submenuBackButtonPrefix = trim((string) ($publicPage['submenu_back_button_prefix'] ?? 'Back to'));
     $submenuMoreInPrefix = trim((string) ($publicPage['submenu_more_in_prefix'] ?? 'More In'));
 @endphp
-<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }}; --theme-surface: {{ $themeSurfaceColor }}; --theme-soft-surface: {{ $themeSoftSurfaceColor }};">
+<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }}; --theme-surface: {{ $themeSurfaceColor }}; --theme-soft-surface: {{ $themeSoftSurfaceColor }}; {{ $tailwindThemeVars }};">
     @include('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor])
     <div class="relative min-h-screen overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>

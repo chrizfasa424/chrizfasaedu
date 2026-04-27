@@ -1436,6 +1436,20 @@ class SettingsController extends Controller
 
         $school->update(['settings' => $settings]);
 
+        $settingsPage = $this->normalizeSettingsPage((string) $request->input('settings_page', ''));
+
+        if ($settingsPage !== null) {
+            $routeParams = ['page' => $settingsPage];
+
+            if ($request->boolean('refresh_editor_feed')) {
+                $routeParams['editor_feed_refresh'] = now()->getTimestampMs();
+            }
+
+            return redirect()
+                ->route('settings.page', $routeParams)
+                ->with('success', 'Public page content updated successfully.');
+        }
+
         return back()->with('success', 'Public page content updated successfully.');
     }
 

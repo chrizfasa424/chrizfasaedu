@@ -12,7 +12,7 @@
         $primaryCtaLabel = $primaryCtaLabel ?? ($isStaffLogin ? 'Sign In to Staff Dashboard' : 'Sign In to Admin Console');
     @endphp
     <title>{{ $pageTitle }} - {{ config('app.name') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {

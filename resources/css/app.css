@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --tw-brand-50: 246 245 255;
+        --tw-brand-100: 233 229 255;
+        --tw-brand-200: 212 203 255;
+        --tw-brand-300: 183 167 255;
+        --tw-brand-400: 142 120 255;
+        --tw-brand-500: 45 29 92;
+        --tw-brand-600: 36 23 75;
+        --tw-brand-700: 26 17 53;
+        --tw-secondary-50: 251 253 235;
+        --tw-secondary-100: 246 250 212;
+        --tw-secondary-200: 238 245 180;
+        --tw-secondary-300: 229 238 141;
+        --tw-secondary-400: 223 232 108;
+        --tw-secondary-500: 223 231 83;
+        --tw-secondary-600: 201 207 75;
+        --tw-secondary-700: 164 169 61;
+        --tw-accent-300: 235 239 158;
+        --tw-accent-400: 228 234 119;
+        --tw-accent-500: 223 231 83;
+        --tw-ink: 15 23 42;
+        --tw-muted: 71 85 105;
+    }
+}

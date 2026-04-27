@@ -15,6 +15,7 @@
         $privacyIntro = trim((string) ($publicPage['privacy_policy_intro'] ?? ''));
         $privacyContent = trim((string) ($publicPage['privacy_policy_content'] ?? ''));
         $policyEffectiveDate = trim((string) ($publicPage['legal_effective_date'] ?? ''));
+        $tailwindThemeVars = \App\Support\ThemePalette::tailwindCssVars($theme);
         if ($policyEffectiveDate === '') {
             $policyEffectiveDate = $effectiveDate ?? now()->toFormattedDateString();
         }
@@ -25,46 +26,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '{{ $theme['primary']['50'] }}',
-                            100: '{{ $theme['primary']['100'] }}',
-                            200: '{{ $theme['primary']['200'] }}',
-                            300: '{{ $theme['primary']['300'] }}',
-                            400: '{{ $theme['primary']['400'] }}',
-                            500: '{{ $theme['primary']['500'] }}',
-                            600: '{{ $theme['primary']['600'] }}',
-                            700: '{{ $theme['primary']['700'] }}'
-                        },
-                        secondary: {
-                            50: '{{ $theme['secondary']['50'] }}',
-                            100: '{{ $theme['secondary']['100'] }}',
-                            200: '{{ $theme['secondary']['200'] }}',
-                            300: '{{ $theme['secondary']['300'] }}',
-                            400: '{{ $theme['secondary']['400'] }}',
-                            500: '{{ $theme['secondary']['500'] }}',
-                            600: '{{ $theme['secondary']['600'] }}',
-                            700: '{{ $theme['secondary']['700'] }}'
-                        },
-                        ink: '{{ $headingColor }}',
-                        muted: '{{ $bodyColor }}'
-                    },
-                    fontFamily: {
-                        sans: ['Manrope', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif']
-                    }
-                }
-            }
-        };
-    </script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('public.partials.nav-styles')
 </head>
-<body class="text-muted antialiased" style="background-color: {{ $siteBackground }}; color: {{ $bodyColor }}; --submenu-primary: {{ $theme['primary']['500'] ?? '#2D1D5C' }}; --submenu-secondary: {{ $theme['secondary']['500'] ?? '#DFE753' }}; --submenu-hover-text: {{ $theme['primary_text_on_secondary'] ?? '#2D1D5C' }};">
+<body class="text-muted antialiased" style="background-color: {{ $siteBackground }}; color: {{ $bodyColor }}; --submenu-primary: {{ $theme['primary']['500'] ?? '#2D1D5C' }}; --submenu-secondary: {{ $theme['secondary']['500'] ?? '#DFE753' }}; --submenu-hover-text: {{ $theme['primary_text_on_secondary'] ?? '#2D1D5C' }}; {{ $tailwindThemeVars }};">
     <div class="min-h-screen">
         @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
