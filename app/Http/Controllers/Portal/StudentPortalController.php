@@ -95,6 +95,43 @@ class StudentPortalController extends Controller
             ->take(8)
             ->get();
 
+        $pendingUpdateCards = [];
+        $unreadMessagesCount = (int) $user->unreadMessagesCount();
+        $unreadFeedbackResponsesCount = (int) $user->unreadResultFeedbackResponsesCount();
+        $unreadAssignmentReviewsCount = (int) $user->unreadNotifications()
+            ->where('type', StudentAssignmentReviewedNotification::class)
+            ->count();
+
+        if ($unreadMessagesCount > 0) {
+            $pendingUpdateCards[] = [
+                'label' => 'Unread Messages',
+                'count' => $unreadMessagesCount,
+                'route' => route('portal.messages.index'),
+                'cta' => 'Open Inbox',
+            ];
+        }
+
+        if ($unreadFeedbackResponsesCount > 0) {
+            $pendingUpdateCards[] = [
+                'label' => 'Result Feedback Responses',
+                'count' => $unreadFeedbackResponsesCount,
+                'route' => route('portal.results.feedback.index'),
+                'cta' => 'Read Responses',
+            ];
+        }
+
+        if ($unreadAssignmentReviewsCount > 0) {
+            $pendingUpdateCards[] = [
+                'label' => 'Assignment Reviews',
+                'count' => $unreadAssignmentReviewsCount,
+                'route' => route('portal.assignments'),
+                'cta' => 'View Assignments',
+            ];
+        }
+
+        $hasPendingStudentUpdates = !empty($pendingUpdateCards);
+        $pendingStudentUpdatesCount = $unreadMessagesCount + $unreadFeedbackResponsesCount + $unreadAssignmentReviewsCount;
+
         return view('portal.student.dashboard', compact(
             'student',
             'results',
@@ -104,7 +141,10 @@ class StudentPortalController extends Controller
             'invoices',
             'timetable',
             'publicPage',
-            'studentTestimonials'
+            'studentTestimonials',
+            'pendingUpdateCards',
+            'hasPendingStudentUpdates',
+            'pendingStudentUpdatesCount'
         ));
     }
 

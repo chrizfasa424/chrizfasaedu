@@ -13,7 +13,7 @@
                 <p class="mt-1 text-sm text-slate-500">Manage all FAQ categories and their questions. Changes are published live to the public FAQ page.</p>
             </div>
             <button type="button" id="add-faq-category"
-                    class="inline-flex items-center gap-2 rounded-2xl border border-dashed border-[#2D1D5C] bg-[#2D1D5C]/5 px-4 py-2 text-sm font-semibold text-[#2D1D5C] transition hover:bg-[#2D1D5C] hover:text-white">
+                    class="inline-flex items-center gap-2 rounded-2xl border border-dashed border-[#25333E] bg-[#25333E]/5 px-4 py-2 text-sm font-semibold text-[#25333E] transition hover:bg-[#25333E] hover:text-white">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Add Category
             </button>
@@ -32,7 +32,7 @@
                                    name="categories[{{ $catIndex }}][id]"
                                    value="{{ $cat['id'] ?? '' }}"
                                    placeholder="e.g. admissions"
-                                   class="w-40 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-mono text-slate-700 focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10">
+                                   class="w-40 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-mono text-slate-700 focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10">
                         </div>
                         <div class="flex items-center gap-2">
                             <label class="text-xs font-semibold uppercase tracking-wider text-slate-500">Label</label>
@@ -40,7 +40,7 @@
                                    name="categories[{{ $catIndex }}][label]"
                                    value="{{ $cat['label'] ?? '' }}"
                                    placeholder="Category label"
-                                   class="w-48 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-900 focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10">
+                                   class="w-48 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-900 focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10">
                         </div>
                         <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500 faq-item-count">
                             {{ count($cat['items'] ?? []) }} question{{ count($cat['items'] ?? []) !== 1 ? 's' : '' }}
@@ -70,14 +70,14 @@
                                            name="categories[{{ $catIndex }}][items][{{ $itemIndex }}][q]"
                                            value="{{ $faqItem['q'] ?? '' }}"
                                            placeholder="Enter the question..."
-                                           class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10">
+                                           class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10">
                                 </div>
                                 <div>
                                     <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Answer</label>
                                     <textarea name="categories[{{ $catIndex }}][items][{{ $itemIndex }}][a]"
                                               rows="3"
                                               placeholder="Enter the answer. You may use basic HTML like &lt;strong&gt;, &lt;ul&gt;, &lt;li&gt;..."
-                                              class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10">{{ $faqItem['a'] ?? '' }}</textarea>
+                                              class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10">{{ $faqItem['a'] ?? '' }}</textarea>
                                     <p class="mt-1 text-xs text-slate-400">Supports basic HTML: &lt;strong&gt;, &lt;ul&gt;&lt;li&gt;, &lt;a&gt;, line breaks.</p>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                     @endforelse
 
                     <button type="button"
-                            class="faq-add-item mt-1 inline-flex items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-500 transition hover:border-[#2D1D5C] hover:text-[#2D1D5C]">
+                            class="faq-add-item mt-1 inline-flex items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-500 transition hover:border-[#25333E] hover:text-[#25333E]">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                         Add Question
                     </button>
@@ -107,7 +107,7 @@
         </div>
     </div>
 
-    <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-[#2D1D5C] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">
+    <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-[#25333E] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
         Save All FAQs
     </button>
@@ -121,12 +121,12 @@
                 <div class="flex items-center gap-2">
                     <label class="text-xs font-semibold uppercase tracking-wider text-slate-500">Category ID</label>
                     <input type="text" name="categories[__CAT__][id]" placeholder="e.g. my-category"
-                           class="w-40 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-mono text-slate-700 focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10">
+                           class="w-40 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-mono text-slate-700 focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10">
                 </div>
                 <div class="flex items-center gap-2">
                     <label class="text-xs font-semibold uppercase tracking-wider text-slate-500">Label</label>
                     <input type="text" name="categories[__CAT__][label]" placeholder="Category label"
-                           class="w-48 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-900 focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10">
+                           class="w-48 rounded-xl border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-900 focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10">
                 </div>
                 <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500 faq-item-count">0 questions</span>
             </div>
@@ -143,7 +143,7 @@
         </div>
         <div class="faq-items-container px-5 py-4 space-y-3">
             <p class="text-sm text-slate-400 italic faq-empty-notice">No questions in this category yet.</p>
-            <button type="button" class="faq-add-item mt-1 inline-flex items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-500 transition hover:border-[#2D1D5C] hover:text-[#2D1D5C]">
+            <button type="button" class="faq-add-item mt-1 inline-flex items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-500 transition hover:border-[#25333E] hover:text-[#25333E]">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Add Question
             </button>
@@ -158,12 +158,12 @@
                 <div>
                     <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Question</label>
                     <input type="text" name="" placeholder="Enter the question..."
-                           class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10">
+                           class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10">
                 </div>
                 <div>
                     <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Answer</label>
                     <textarea name="" rows="3" placeholder="Enter the answer..."
-                              class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm focus:border-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#2D1D5C]/10"></textarea>
+                              class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm focus:border-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#25333E]/10"></textarea>
                     <p class="mt-1 text-xs text-slate-400">Supports basic HTML: &lt;strong&gt;, &lt;ul&gt;&lt;li&gt;, &lt;a&gt;, line breaks.</p>
                 </div>
             </div>

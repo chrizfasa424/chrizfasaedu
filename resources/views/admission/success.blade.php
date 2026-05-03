@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Submitted â€” {{ $schoolName }}</title>
+    @php
+        $seoSuccessTitle = 'Application Submitted - ' . $schoolName;
+        $seoSuccessDescription = 'Your admission application was submitted successfully.';
+        $seoSuccessLogo = $school?->logo ? asset('storage/' . ltrim($school->logo, '/')) : '';
+    @endphp
+    @include('public.partials.seo', [
+        'title' => $seoSuccessTitle,
+        'description' => $seoSuccessDescription,
+        'canonical' => route('admission.success'),
+        'type' => 'website',
+        'schemaType' => 'WebPage',
+        'siteName' => $schoolName,
+        'image' => $seoSuccessLogo,
+        'school' => $school,
+        'robots' => 'noindex,nofollow',
+    ])
     @if($faviconPath)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
     @endif
@@ -122,7 +138,49 @@
         </div>
     </div>
 
+    <div id="submission-success-popup" class="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/50 px-4" role="dialog" aria-modal="true" aria-labelledby="submission-success-title">
+        <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-2xl">
+            <h2 id="submission-success-title" class="text-xl font-extrabold text-slate-900">Application submitted successfully.</h2>
+            <p class="mt-2 text-sm font-medium text-slate-600">It is under review.</p>
+            <p class="mt-4 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+                Redirecting to homepage in
+                <span id="redirect-countdown" class="font-extrabold text-slate-800">10</span>
+                seconds...
+            </p>
+        </div>
+    </div>
+
     @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
+
+    <script>
+        (function () {
+            const countdownEl = document.getElementById('redirect-countdown');
+            const homeUrl = @json(route('public.home'));
+            let remaining = 10;
+            let redirected = false;
+
+            const redirectHome = function () {
+                if (redirected) {
+                    return;
+                }
+                redirected = true;
+                window.location.replace(homeUrl);
+            };
+
+            const tick = window.setInterval(function () {
+                remaining -= 1;
+                if (countdownEl) {
+                    countdownEl.textContent = String(Math.max(remaining, 0));
+                }
+                if (remaining <= 0) {
+                    window.clearInterval(tick);
+                    redirectHome();
+                }
+            }, 1000);
+
+            window.setTimeout(redirectHome, 10000);
+        })();
+    </script>
 </body>
 </html>
 

@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <section class="rounded-3xl border border-[#DCE4F2] bg-gradient-to-br from-[#F6F8FF] via-white to-[#F3F7FF] px-6 py-7 shadow-sm sm:px-8">
-        <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#2D1D5C]/60">Staff Workspace</p>
+        <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#25333E]/60">Staff Workspace</p>
         <h3 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">Welcome back, {{ $user?->full_name }}</h3>
         <p class="mt-2 text-sm text-slate-600">Access your profile, track your role details, and stay updated with school operations.</p>
     </section>

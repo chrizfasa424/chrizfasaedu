@@ -6,7 +6,7 @@ class ThemePalette
 {
     public static function fromPublicPage(array $publicPage): array
     {
-        $primary = self::sanitizeHex($publicPage['primary_color'] ?? null, '#2D1D5C');
+        $primary = self::sanitizeHex($publicPage['primary_color'] ?? null, '#25333E');
         $secondary = self::sanitizeHex($publicPage['secondary_color'] ?? null, '#DFE753');
         $heading = self::sanitizeHex($publicPage['heading_text_color'] ?? null, '#0F172A');
         $body = self::sanitizeHex($publicPage['body_text_color'] ?? null, '#475569');
@@ -106,7 +106,7 @@ class ThemePalette
             '--tw-brand-200' => data_get($theme, 'primary.200', '#D4CBFF'),
             '--tw-brand-300' => data_get($theme, 'primary.300', '#B7A7FF'),
             '--tw-brand-400' => data_get($theme, 'primary.400', '#8E78FF'),
-            '--tw-brand-500' => data_get($theme, 'primary.500', '#2D1D5C'),
+            '--tw-brand-500' => data_get($theme, 'primary.500', '#25333E'),
             '--tw-brand-600' => data_get($theme, 'primary.600', '#24174B'),
             '--tw-brand-700' => data_get($theme, 'primary.700', '#1A1135'),
             '--tw-secondary-50' => data_get($theme, 'secondary.50', '#FBFDEB'),

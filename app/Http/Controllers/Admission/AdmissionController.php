@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admission;
 
 use App\Enums\AdmissionStatus;
 use App\Http\Controllers\Controller;
+use App\Mail\AdmissionSubmittedAdmin;
 use App\Mail\AdmissionReceived;
 use App\Mail\AdmissionStatusChanged;
 use App\Mail\StudentEnrolled;
@@ -41,9 +42,9 @@ class AdmissionController extends Controller
             $theme = [];
         }
 
-        $primary     = data_get($theme, 'primary.500',     '#2D1D5C');
+        $primary     = data_get($theme, 'primary.500',     '#25333E');
         $secondary   = data_get($theme, 'secondary.500',   '#DFE753');
-        $header      = data_get($theme, 'header',          '#2D1D5C');
+        $header      = data_get($theme, 'header',          '#25333E');
         $bg          = data_get($theme, 'site_background', '#F8FAFC');
         $ink         = data_get($theme, 'ink',             '#0F172A');
         $muted       = data_get($theme, 'muted',           '#475569');
@@ -135,6 +136,18 @@ class AdmissionController extends Controller
             ]);
         }
 
+        try {
+            $adminRecipients = $this->resolveAdmissionAdminRecipients($school);
+            if (!empty($adminRecipients)) {
+                Mail::to($adminRecipients)->send(new AdmissionSubmittedAdmin($admission, $school));
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Admission admin notification email failed', [
+                'admission_id' => $admission->id,
+                'error'        => $e->getMessage(),
+            ]);
+        }
+
         return redirect()->route('admission.success')
             ->with('application_number', $admission->application_number)
             ->with('email_sent', $emailSent)
@@ -157,9 +170,9 @@ class AdmissionController extends Controller
             $theme = [];
         }
 
-        $primary     = data_get($theme, 'primary.500',     '#2D1D5C');
+        $primary     = data_get($theme, 'primary.500',     '#25333E');
         $secondary   = data_get($theme, 'secondary.500',   '#DFE753');
-        $header      = data_get($theme, 'header',          '#2D1D5C');
+        $header      = data_get($theme, 'header',          '#25333E');
         $bg          = data_get($theme, 'site_background', '#F8FAFC');
         $schoolName  = $school?->name ?? 'Our School';
         $faviconPath = data_get($school?->settings, 'branding.favicon');
@@ -517,6 +530,18 @@ class AdmissionController extends Controller
     private function normalizeClassToken(string $value): string
     {
         return (string) preg_replace('/[^a-z0-9]/', '', strtolower(trim($value)));
+    }
+
+    private function resolveAdmissionAdminRecipients(?School $school): array
+    {
+        $smtpTo = trim((string) data_get($school?->settings, 'smtp.to_address', ''));
+        $schoolEmail = trim((string) ($school?->email ?? ''));
+
+        $recipients = array_values(array_filter([$smtpTo, $schoolEmail], function ($email) {
+            return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL);
+        }));
+
+        return array_values(array_unique($recipients));
     }
 
     private function resolvePublicSchool(Request $request): ?School

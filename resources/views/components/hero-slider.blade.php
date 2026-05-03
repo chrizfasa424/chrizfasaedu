@@ -332,7 +332,7 @@
                     @if(filled(data_get($slide, 'image_url')) && !data_get($slide, 'is_placeholder_visual'))
                         <img src="{{ data_get($slide, 'image_url') }}" alt="{{ data_get($slide, 'title') }}" class="h-full w-full object-cover object-center">
                     @else
-                        <div class="absolute inset-0 bg-[linear-gradient(135deg,#1f2a44_0%,#2D1D5C_42%,#355AA0_100%)]"></div>
+                        <div class="absolute inset-0 bg-[linear-gradient(135deg,#1f2a44_0%,#25333E_42%,#355AA0_100%)]"></div>
                         <div class="absolute inset-0 flex items-center justify-center px-6">
                             <div class="hero-glass-panel relative max-w-xl rounded-3xl p-6 text-white">
                                 <p class="text-sm font-semibold uppercase text-white/80">Hero Slides</p>

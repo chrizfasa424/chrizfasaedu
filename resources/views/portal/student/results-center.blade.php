@@ -3,7 +3,7 @@
 @section('header', 'My Results')
 
 @php
-    $primaryColor = trim((string) data_get($school->settings ?? [], 'branding.primary_color', '#2D1D5C'));
+    $primaryColor = trim((string) data_get($school->settings ?? [], 'branding.primary_color', '#25333E'));
     $canViewFirst = (bool) ($componentVisibility['first_test'] ?? false);
     $canViewSecond = (bool) ($componentVisibility['second_test'] ?? false);
     $canViewExam = (bool) ($componentVisibility['exam'] ?? false);
@@ -36,7 +36,7 @@
     </section>
 
     <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <form method="GET" action="{{ route('portal.results.center') }}" class="grid gap-4 md:grid-cols-4">
+        <form method="GET" action="{{ route('portal.results.center') }}" class="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
             <input type="hidden" name="filter" value="1">
             <div>
                 <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Term</label>
@@ -64,9 +64,9 @@
                 </select>
             </div>
 
-            <div class="flex items-end justify-end gap-2 md:col-span-2">
+            <div class="flex flex-wrap items-end gap-2 md:col-span-2 2xl:col-span-2">
                 <button id="results-filter-btn" type="submit"
-                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 sm:w-auto 2xl:flex-1">
                     Filter
                 </button>
                 <a href="{{ route('portal.results.center') }}"
@@ -156,7 +156,7 @@
                 $subjectCount = max((int) $items->count(), 1);
             @endphp
 
-            <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <section class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
                 @if($canViewFirst)
                     <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">First Test Total</p>

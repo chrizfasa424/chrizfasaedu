@@ -29,7 +29,7 @@
     .teacher-marquee-input:focus,
     .teacher-marquee-input:focus-visible {
         outline: none;
-        border-color: #2D1D5C;
+        border-color: #25333E;
         box-shadow:
             0 0 0 4px rgba(45, 29, 92, 0.16),
             0 14px 28px -18px rgba(45, 29, 92, 0.45);
@@ -262,7 +262,7 @@
             @endforeach
         </div>
 
-        <button type="button" data-add-teacher-marquee-row class="mt-4 inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#2D1D5C] hover:text-[#2D1D5C]">
+        <button type="button" data-add-teacher-marquee-row class="mt-4 inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#25333E] hover:text-[#25333E]">
             Add Another Teacher
         </button>
 
@@ -396,7 +396,7 @@
         </div>
     </div>
 
-    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">Save About Us Page</button>
+    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save About Us Page</button>
 </form>
 
 @include('system.settings.partials._submenu-item-editor', [

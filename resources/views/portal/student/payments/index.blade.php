@@ -9,7 +9,7 @@
             <h1 class="text-2xl font-bold text-slate-900">Payments Center</h1>
             <p class="text-sm text-slate-500">Pay school fees, upload proof, and track approval with your student ID.</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             <div class="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2 text-xs text-indigo-700">
                 Student ID: <span class="font-semibold">{{ $student->admission_number ?: $student->registration_number }}</span>
             </div>
@@ -31,43 +31,45 @@
             <div class="px-5 py-4 border-b border-slate-100">
                 <h2 class="text-sm font-semibold text-slate-700">Invoices</h2>
             </div>
-            <table class="min-w-full divide-y divide-slate-100 text-sm">
-                <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th class="px-4 py-3 text-left">Invoice</th>
-                        <th class="px-4 py-3 text-left">Session / Term</th>
-                        <th class="px-4 py-3 text-right">Net</th>
-                        <th class="px-4 py-3 text-right">Balance</th>
-                        <th class="px-4 py-3 text-left">Fee State</th>
-                        <th class="px-4 py-3 text-left">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse($invoices as $invoice)
-                        @php $feeState = $invoice->fee_state; @endphp
-                        <tr class="{{ $selectedInvoice && $selectedInvoice->id === $invoice->id ? 'bg-indigo-50' : '' }}">
-                            <td class="px-4 py-3 font-mono text-xs text-slate-700">{{ $invoice->invoice_number }}</td>
-                            <td class="px-4 py-3 text-xs text-slate-600">{{ $invoice->session?->name }} / {{ $invoice->term?->name }}</td>
-                            <td class="px-4 py-3 text-right text-slate-700">NGN {{ number_format((float) $invoice->net_amount, 2) }}</td>
-                            <td class="px-4 py-3 text-right font-semibold {{ (float) $invoice->balance > 0 ? 'text-red-600' : 'text-green-600' }}">NGN {{ number_format((float) $invoice->balance, 2) }}</td>
-                            <td class="px-4 py-3">
-                                <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $feeState === 'active' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700' }}">
-                                    {{ ucfirst($feeState) }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3">
-                                @if($feeState === 'active')
-                                    <a href="{{ route('portal.payments.index', ['invoice_id' => $invoice->id]) }}" class="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Select</a>
-                                @else
-                                    <span class="text-xs font-medium text-slate-400">Settled</span>
-                                @endif
-                            </td>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-100 text-sm">
+                    <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Invoice</th>
+                            <th class="px-4 py-3 text-left">Session / Term</th>
+                            <th class="px-4 py-3 text-right">Net</th>
+                            <th class="px-4 py-3 text-right">Balance</th>
+                            <th class="px-4 py-3 text-left">Fee State</th>
+                            <th class="px-4 py-3 text-left">Action</th>
                         </tr>
-                    @empty
-                        <tr><td colspan="6" class="px-4 py-10 text-center text-slate-400">No invoices found.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($invoices as $invoice)
+                            @php $feeState = $invoice->fee_state; @endphp
+                            <tr class="{{ $selectedInvoice && $selectedInvoice->id === $invoice->id ? 'bg-indigo-50' : '' }}">
+                                <td class="px-4 py-3 font-mono text-xs text-slate-700">{{ $invoice->invoice_number }}</td>
+                                <td class="px-4 py-3 text-xs text-slate-600">{{ $invoice->session?->name }} / {{ $invoice->term?->name }}</td>
+                                <td class="px-4 py-3 text-right text-slate-700">NGN {{ number_format((float) $invoice->net_amount, 2) }}</td>
+                                <td class="px-4 py-3 text-right font-semibold {{ (float) $invoice->balance > 0 ? 'text-red-600' : 'text-green-600' }}">NGN {{ number_format((float) $invoice->balance, 2) }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $feeState === 'active' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700' }}">
+                                        {{ ucfirst($feeState) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if($feeState === 'active')
+                                        <a href="{{ route('portal.payments.index', ['invoice_id' => $invoice->id]) }}" class="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Select</a>
+                                    @else
+                                        <span class="text-xs font-medium text-slate-400">Settled</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="px-4 py-10 text-center text-slate-400">No invoices found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -161,7 +163,7 @@
     @if($bankAccounts->count())
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 class="text-sm font-semibold text-slate-700">Bank Transfer Details</h2>
-            <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div class="mt-4 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
                 @foreach($bankAccounts as $account)
                     <div class="rounded-xl border {{ $account->is_default ? 'border-indigo-300 bg-indigo-50' : 'border-slate-200 bg-slate-50' }} p-3 text-sm">
                         <div class="font-semibold text-slate-800">{{ $account->bank_name }} @if($account->is_default)<span class="ml-1 rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] text-white">Default</span>@endif</div>
@@ -180,51 +182,53 @@
         <div class="px-5 py-4 border-b border-slate-100">
             <h2 class="text-sm font-semibold text-slate-700">Payment History</h2>
         </div>
-        <table class="min-w-full divide-y divide-slate-100 text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                    <th class="px-4 py-3 text-left">Reference</th>
-                    <th class="px-4 py-3 text-left">Invoice</th>
-                    <th class="px-4 py-3 text-left">Method</th>
-                    <th class="px-4 py-3 text-right">Amount</th>
-                    <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-left">Date</th>
-                    <th class="px-4 py-3 text-left">Receipt</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                @forelse($payments as $payment)
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-100 text-sm">
+                <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                     <tr>
-                        <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $payment->payment_reference }}</td>
-                        <td class="px-4 py-3 text-xs text-slate-600">{{ $payment->invoice?->invoice_number ?: 'N/A' }}</td>
-                        <td class="px-4 py-3 capitalize text-slate-600">{{ str_replace('_', ' ', $payment->payment_method) }}</td>
-                        <td class="px-4 py-3 text-right font-semibold text-slate-800">NGN {{ number_format((float) $payment->amount, 2) }}</td>
-                        <td class="px-4 py-3">
-                            @php
-                                $status = strtolower((string) $payment->status);
-                                $statusClass = match($status) {
-                                    'approved', 'confirmed' => 'bg-green-100 text-green-700',
-                                    'pending', 'under_review' => 'bg-yellow-100 text-yellow-700',
-                                    'rejected', 'failed', 'cancelled' => 'bg-red-100 text-red-700',
-                                    default => 'bg-slate-100 text-slate-700',
-                                };
-                            @endphp
-                            <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $statusClass }}">{{ ucwords(str_replace('_', ' ', $payment->status)) }}</span>
-                        </td>
-                        <td class="px-4 py-3 text-xs text-slate-500">{{ optional($payment->payment_date ?: $payment->paid_at)->format('d M Y') ?: '—' }}</td>
-                        <td class="px-4 py-3">
-                            @if($payment->receipt && $payment->isSuccessful())
-                                <a href="{{ route('portal.payments.receipt', $payment->receipt) }}" class="text-xs text-indigo-600 hover:underline">View</a>
-                            @else
-                                <span class="text-xs text-slate-400">Unavailable</span>
-                            @endif
-                        </td>
+                        <th class="px-4 py-3 text-left">Reference</th>
+                        <th class="px-4 py-3 text-left">Invoice</th>
+                        <th class="px-4 py-3 text-left">Method</th>
+                        <th class="px-4 py-3 text-right">Amount</th>
+                        <th class="px-4 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-left">Date</th>
+                        <th class="px-4 py-3 text-left">Receipt</th>
                     </tr>
-                @empty
-                    <tr><td colspan="7" class="px-4 py-10 text-center text-slate-400">No payment history yet.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($payments as $payment)
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $payment->payment_reference }}</td>
+                            <td class="px-4 py-3 text-xs text-slate-600">{{ $payment->invoice?->invoice_number ?: 'N/A' }}</td>
+                            <td class="px-4 py-3 capitalize text-slate-600">{{ str_replace('_', ' ', $payment->payment_method) }}</td>
+                            <td class="px-4 py-3 text-right font-semibold text-slate-800">NGN {{ number_format((float) $payment->amount, 2) }}</td>
+                            <td class="px-4 py-3">
+                                @php
+                                    $status = strtolower((string) $payment->status);
+                                    $statusClass = match($status) {
+                                        'approved', 'confirmed' => 'bg-green-100 text-green-700',
+                                        'pending', 'under_review' => 'bg-yellow-100 text-yellow-700',
+                                        'rejected', 'failed', 'cancelled' => 'bg-red-100 text-red-700',
+                                        default => 'bg-slate-100 text-slate-700',
+                                    };
+                                @endphp
+                                <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $statusClass }}">{{ ucwords(str_replace('_', ' ', $payment->status)) }}</span>
+                            </td>
+                            <td class="px-4 py-3 text-xs text-slate-500">{{ optional($payment->payment_date ?: $payment->paid_at)->format('d M Y') ?: '—' }}</td>
+                            <td class="px-4 py-3">
+                                @if($payment->receipt && $payment->isSuccessful())
+                                    <a href="{{ route('portal.payments.receipt', $payment->receipt) }}" class="text-xs text-indigo-600 hover:underline">View</a>
+                                @else
+                                    <span class="text-xs text-slate-400">Unavailable</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="7" class="px-4 py-10 text-center text-slate-400">No payment history yet.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
         <div class="px-4 py-3">{{ $payments->links() }}</div>
     </div>
 </div>

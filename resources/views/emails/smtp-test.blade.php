@@ -1,28 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMTP Test Email</title>
-</head>
-<body style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5; margin: 0; padding: 20px; background: #f8fafc;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 680px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
+<x-email-layout
+    title="SMTP Test Successful"
+    :school="$school"
+    :school-name="$school?->name ?? 'School'"
+    :mailer-message="isset($message) ? $message : null"
+    preview-text="This confirms your SMTP configuration is sending emails successfully."
+>
+    <table width="100%" cellpadding="0" cellspacing="6">
         <tr>
-            <td style="padding: 20px;">
-                <h2 style="margin: 0; font-size: 20px;">SMTP Test Successful</h2>
-                <p style="margin: 8px 0 0; color: #475569;">This test message confirms your SMTP settings are working.</p>
-            </td>
+            <td style="width:38%;color:#64748b;font-size:14px;">School</td>
+            <td style="color:#0f172a;font-size:14px;font-weight:600;">{{ $school?->name ?? 'School' }}</td>
         </tr>
         <tr>
-            <td style="padding: 0 20px 20px;">
-                <p style="margin: 0 0 8px;"><strong>School:</strong> {{ $school?->name ?? 'School' }}</p>
-                <p style="margin: 0 0 8px;"><strong>Recipient:</strong> {{ $recipient }}</p>
-                <p style="margin: 0 0 8px;"><strong>Sent At:</strong> {{ $sentAt->format('Y-m-d H:i:s') }}</p>
-                <p style="margin: 0 0 8px;"><strong>SMTP Host:</strong> {{ $smtp['host'] ?? 'N/A' }}</p>
-                <p style="margin: 0;"><strong>SMTP Port:</strong> {{ $smtp['port'] ?? 'N/A' }}</p>
-            </td>
+            <td style="color:#64748b;font-size:14px;">Recipient</td>
+            <td style="color:#0f172a;font-size:14px;">{{ $recipient }}</td>
+        </tr>
+        <tr>
+            <td style="color:#64748b;font-size:14px;">Sent At</td>
+            <td style="color:#0f172a;font-size:14px;">{{ $sentAt->format('Y-m-d H:i:s') }}</td>
+        </tr>
+        <tr>
+            <td style="color:#64748b;font-size:14px;">SMTP Host</td>
+            <td style="color:#0f172a;font-size:14px;">{{ $smtp['host'] ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td style="color:#64748b;font-size:14px;">SMTP Port</td>
+            <td style="color:#0f172a;font-size:14px;">{{ $smtp['port'] ?? 'N/A' }}</td>
         </tr>
     </table>
-</body>
-</html>
-
+</x-email-layout>

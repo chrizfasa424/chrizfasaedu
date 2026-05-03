@@ -15,7 +15,7 @@
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold text-slate-700">Primary Brand Color</label>
-                <input type="color" name="primary_color" value="{{ old('primary_color', $publicPage['primary_color'] ?? '#2D1D5C') }}" class="h-12 w-full rounded-2xl border border-slate-300 bg-white p-1">
+                <input type="color" name="primary_color" value="{{ old('primary_color', $publicPage['primary_color'] ?? '#25333E') }}" class="h-12 w-full rounded-2xl border border-slate-300 bg-white p-1">
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold text-slate-700">Secondary Brand Color</label>
@@ -43,11 +43,11 @@
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold text-slate-700">Header Color</label>
-                <input type="color" name="header_bg_color" value="{{ old('header_bg_color', $publicPage['header_bg_color'] ?? '#2D1D5C') }}" class="h-12 w-full rounded-2xl border border-slate-300 bg-white p-1">
+                <input type="color" name="header_bg_color" value="{{ old('header_bg_color', $publicPage['header_bg_color'] ?? '#25333E') }}" class="h-12 w-full rounded-2xl border border-slate-300 bg-white p-1">
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold text-slate-700">Footer Color</label>
-                <input type="color" name="footer_bg_color" value="{{ old('footer_bg_color', $publicPage['footer_bg_color'] ?? '#2D1D5C') }}" class="h-12 w-full rounded-2xl border border-slate-300 bg-white p-1">
+                <input type="color" name="footer_bg_color" value="{{ old('footer_bg_color', $publicPage['footer_bg_color'] ?? '#25333E') }}" class="h-12 w-full rounded-2xl border border-slate-300 bg-white p-1">
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold text-slate-700">Footer Separator Color</label>
@@ -57,8 +57,8 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-        <button type="submit" class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">Save Theme Settings</button>
-        <button type="submit" form="reset-theme-form" class="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#2D1D5C] hover:text-[#2D1D5C]" onclick="return confirm('Reset header and footer colors to the default school theme?');">Reset Theme To Default</button>
+        <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save Theme Settings</button>
+        <button type="submit" form="reset-theme-form" class="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#25333E] hover:text-[#25333E]" onclick="return confirm('Reset header and footer colors to the default school theme?');">Reset Theme To Default</button>
     </div>
 </form>
 

@@ -3,7 +3,7 @@
 @section('header', 'Result Feedback')
 
 @php
-    $primaryColor = trim((string) data_get($school->settings ?? [], 'branding.primary_color', '#2D1D5C'));
+    $primaryColor = trim((string) data_get($school->settings ?? [], 'branding.primary_color', '#25333E'));
     $replyParentOldId = (int) old('parent_feedback_id', 0);
 @endphp
 

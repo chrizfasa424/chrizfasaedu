@@ -6,7 +6,20 @@
     <title>{{ $school?->name ?? 'ChrizFasa Academy' }} | {{ trim((string) ($publicPage['site_title_suffix'] ?? 'KG, Primary and Secondary School')) }}</title>
     @php
         $faviconPath = data_get($school?->settings, 'branding.favicon');
+        $seoHomeTitle = ($school?->name ?? 'ChrizFasa Academy') . ' | ' . trim((string) ($publicPage['site_title_suffix'] ?? 'KG, Primary and Secondary School'));
+        $seoHomeDescription = trim((string) ($publicPage['hero_subtitle'] ?? ''));
+        $seoHomeLogo = $school?->logo ? asset('storage/' . ltrim($school->logo, '/')) : '';
     @endphp
+    @include('public.partials.seo', [
+        'title' => $seoHomeTitle,
+        'description' => $seoHomeDescription,
+        'canonical' => route('public.home'),
+        'type' => 'website',
+        'schemaType' => 'WebSite',
+        'siteName' => $school?->name ?? 'ChrizFasa Academy',
+        'image' => $seoHomeLogo,
+        'school' => $school,
+    ])
     @if($faviconPath)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
     @endif
@@ -106,11 +119,11 @@
     .theme-nav-link:hover,
     .theme-nav-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-nav-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
 
@@ -132,53 +145,53 @@
     .theme-header-action-outline:focus-visible {
         border-color: var(--submenu-secondary, #DFE753);
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-header-action-solid {
         background-color: #ffffff;
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-header-action-solid:hover,
     .theme-header-action-solid:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-mobile-action-outline {
-        border-color: var(--submenu-primary, #2D1D5C);
-        color: var(--submenu-primary, #2D1D5C);
+        border-color: var(--submenu-primary, #25333E);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-mobile-action-outline:hover,
     .theme-mobile-action-outline:focus-visible {
         border-color: var(--submenu-secondary, #DFE753);
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-mobile-action-solid {
-        background-color: var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
         color: #ffffff;
     }
 
     .theme-mobile-action-solid:hover,
     .theme-mobile-action-solid:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-cta-solid {
-        background-color: var(--submenu-primary, #2D1D5C);
-        border: 1px solid var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
+        border: 1px solid var(--submenu-primary, #25333E);
         color: #ffffff;
     }
 
     .theme-cta-outline {
         background-color: #ffffff;
-        border: 1px solid var(--submenu-primary, #2D1D5C);
-        color: var(--submenu-primary, #2D1D5C);
+        border: 1px solid var(--submenu-primary, #25333E);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-cta-solid:hover,
@@ -187,12 +200,12 @@
     .theme-cta-outline:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
         border-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-submenu-panel {
-        background-color: var(--submenu-primary, #2D1D5C);
-        border-color: var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
+        border-color: var(--submenu-primary, #25333E);
     }
 
     .theme-submenu-heading {
@@ -207,11 +220,11 @@
     .theme-submenu-link:hover,
     .theme-submenu-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-submenu-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
 
@@ -222,11 +235,11 @@
     .theme-mobile-submenu-link:hover,
     .theme-mobile-submenu-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-mobile-submenu-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
 
@@ -318,7 +331,7 @@
         font-style: italic;
     }
     .rich-text-content a {
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
         font-weight: 700;
         text-decoration: underline;
         text-decoration-thickness: 2px;
@@ -368,25 +381,37 @@
     .academics-heading h3,
     .academics-heading h4,
     .academics-heading p:first-child {
-        font-size: clamp(1.25rem, 2.2vw, 1.5rem) !important;
+        font-size: clamp(1.875rem, 3vw, 2.25rem) !important;
         line-height: 1.35 !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         letter-spacing: normal !important;
         word-spacing: normal !important;
     }
-    .rich-text-section-intro h2,
-    .rich-text-section-intro h3,
-    .rich-text-section-intro h4,
-    .rich-text-section-intro p:first-child {
-        font-size: clamp(1.9rem, 3vw, 2.4rem);
-        font-weight: 600;
-        line-height: 1.12;
-    }
-    .rich-text-section-intro p:not(:first-child) {
-        margin-top: 0.6rem;
+    .section-kicker-unified {
+        color: var(--submenu-primary, #25333E);
+        font-family: 'Outfit', sans-serif;
         font-size: 1rem;
-        line-height: 1.7;
-        color: var(--theme-body, #475569);
+        font-weight: 800;
+        letter-spacing: 0.24em;
+        line-height: 1.2;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    .section-heading-unified {
+        color: var(--theme-heading, #0F172A);
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.875rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        text-align: center;
+    }
+
+    @media (min-width: 640px) {
+        .section-heading-unified {
+            font-size: 2.25rem;
+        }
     }
     .rich-text-content-inverse blockquote {
         border-left-color: rgba(223, 231, 83, 0.75);
@@ -399,86 +424,33 @@
         color: #ffffff;
     }
 
-    @keyframes fx-student-life-bg-flash {
-        0%, 100% {
-            opacity: 0.72;
-        }
-        50% {
-            opacity: 0.96;
-        }
-    }
-
-    @keyframes fx-student-life-border-blink {
-        0%, 49% {
-            box-shadow: 0 18px 38px -28px rgba(15, 23, 42, 0.5);
-        }
-        50%, 100% {
-            box-shadow: 0 22px 44px -30px rgba(15, 23, 42, 0.55);
-        }
-    }
-
-    @keyframes fx-student-life-title-neon {
-        0%, 100% {
-            text-shadow:
-                0 0 0 rgba(223, 231, 83, 0),
-                0 0 0 rgba(223, 231, 83, 0);
-        }
-        50% {
-            text-shadow:
-                0 0 10px rgba(223, 231, 83, 0.95),
-                0 0 22px rgba(223, 231, 83, 0.65);
-        }
-    }
-
     .student-life-fx-card {
         position: relative;
         overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         background-color: var(--submenu-secondary, #DFE753) !important;
         border: 0 !important;
         box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
     }
 
-    .student-life-fx-card::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        background: #2D1D5C;
-        opacity: 0;
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .student-life-fx-card > * {
-        position: relative;
-        z-index: 1;
-    }
-
     .student-life-fx-card .student-life-fx-title {
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .student-life-fx-card .student-life-fx-text {
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .student-life-fx-card:hover,
     .student-life-fx-card:focus-within {
-        transform: translateY(-10px);
-        animation: fx-student-life-border-blink 0.12s steps(2, end) infinite;
-    }
-
-    .student-life-fx-card:hover::after,
-    .student-life-fx-card:focus-within::after {
-        opacity: 0.86;
-        animation: fx-student-life-bg-flash 0.22s ease-in-out 2;
+        transform: translateY(-4px);
+        background-color: rgba(37, 51, 62, 0.86) !important;
+        box-shadow: 0 18px 34px -24px rgba(15, 23, 42, 0.45);
     }
 
     .student-life-fx-card:hover .student-life-fx-title,
     .student-life-fx-card:focus-within .student-life-fx-title {
         color: #ffffff !important;
-        animation: fx-student-life-title-neon 0.7s ease-in-out infinite;
     }
 
     .student-life-fx-card:hover .student-life-fx-text,
@@ -487,13 +459,14 @@
     }
 
     .contact-primary-card {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-secondary, #DFE753) !important;
         border: 0 !important;
         box-shadow: 0 14px 34px -22px rgba(15, 23, 42, 0.55);
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .contact-primary-title {
-        color: #ffffff !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .contact-primary-text,
@@ -503,7 +476,40 @@
     .contact-primary-text strong,
     .contact-primary-card .rich-text-content,
     .contact-primary-card .rich-text-content * {
-        color: rgba(255, 255, 255, 0.92) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
+    }
+
+    .contact-primary-card:hover,
+    .contact-primary-card:focus-within {
+        transform: translateY(-4px);
+        background-color: rgba(37, 51, 62, 0.86) !important;
+        box-shadow: 0 18px 34px -24px rgba(15, 23, 42, 0.45);
+    }
+
+    .contact-primary-card:hover .contact-primary-title,
+    .contact-primary-card:hover .contact-primary-text,
+    .contact-primary-card:hover .contact-primary-text p,
+    .contact-primary-card:hover .contact-primary-text span,
+    .contact-primary-card:hover .contact-primary-text a,
+    .contact-primary-card:hover .contact-primary-text strong,
+    .contact-primary-card:hover .rich-text-content,
+    .contact-primary-card:hover .rich-text-content *,
+    .contact-primary-card:focus-within .contact-primary-title,
+    .contact-primary-card:focus-within .contact-primary-text,
+    .contact-primary-card:focus-within .contact-primary-text p,
+    .contact-primary-card:focus-within .contact-primary-text span,
+    .contact-primary-card:focus-within .contact-primary-text a,
+    .contact-primary-card:focus-within .contact-primary-text strong,
+    .contact-primary-card:focus-within .rich-text-content,
+    .contact-primary-card:focus-within .rich-text-content * {
+        color: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    .contact-primary-card:hover .theme-cta-outline,
+    .contact-primary-card:focus-within .theme-cta-outline {
+        border-color: rgba(255, 255, 255, 0.92) !important;
+        color: #ffffff !important;
+        background-color: transparent !important;
     }
 
     .academics-primary-card {
@@ -531,12 +537,12 @@
     .academics-primary-card h3,
     .academics-primary-card .rich-text-content,
     .academics-primary-card .rich-text-content * {
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .academics-primary-card:hover,
     .academics-primary-card:focus-within {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: rgba(37, 51, 62, 0.86) !important;
     }
 
     .academics-primary-card:hover h3,
@@ -579,6 +585,171 @@
         }
     }
 
+    .testimonials-section {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at 8% 12%, rgb(var(--tw-secondary-300) / 0.34), transparent 42%),
+            radial-gradient(circle at 92% 86%, rgb(var(--tw-brand-200) / 0.26), transparent 46%),
+            linear-gradient(180deg, #eaf2fb 0%, #dde8f7 100%);
+    }
+
+    .testimonials-section::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.35;
+        background-image:
+            linear-gradient(rgba(37, 51, 62, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(37, 51, 62, 0.08) 1px, transparent 1px);
+        background-size: 34px 34px;
+    }
+
+    .testimonials-shell {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        background:
+            linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92));
+        box-shadow:
+            0 28px 70px -44px rgba(15, 23, 42, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
+
+    .testimonials-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.35), transparent 38%);
+    }
+
+    .testimonials-kicker {
+        color: var(--submenu-primary, #25333E);
+        font-weight: 800;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+    }
+
+    .testimonials-metric-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        border-radius: 999px;
+        border: 1px solid rgba(37, 51, 62, 0.14);
+        background: rgba(255, 255, 255, 0.72);
+        padding: 0.42rem 0.9rem;
+        box-shadow: 0 10px 22px -18px rgba(15, 23, 42, 0.35);
+        backdrop-filter: blur(6px);
+    }
+
+    .testimonials-metric-chip-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(37, 51, 62, 0.68);
+    }
+
+    .testimonials-metric-chip-value {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--submenu-primary, #25333E);
+    }
+
+    .testimonials-stage {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(37, 51, 62, 0.08);
+        background: linear-gradient(165deg, rgba(37, 51, 62, 0.03), rgba(255, 255, 255, 0.76));
+    }
+
+    .testimonials-stage-title {
+        color: var(--submenu-primary, #25333E);
+        letter-spacing: -0.02em;
+    }
+
+    .testimonials-nav-btn {
+        border: 1px solid rgba(37, 51, 62, 0.2);
+        background: rgba(255, 255, 255, 0.88);
+        color: var(--submenu-primary, #25333E);
+        box-shadow: 0 8px 18px -14px rgba(37, 51, 62, 0.38);
+        transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .testimonials-nav-btn:hover,
+    .testimonials-nav-btn:focus-visible {
+        border-color: rgba(37, 51, 62, 0.38);
+        background: rgb(var(--tw-secondary-100) / 1);
+        transform: translateY(-1px);
+    }
+
+    .testimonials-empty {
+        position: relative;
+        border: 1px dashed rgba(37, 51, 62, 0.24);
+        background: rgba(255, 255, 255, 0.86);
+        color: rgba(37, 51, 62, 0.84);
+    }
+
+    .testimonials-empty::before {
+        content: "''";
+        position: absolute;
+        left: 1.2rem;
+        top: 0.55rem;
+        font-size: 2.1rem;
+        font-weight: 800;
+        line-height: 1;
+        color: rgba(37, 51, 62, 0.16);
+    }
+
+    .testimonials-slider {
+        background: rgba(255, 255, 255, 0.72);
+    }
+
+    .testimonials-card {
+        position: relative;
+        border: 1px solid rgba(37, 51, 62, 0.1);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.94));
+        box-shadow: 0 16px 34px -26px rgba(15, 23, 42, 0.4);
+    }
+
+    .testimonials-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(125deg, rgba(255, 255, 255, 0.35), transparent 42%);
+    }
+
+    .testimonials-quote {
+        position: relative;
+        color: var(--submenu-primary, #25333E);
+    }
+
+    .testimonials-quote::before {
+        content: "“";
+        position: absolute;
+        left: -0.4rem;
+        top: -0.85rem;
+        font-size: 2.8rem;
+        font-weight: 800;
+        line-height: 1;
+        color: rgb(var(--tw-secondary-500) / 0.55);
+    }
+
+    .testimonials-author-role {
+        color: rgba(37, 51, 62, 0.62);
+    }
+
+    .testimonials-dot {
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .testimonials-dot:hover {
+        transform: scale(1.05);
+    }
+
     .teacher-marquee-section {
         background:
             radial-gradient(circle at top right, rgba(223, 231, 83, 0.12), transparent 35%),
@@ -592,7 +763,7 @@
     }
 
     .teacher-marquee-kicker {
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
         font-weight: 800;
         letter-spacing: 0.22em;
         text-transform: uppercase;
@@ -600,7 +771,7 @@
 
     .teacher-marquee-window {
         overflow: hidden;
-        background: var(--submenu-primary, #2D1D5C) !important;
+        background: var(--submenu-secondary, #DFE753) !important;
     }
 
     @keyframes teacher-marquee-scroll {
@@ -638,7 +809,8 @@
         align-items: center;
         gap: 0.8rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(37, 51, 62, 0.14);
         padding: 0.55rem 0.8rem;
     }
 
@@ -651,7 +823,7 @@
         justify-content: center;
         overflow: hidden;
         border-radius: 999px;
-        background: linear-gradient(135deg, #2D1D5C, #4c3892);
+        background: linear-gradient(135deg, #25333E, #4c3892);
         color: #f8fafc;
         font-weight: 800;
         letter-spacing: 0.08em;
@@ -662,7 +834,7 @@
     }
 
     .teacher-marquee-name {
-        color: #ffffff !important;
+        color: var(--submenu-hover-text, #25333E) !important;
         font-size: 0.98rem;
         font-weight: 800;
         letter-spacing: 0.02em;
@@ -670,7 +842,7 @@
     }
 
     .teacher-marquee-role {
-        color: rgba(255, 255, 255, 0.82) !important;
+        color: rgba(37, 51, 62, 0.78) !important;
         font-size: 0.78rem;
         white-space: nowrap;
     }
@@ -708,7 +880,7 @@
     }
 
     .why-enhance-kicker {
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
         font-weight: 800;
         letter-spacing: 0.24em;
         text-transform: uppercase;
@@ -746,11 +918,11 @@
         border-radius: 0.9rem;
         background: var(--submenu-secondary, #DFE753);
         padding: 0.72rem 0.86rem 0.72rem 2.18rem;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .why-enhance-intro li strong {
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .why-enhance-intro li::before {
@@ -761,7 +933,7 @@
         width: 0.82rem;
         height: 0.82rem;
         border-radius: 999px;
-        background: var(--submenu-primary, #2D1D5C);
+        background: var(--submenu-primary, #25333E);
         box-shadow: 0 0 0 3px rgba(223, 231, 83, 0.4);
     }
 
@@ -816,8 +988,16 @@
     $facilitiesLabel = trim((string) ($publicPage['facilities_label'] ?? 'Facilities'));
     $aboutLabel = trim((string) ($publicPage['about_label'] ?? 'About Us'));
     $studentLifeLabel = trim((string) ($publicPage['student_life_label'] ?? 'Student Life'));
+    $studentLifeHeading = trim(preg_replace('/\s+/', ' ', strip_tags((string) ($publicPage['student_life_intro'] ?? ''))));
+    if ($studentLifeHeading === '') {
+        $studentLifeHeading = 'A vibrant school experience beyond the classroom.';
+    }
     $parentsLabel = trim((string) ($publicPage['parents_label'] ?? 'Parents'));
     $contactLabel = trim((string) ($publicPage['contact_label'] ?? 'Contact'));
+    $contactHeading = trim(preg_replace('/\s+/', ' ', strip_tags((string) ($publicPage['contact_intro'] ?? ''))));
+    if ($contactHeading === '') {
+        $contactHeading = 'Reach us through our official channels.';
+    }
     $headerApplyText = trim((string) ($publicPage['header_apply_text'] ?? 'Apply'));
     $headerPortalLoginText = trim((string) ($publicPage['header_portal_login_text'] ?? 'Portal Login'));
     $mobileApplyText = trim((string) ($publicPage['mobile_apply_text'] ?? 'Apply Now'));
@@ -1175,13 +1355,13 @@
     $themeSoftSurfaceColor = $theme['soft_surface'];
     $themeStyle = $theme['theme_style'];
 ?>
-<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor ?? ($theme['site_background'] ?? '#F8FAFC') }}; color: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }}; --theme-heading: {{ $themeHeadingColor ?? ($theme['ink'] ?? '#0F172A') }}; --theme-body: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --theme-surface: {{ $themeSurfaceColor ?? ($theme['surface'] ?? '#FFFFFF') }}; --theme-soft-surface: {{ $themeSoftSurfaceColor ?? ($theme['soft_surface'] ?? '#EEF6FF') }}; {{ $tailwindThemeVars }};">
-    @include('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C')])
+<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor ?? ($theme['site_background'] ?? '#F8FAFC') }}; color: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }}; --theme-heading: {{ $themeHeadingColor ?? ($theme['ink'] ?? '#0F172A') }}; --theme-body: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --theme-surface: {{ $themeSurfaceColor ?? ($theme['surface'] ?? '#FFFFFF') }}; --theme-soft-surface: {{ $themeSoftSurfaceColor ?? ($theme['soft_surface'] ?? '#EEF6FF') }}; {{ $tailwindThemeVars }};">
+    @include('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E')])
     <div class="relative overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
-        <header class="sticky top-0 z-50 backdrop-blur" style="background-color: {{ $headerBgColor ?? ($theme['header'] ?? '#2D1D5C') }};">
+        <header class="sticky top-0 z-50" style="background-color: {{ $headerBgColor ?? ($theme['header'] ?? '#25333E') }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
@@ -1192,7 +1372,7 @@
                         </div>
                     @endif
                 </a>
-                <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
+                <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
                     @foreach($menuSections as $section)
                         @php
                             $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
@@ -1205,7 +1385,7 @@
                                 <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
                                     <div
                                         class="theme-submenu-panel rounded-2xl p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
-                                        style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};"
+                                        style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};"
                                     >
                                         <p class="theme-submenu-heading px-3 pb-1 text-xs font-bold uppercase tracking-[0.16em]">{{ $section['label'] }}</p>
                                         <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-submenu-link block rounded-lg px-3 py-2 text-sm font-semibold transition duration-200">
@@ -1226,7 +1406,7 @@
                         </div>
                     @endforeach
                 </nav>
-                <div class="flex items-center justify-end gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
+                <div class="flex items-center justify-end gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
                     <a href="{{ route('admission.apply') }}" class="theme-header-action-outline hidden items-center whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">{{ $headerApplyText !== '' ? $headerApplyText : 'Apply' }}</a>
                     <a href="{{ route('portal.login') }}" class="theme-header-action-solid inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $headerPortalLoginText !== '' ? $headerPortalLoginText : 'Portal Login' }}</a>
                     <button type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/40 text-white transition duration-200 hover:bg-white/10 xl:hidden">
@@ -1252,12 +1432,12 @@
                     </button>
                 </div>
                 <div class="px-5 py-5">
-                    <div class="mb-4 flex flex-col gap-2" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
+                    <div class="mb-4 flex flex-col gap-2" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
                         <a href="{{ route('admission.apply') }}" class="theme-mobile-action-outline inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition duration-200">{{ $mobileApplyText !== '' ? $mobileApplyText : 'Apply Now' }}</a>
                         <a href="{{ route('portal.login') }}" class="theme-mobile-action-solid inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200">{{ $mobilePortalLoginText !== '' ? $mobilePortalLoginText : 'Portal Login' }}</a>
                     </div>
 
-                    <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
+                    <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
                         @foreach($menuSections as $section)
                             <div class="rounded-xl bg-white shadow-sm">
                                 @if(!empty($section['items']))
@@ -1265,7 +1445,7 @@
                                         <span>{{ $section['label'] }}</span>
                                         <span data-mobile-submenu-indicator class="text-lg font-medium leading-none text-slate-500">+</span>
                                     </button>
-                                    <div id="mobile-submenu-{{ $section['id'] }}" data-mobile-submenu-panel class="hidden px-4 pb-4" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#2D1D5C') }};">
+                                    <div id="mobile-submenu-{{ $section['id'] }}" data-mobile-submenu-panel class="hidden px-4 pb-4" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
                                         <div class="space-y-1 border-l border-slate-200 pl-4">
                                             <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-mobile-submenu-link block rounded-lg px-3 py-2 text-sm font-semibold transition duration-200">{{ $section['label'] }} {{ $menuOverviewSuffix !== '' ? $menuOverviewSuffix : 'Overview' }}</a>
                                             @foreach($section['items'] as $menuItem)
@@ -1290,7 +1470,7 @@
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="why-enhance-shell p-5 lg:p-7">
                         <div class="relative z-10 mb-6">
-                            <p class="why-enhance-kicker text-xs">{{ $whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us' }}</p>
+                            <p class="why-enhance-kicker text-base">{{ $whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us' }}</p>
                             <h2 class="mt-2 font-display text-3xl font-extrabold text-slate-900 sm:text-4xl">What Sets Us Apart</h2>
                             <p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">A clear learning philosophy, disciplined delivery, and values-driven mentorship that shapes confident, capable learners.</p>
                         </div>
@@ -1347,7 +1527,7 @@
                         <div class="grid gap-4 lg:grid-cols-12 lg:items-stretch">
                             <div class="lg:col-span-6">
                                 <p class="text-base font-bold uppercase tracking-[0.24em] text-blue-700">
-                                    {{ $academicsLabel !== '' ? $academicsLabel : 'Academic Excellence' }}
+                                        {{ $academicsLabel !== '' ? $academicsLabel : 'Academic Excellence' }}
                                 </p>
                                 <div class="academics-heading rich-text-content rich-text-display mt-2 text-slate-900 font-[Georgia,serif]">{!! \App\Support\RichText::render($publicPage['academics_intro'] ?? 'A Structured Learning Culture With Mentorship At The Center.') !!}</div>
                                 <div class="rich-text-content mt-3 text-base leading-relaxed text-slate-700">{!! \App\Support\RichText::render($academicsSupportText !== '' ? $academicsSupportText : 'Our school culture is built around consistent learning outcomes, high accountability, and teacher-student mentorship that develops confidence and character.') !!}</div>
@@ -1389,9 +1569,9 @@
 
             <section id="student-life" class="bg-slate-50 py-16">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="mb-10 max-w-3xl">
-                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life' }}</p>
-                        <div class="rich-text-content rich-text-section-intro mt-3 text-slate-900">{!! \App\Support\RichText::render($publicPage['student_life_intro'] ?? '') !!}</div>
+                    <div class="mb-10 mx-auto max-w-3xl text-center">
+                        <p class="section-kicker-unified">{{ $studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life' }}</p>
+                        <h2 class="section-heading-unified mt-3">{{ $studentLifeHeading }}</h2>
                     </div>
                     <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach($studentLifeItems as $item)
@@ -1404,43 +1584,53 @@
                 </div>
             </section>
 
-            <section id="parents" class="relative overflow-hidden bg-[#eef6ff] py-14 sm:py-16">
-                <div class="pointer-events-none absolute inset-0 opacity-60" style="background-image: linear-gradient(rgba(45, 29, 92, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 29, 92, 0.08) 1px, transparent 1px); background-size: 34px 34px;"></div>
-                <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.68),_transparent_38%)]"></div>
-                <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.4),_transparent_34%)]"></div>
-                <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <div id="testimonials" class="rounded-3xl bg-white p-5 shadow-sm lg:p-6">
+            <section id="parents" class="testimonials-section py-14 sm:py-16">
+                <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+                    <div id="testimonials" class="testimonials-shell rounded-[2rem] p-5 sm:p-7 lg:p-8">
+                        @php
+                            $testimonialsCount = $testimonials->count();
+                            $testimonialsAverage = $testimonialsCount > 0
+                                ? number_format((float) $testimonials->avg('rating'), 1)
+                                : '0.0';
+                        @endphp
                         <div class="mx-auto max-w-4xl text-center">
-                            <p class="text-base font-bold uppercase tracking-[0.24em] text-blue-700">
+                            <p class="section-kicker-unified">
                                 {{ $testimonialsBadgeText !== '' ? $testimonialsBadgeText : 'Testimonials' }}
                             </p>
-                            <h2 class="mt-3 font-display text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                            <h2 class="section-heading-unified mt-3">
                                 {{ $testimonialsHeading !== '' ? $testimonialsHeading : 'What Parents and Student Say' }}
                             </h2>
-                            <p class="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
+                            <p class="mx-auto mt-4 max-w-3xl text-center text-base leading-relaxed text-slate-600">
                                 {{ $testimonialsSubheading !== '' ? $testimonialsSubheading : 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.' }}
                             </p>
+                            <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+                                <span class="testimonials-metric-chip">
+                                    <span class="testimonials-metric-chip-label">Rated</span>
+                                    <span class="testimonials-metric-chip-value">{{ $testimonialsAverage }}/5</span>
+                                </span>
+                                <span class="testimonials-metric-chip">
+                                    <span class="testimonials-metric-chip-label">Approved</span>
+                                    <span class="testimonials-metric-chip-value">{{ number_format($testimonialsCount) }}</span>
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="mt-8 rounded-2xl bg-slate-50/70 p-5 sm:p-6">
-                            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-                                <h3 class="text-2xl font-extrabold text-slate-900 sm:text-3xl">
-                                    {{ $testimonialsSliderTitle !== '' ? $testimonialsSliderTitle : 'Approved Testimonials' }}
-                                </h3>
+                        <div class="testimonials-stage mt-8 rounded-3xl p-4 sm:p-6">
+                            <div class="mb-5 flex flex-wrap items-center justify-end gap-3">
                                 @if($testimonials->count() > 1)
                                     <div class="flex items-center gap-2">
-                                        <button type="button" data-testimonial-prev class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-lg font-bold text-slate-700 transition hover:border-brand-300 hover:bg-slate-100" aria-label="Previous testimonial">&lt;</button>
-                                        <button type="button" data-testimonial-next class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-lg font-bold text-slate-700 transition hover:border-brand-300 hover:bg-slate-100" aria-label="Next testimonial">&gt;</button>
+                                        <button type="button" data-testimonial-prev class="testimonials-nav-btn inline-flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold" aria-label="Previous testimonial">&lt;</button>
+                                        <button type="button" data-testimonial-next class="testimonials-nav-btn inline-flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold" aria-label="Next testimonial">&gt;</button>
                                     </div>
                                 @endif
                             </div>
 
                             @if($testimonials->isEmpty())
-                                <div class="rounded-xl bg-white px-4 py-10 text-center text-base font-medium text-slate-600">
+                                <div class="testimonials-empty rounded-2xl px-5 py-10 text-center text-base font-medium">
                                     {{ $testimonialsEmptyText !== '' ? $testimonialsEmptyText : 'No testimonials have been approved yet. Be the first to share your experience.' }}
                                 </div>
                             @else
-                                <div data-testimonial-slider class="relative overflow-hidden rounded-2xl bg-white">
+                                <div data-testimonial-slider class="testimonials-slider relative overflow-hidden rounded-2xl">
                                     <div data-testimonial-track class="flex transition-transform duration-500 ease-out">
                                         @foreach($testimonials as $testimonial)
                                             @php
@@ -1452,40 +1642,36 @@
                                                 ) ?: '?';
                                                 $tStars = max(1, min(5, (int) $testimonial->rating));
                                             @endphp
-                                            <article class="w-full shrink-0 p-5 sm:p-7">
-                                                <div class="rounded-xl bg-slate-50 p-5 shadow-sm sm:p-6">
-
-                                                    {{-- Rating stars --}}
+                                            <article class="w-full shrink-0 p-4 sm:p-6">
+                                                <div class="testimonials-card h-full rounded-2xl p-5 sm:p-6">
                                                     <div class="mb-4 flex items-center gap-1">
                                                         @for($s = 1; $s <= 5; $s++)
-                                                            <svg class="h-4 w-4 {{ $s <= $tStars ? 'text-amber-400' : 'text-slate-200' }}" viewBox="0 0 20 20" fill="currentColor">
+                                                            <svg class="h-4 w-4 {{ $s <= $tStars ? 'text-amber-400' : 'text-slate-300' }}" viewBox="0 0 20 20" fill="currentColor">
                                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                                             </svg>
                                                         @endfor
-                                                        <span class="ml-1 text-xs text-slate-400">{{ $tStars }}/5</span>
+                                                        <span class="ml-1 text-xs font-semibold text-slate-500">{{ $tStars }}/5</span>
                                                     </div>
 
-                                                    {{-- Quote --}}
-                                                    <blockquote class="text-xl font-black leading-relaxed text-[#2D1D5C] sm:text-2xl">
-                                                        "{{ $testimonial->message }}"
+                                                    <blockquote class="testimonials-quote pl-4 text-xl font-black leading-relaxed sm:text-2xl">
+                                                        {{ $testimonial->message }}
                                                     </blockquote>
 
-                                                    {{-- Author row with avatar --}}
-                                                    <div class="mt-5 flex items-center gap-3">
+                                                    <div class="mt-6 flex items-center gap-3">
                                                         @if($testimonial->student?->photo)
                                                             <img src="{{ asset('storage/' . $testimonial->student->photo) }}"
                                                                  alt="{{ $testimonial->full_name }}"
                                                                  class="h-11 w-11 shrink-0 rounded-full border-2 border-white object-cover shadow-sm">
                                                         @else
                                                             <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-extrabold text-white shadow-sm"
-                                                                 style="background:{{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#2D1D5C') }};">
+                                                                 style="background:{{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }};">
                                                                 {{ $tInitials }}
                                                             </div>
                                                         @endif
                                                         <div>
                                                             <p class="text-sm font-bold text-slate-800">{{ $testimonial->full_name }}</p>
                                                             @if(!empty($testimonial->role_title))
-                                                            <p class="text-xs text-slate-400">{{ $testimonial->role_title }}</p>
+                                                                <p class="testimonials-author-role text-xs font-medium">{{ $testimonial->role_title }}</p>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -1501,7 +1687,7 @@
                                                 type="button"
                                                 data-testimonial-dot
                                                 data-index="{{ $loop->index }}"
-                                                class="h-2.5 w-8 rounded-full {{ $loop->first ? 'bg-brand-700' : 'bg-slate-300' }} transition duration-200"
+                                                class="testimonials-dot h-2.5 w-8 rounded-full {{ $loop->first ? 'bg-brand-700' : 'bg-slate-300' }}"
                                                 aria-label="Go to testimonial {{ $loop->iteration }}"
                                             ></button>
                                         @endforeach
@@ -1515,9 +1701,9 @@
 
             <section id="contact" class="bg-slate-50 py-16">
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="mb-10 max-w-3xl">
-                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">{{ $contactLabel !== '' ? $contactLabel : 'Contact' }}</p>
-                        <div class="rich-text-content rich-text-section-intro mt-3 text-slate-900">{!! \App\Support\RichText::render($publicPage['contact_intro'] ?? '') !!}</div>
+                    <div class="mx-auto mb-10 max-w-3xl text-center">
+                        <p class="section-kicker-unified">{{ $contactLabel !== '' ? $contactLabel : 'Contact' }}</p>
+                        <h2 class="section-heading-unified mt-3">{{ $contactHeading }}</h2>
                     </div>
                     <div class="grid gap-6 lg:grid-cols-2">
                         <div class="grid gap-4 sm:grid-cols-2">
@@ -1556,13 +1742,13 @@
                 <section class="teacher-marquee-section py-10">
                     <div class="mx-auto max-w-7xl px-6 lg:px-8">
                         <div class="teacher-marquee-shell rounded-3xl p-5 lg:p-6">
-                            <div class="mb-4">
-                                <p class="teacher-marquee-kicker text-xs">{{ $teachersMarqueeLabel !== '' ? $teachersMarqueeLabel : 'Our Teachers' }}</p>
-                                <h2 class="mt-2 font-display text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                            <div class="mb-4 text-center">
+                                <p class="section-kicker-unified">{{ $teachersMarqueeLabel !== '' ? $teachersMarqueeLabel : 'Our Teachers' }}</p>
+                                <h2 class="section-heading-unified mt-2">
                                     {{ $teachersMarqueeHeading !== '' ? $teachersMarqueeHeading : 'Meet Our Teaching Team' }}
                                 </h2>
                                 @if($teachersMarqueeIntro !== '')
-                                    <p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">{{ $teachersMarqueeIntro }}</p>
+                                    <p class="mx-auto mt-2 max-w-3xl text-center text-sm leading-relaxed text-slate-600 sm:text-base">{{ $teachersMarqueeIntro }}</p>
                                 @endif
                             </div>
 

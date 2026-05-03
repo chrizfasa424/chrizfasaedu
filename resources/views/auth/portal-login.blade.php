@@ -8,18 +8,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --portal-focus: color-mix(in srgb, {{ $primary }} 30%, transparent);
+            --portal-accent: #1d4ed8;
+            --portal-highlight: #f97316;
+            --portal-focus: color-mix(in srgb, var(--portal-accent) 30%, transparent);
         }
 
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .page-bg {
             background:
-                radial-gradient(circle at 15% 20%, {{ $primary }}22, transparent 35%),
-                radial-gradient(circle at 85% 82%, {{ $primary }}20, transparent 38%),
-                linear-gradient(130deg, #f8fafc 0%, #eef6ff 55%, #f5fbff 100%);
+                radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.2), transparent 35%),
+                radial-gradient(circle at 85% 82%, rgba(249, 115, 22, 0.16), transparent 40%),
+                linear-gradient(130deg, #0a1020 0%, #121a2e 55%, #0f172a 100%);
         }
         .brand-panel {
-            background: linear-gradient(155deg, {{ $primary }} 0%, {{ $primary }}d9 60%, {{ $primary }}b8 100%);
+            background: linear-gradient(155deg, #1e3a8a 0%, #1d4ed8 58%, #f97316 100%);
         }
         .field {
             border: 1.5px solid #e2e8f0;
@@ -27,17 +29,17 @@
         }
         .field:focus {
             outline: none;
-            border-color: {{ $primary }};
+            border-color: var(--portal-accent);
             box-shadow: 0 0 0 3px var(--portal-focus);
         }
         .submit-btn {
-            background: {{ $primary }};
-            color: {{ $secondary }};
+            background: linear-gradient(135deg, var(--portal-accent) 0%, var(--portal-highlight) 100%);
+            color: #ffffff;
         }
         .submit-btn:hover {
-            filter: brightness(1.08);
+            filter: brightness(1.03);
             transform: translateY(-1px);
-            box-shadow: 0 10px 25px {{ $primary }}40;
+            box-shadow: 0 10px 25px rgba(15, 118, 110, 0.32);
         }
         a:focus-visible,
         button:focus-visible,
@@ -115,8 +117,8 @@
 
         .fx-sidebar-effects::before {
             background: linear-gradient(145deg,
-                color-mix(in srgb, {{ $primary }} 58%, transparent),
-                color-mix(in srgb, {{ $primary }} 20%, transparent));
+                color-mix(in srgb, var(--portal-accent) 58%, transparent),
+                color-mix(in srgb, var(--portal-highlight) 28%, transparent));
             opacity: 0;
         }
 
@@ -188,13 +190,12 @@
             <section class="p-6 sm:p-10">
                 <div class="mx-auto w-full max-w-md">
                     <div class="mb-8 lg:hidden">
-                        <p class="text-xs font-semibold uppercase tracking-[0.22em]" style="color:{{ $primary }};">Student Portal</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em]" style="color:var(--portal-accent);">Student Portal</p>
                         <h2 class="mt-2 text-xl font-bold text-slate-900">{{ $schoolName }}</h2>
                     </div>
 
                     <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
-                        Students and parents only. Staff should use
-                        <a href="{{ route('login') }}" class="font-bold underline">admin login</a>.
+                        Students and parents only.
                     </div>
 
                     <h3 class="text-2xl font-extrabold text-slate-900">Sign In</h3>
@@ -241,7 +242,7 @@
                                 <input type="checkbox" name="remember" class="h-3.5 w-3.5 rounded border-slate-300">
                                 Remember me
                             </label>
-                            <a href="{{ route('portal.password.request') }}" class="text-xs font-semibold" style="color:{{ $primary }};">Forgot password?</a>
+                            <a href="{{ route('portal.password.request') }}" class="text-xs font-semibold" style="color:var(--portal-accent);">Forgot password?</a>
                         </div>
 
                         <button type="submit" class="submit-btn w-full rounded-xl px-5 py-3 text-sm font-bold transition">

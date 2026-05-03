@@ -7,7 +7,23 @@
     @php
         $faviconPath = data_get($school?->settings, 'branding.favicon');
         $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
+        $seoSubmenuTitle = trim((string) ($item['title'] ?? '')) . ' | ' . $schoolName;
+        $seoSubmenuDescription = trim((string) ($item['description'] ?? ''));
+        if ($seoSubmenuDescription === '') {
+            $seoSubmenuDescription = trim((string) ($publicPage['submenu_description_fallback_template'] ?? ''));
+        }
+        $seoSubmenuLogo = $school?->logo ? asset('storage/' . ltrim($school->logo, '/')) : '';
     @endphp
+    @include('public.partials.seo', [
+        'title' => $seoSubmenuTitle,
+        'description' => $seoSubmenuDescription,
+        'canonical' => route('public.submenu', ['section' => $sectionKey, 'slug' => $item['slug']]),
+        'type' => 'website',
+        'schemaType' => 'WebPage',
+        'siteName' => $schoolName,
+        'image' => $seoSubmenuLogo,
+        'school' => $school,
+    ])
     @if($faviconPath)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
     @endif
@@ -87,11 +103,11 @@
     .theme-nav-link:hover,
     .theme-nav-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-nav-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
 
@@ -104,53 +120,53 @@
     .theme-header-action-outline:focus-visible {
         border-color: var(--submenu-secondary, #DFE753);
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-header-action-solid {
         background-color: #ffffff;
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-header-action-solid:hover,
     .theme-header-action-solid:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-mobile-action-outline {
-        border-color: var(--submenu-primary, #2D1D5C);
-        color: var(--submenu-primary, #2D1D5C);
+        border-color: var(--submenu-primary, #25333E);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-mobile-action-outline:hover,
     .theme-mobile-action-outline:focus-visible {
         border-color: var(--submenu-secondary, #DFE753);
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-mobile-action-solid {
-        background-color: var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
         color: #ffffff;
     }
 
     .theme-mobile-action-solid:hover,
     .theme-mobile-action-solid:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-cta-solid {
-        background-color: var(--submenu-primary, #2D1D5C);
-        border: 1px solid var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
+        border: 1px solid var(--submenu-primary, #25333E);
         color: #ffffff;
     }
 
     .theme-cta-outline {
         background-color: #ffffff;
-        border: 1px solid var(--submenu-primary, #2D1D5C);
-        color: var(--submenu-primary, #2D1D5C);
+        border: 1px solid var(--submenu-primary, #25333E);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-cta-solid:hover,
@@ -159,12 +175,12 @@
     .theme-cta-outline:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
         border-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-submenu-panel {
-        background-color: var(--submenu-primary, #2D1D5C);
-        border-color: var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
+        border-color: var(--submenu-primary, #25333E);
     }
 
     .theme-submenu-heading {
@@ -179,11 +195,11 @@
     .theme-submenu-link:hover,
     .theme-submenu-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-submenu-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
 
@@ -194,11 +210,11 @@
     .theme-mobile-submenu-link:hover,
     .theme-mobile-submenu-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-mobile-submenu-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
     .text-slate-950,
@@ -259,7 +275,7 @@
     }
 
     .rich-text-content a {
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
         font-weight: 700;
         text-decoration: underline;
     }
@@ -284,8 +300,8 @@
         color: #475569;
     }
     .faq-pill:hover {
-        border-color: var(--submenu-primary, #2D1D5C);
-        color: var(--submenu-primary, #2D1D5C);
+        border-color: var(--submenu-primary, #25333E);
+        color: var(--submenu-primary, #25333E);
         background-color: #f8fafc;
     }
     .faq-pill .faq-pill-count {
@@ -293,8 +309,8 @@
         color: #475569;
     }
     .faq-pill-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
-        border-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
+        border-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
     .faq-pill-active .faq-pill-count {
@@ -363,7 +379,7 @@
     .sidebar-program-link:focus-visible,
     .sidebar-program-link-active {
         border-color: #22323C !important;
-        background-color: #2D1D5C !important;
+        background-color: #25333E !important;
     }
 
     .sidebar-program-link:hover .sidebar-program-link-title,
@@ -441,7 +457,7 @@
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
-        <header class="sticky top-0 z-50 backdrop-blur" style="background-color: {{ $headerBgColor }};">
+        <header class="sticky top-0 z-50" style="background-color: {{ $headerBgColor }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)
@@ -711,6 +727,19 @@
                     $displayDescription = !empty($item['rich_description'])
                         ? $item['rich_description']
                         : $item['description'];
+                    $managementTeamCards = collect($item['management_team_cards'] ?? [])
+                        ->map(function ($card) {
+                            return [
+                                'image' => trim((string) data_get($card, 'image', '')),
+                                'name' => trim((string) data_get($card, 'name', '')),
+                                'subject' => trim((string) data_get($card, 'subject', '')),
+                                'qualification' => trim((string) data_get($card, 'qualification', '')),
+                            ];
+                        })
+                        ->filter(function (array $card) {
+                            return $card['image'] !== '' || $card['name'] !== '' || $card['subject'] !== '' || $card['qualification'] !== '';
+                        })
+                        ->values();
 
                     $h1Title = !empty($item['highlight_one_title'])
                         ? $item['highlight_one_title']
@@ -740,6 +769,41 @@
                         </div>
 
                         <div class="rich-text-content max-w-4xl text-base leading-relaxed text-muted sm:text-lg">{!! \App\Support\RichText::render($displayDescription) !!}</div>
+
+                        @if($sectionKey === 'about' && $item['slug'] === 'management-team' && $managementTeamCards->isNotEmpty())
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Leadership Profiles</p>
+                                <h2 class="mt-1 text-2xl font-semibold text-slate-900">Meet Our Management Team</h2>
+                            </div>
+                            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                                @foreach($managementTeamCards as $card)
+                                <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                                    @if($card['image'] !== '')
+                                        <img
+                                            src="{{ asset('storage/' . ltrim($card['image'], '/')) }}"
+                                            alt="{{ $card['name'] !== '' ? $card['name'] : 'Management team member' }}"
+                                            class="h-52 w-full object-cover"
+                                        >
+                                    @else
+                                        <div class="flex h-52 w-full items-center justify-center bg-slate-100 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
+                                            No Photo
+                                        </div>
+                                    @endif
+                                    <div class="space-y-2 p-4">
+                                        <h3 class="text-lg font-semibold text-slate-900">{{ $card['name'] !== '' ? $card['name'] : 'Staff Member' }}</h3>
+                                        @if($card['subject'] !== '')
+                                            <p class="text-sm font-medium text-slate-700">{{ $card['subject'] }}</p>
+                                        @endif
+                                        @if($card['qualification'] !== '')
+                                            <p class="text-sm text-slate-600">{{ $card['qualification'] }}</p>
+                                        @endif
+                                    </div>
+                                </article>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
 
                         @php
                             $pageImgOne = trim((string) ($item['image_one'] ?? ''));
@@ -800,8 +864,8 @@
                 @endif
 
                     <aside class="self-start overflow-hidden rounded-[1.75rem] border bg-white shadow-[0_24px_50px_-40px_rgba(15,23,42,0.55)] lg:sticky lg:top-28" style="border-color:#22323C;">
-                        <div class="px-5 py-4" style="background-color: var(--submenu-secondary, #DFE753); color: var(--submenu-hover-text, #2D1D5C);">
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--submenu-hover-text, #2D1D5C); opacity: 0.82;">{{ $sectionLabel }}</p>
+                        <div class="px-5 py-4" style="background-color: var(--submenu-secondary, #DFE753); color: var(--submenu-hover-text, #25333E);">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--submenu-hover-text, #25333E); opacity: 0.82;">{{ $sectionLabel }}</p>
                             <h2 class="mt-1 font-display text-2xl font-semibold">{{ $submenuMoreInPrefix !== '' ? $submenuMoreInPrefix : 'More In' }} {{ $sectionLabel }}</h2>
                         </div>
                         <div class="p-4">

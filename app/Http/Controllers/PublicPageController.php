@@ -112,6 +112,68 @@ class PublicPageController extends Controller
         ]);
     }
 
+    public function robots()
+    {
+        $sitemapUrl = route('public.sitemap');
+        $content = implode("\n", [
+            'User-agent: *',
+            'Allow: /',
+            'Disallow: /admin-access',
+            'Disallow: /staff',
+            'Disallow: /staff-access',
+            'Disallow: /portal',
+            'Disallow: /dashboard',
+            'Disallow: /settings',
+            'Disallow: /system',
+            'Disallow: /student',
+            'Disallow: /parent',
+            'Disallow: /my',
+            'Disallow: /notifications',
+            'Sitemap: ' . $sitemapUrl,
+        ]) . "\n";
+
+        return response($content, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+    }
+
+    public function sitemap(Request $request)
+    {
+        $school = $this->resolveSchool($request);
+        $publicPage = PublicPageContent::forSchool($school);
+        $catalog = $this->buildMenuCatalog($publicPage);
+        $generatedAt = now()->toAtomString();
+
+        $urls = collect([
+            ['loc' => route('public.home'), 'lastmod' => $generatedAt, 'changefreq' => 'weekly', 'priority' => '1.0'],
+            ['loc' => route('public.contact'), 'lastmod' => $generatedAt, 'changefreq' => 'monthly', 'priority' => '0.8'],
+            ['loc' => route('public.privacy'), 'lastmod' => $generatedAt, 'changefreq' => 'yearly', 'priority' => '0.4'],
+            ['loc' => route('public.cookies'), 'lastmod' => $generatedAt, 'changefreq' => 'yearly', 'priority' => '0.4'],
+        ]);
+
+        foreach ($catalog as $sectionKey => $sectionData) {
+            foreach ((array) ($sectionData['items'] ?? []) as $item) {
+                $slug = trim((string) ($item['slug'] ?? ''));
+                if ($slug === '') {
+                    continue;
+                }
+
+                $urls->push([
+                    'loc' => route('public.submenu', ['section' => $sectionKey, 'slug' => $slug]),
+                    'lastmod' => $generatedAt,
+                    'changefreq' => 'monthly',
+                    'priority' => '0.7',
+                ]);
+            }
+        }
+
+        $urls = $urls
+            ->unique('loc')
+            ->values();
+
+        return response()
+            ->view('public.sitemap', ['urls' => $urls])
+            ->header('Content-Type', 'application/xml; charset=UTF-8');
+    }
+
     public function submitContact(Request $request)
     {
         $validated = $request->validate([
@@ -409,6 +471,20 @@ class PublicPageController extends Controller
                     'highlight_two_text' => trim((string) ($perItemContent['highlight_two_text'] ?? '')),
                     'image_one' => trim((string) ($perItemContent['image_one'] ?? '')),
                     'image_two' => trim((string) ($perItemContent['image_two'] ?? '')),
+                    'management_team_cards' => collect($perItemContent['management_team_cards'] ?? [])
+                        ->map(function ($card) {
+                            return [
+                                'image' => trim((string) data_get($card, 'image', '')),
+                                'name' => trim((string) data_get($card, 'name', '')),
+                                'subject' => trim((string) data_get($card, 'subject', '')),
+                                'qualification' => trim((string) data_get($card, 'qualification', '')),
+                            ];
+                        })
+                        ->filter(function (array $card) {
+                            return $card['image'] !== '' || $card['name'] !== '' || $card['subject'] !== '' || $card['qualification'] !== '';
+                        })
+                        ->values()
+                        ->all(),
                 ];
             }
 

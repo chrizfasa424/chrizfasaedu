@@ -21,7 +21,7 @@
     </div>
     @endif
 
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         @php
             $cards = [
                 ['label' => 'Days Present', 'value' => $stats['present'], 'color' => 'text-green-700', 'dot' => 'bg-green-500'],
@@ -42,7 +42,7 @@
     </div>
 
     <div class="rounded-2xl border {{ $stats['absent'] >= 10 ? 'border-red-200 bg-red-50' : 'border-slate-200 bg-white' }} p-5 shadow-sm">
-        <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_320px]">
             <div>
                 <div class="mb-1 text-xs font-semibold uppercase text-slate-500">Attendance Rate</div>
                 <div class="text-5xl font-extrabold {{ $stats['rate'] >= 90 ? 'text-green-600' : ($stats['rate'] >= 75 ? 'text-amber-600' : 'text-red-600') }}">

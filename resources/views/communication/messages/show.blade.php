@@ -8,7 +8,7 @@
     {{-- Back + delete --}}
     <div class="flex items-center justify-between">
         <a href="{{ route('messages.index') }}"
-           class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-[#2D1D5C]">
+           class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-[#25333E]">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
             </svg>
@@ -45,7 +45,7 @@
                     </div>
                     <div class="flex items-start justify-between gap-2 px-5 py-3">
                         <span class="text-slate-400 shrink-0">Audience</span>
-                        <span class="rounded-lg bg-[#2D1D5C]/8 px-2 py-0.5 text-xs font-semibold text-[#2D1D5C] text-right">
+                        <span class="rounded-lg bg-[#25333E]/8 px-2 py-0.5 text-xs font-semibold text-[#25333E] text-right">
                             {{ $message->audienceLabel() }}
                         </span>
                     </div>
@@ -60,8 +60,8 @@
             <div class="rounded-2xl border border-slate-100 bg-white shadow-sm p-5 space-y-4">
                 <p class="text-xs font-semibold uppercase tracking-widest text-slate-400">Reach</p>
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="rounded-xl bg-[#2D1D5C]/6 p-3 text-center">
-                        <p class="text-2xl font-extrabold text-[#2D1D5C]">{{ number_format($recipientsCount) }}</p>
+                    <div class="rounded-xl bg-[#25333E]/6 p-3 text-center">
+                        <p class="text-2xl font-extrabold text-[#25333E]">{{ number_format($recipientsCount) }}</p>
                         <p class="text-xs text-slate-500 mt-0.5">Sent To</p>
                     </div>
                     <div class="rounded-xl bg-emerald-50 p-3 text-center">
@@ -115,7 +115,7 @@
                     @foreach($message->replies as $reply)
                     <div class="px-5 py-4">
                         <div class="flex items-start gap-3">
-                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2D1D5C] text-xs font-bold text-white">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#25333E] text-xs font-bold text-white">
                                 {{ strtoupper(substr($reply->sender->first_name, 0, 1) . substr($reply->sender->last_name, 0, 1)) }}
                             </div>
                             <div class="flex-1 min-w-0">

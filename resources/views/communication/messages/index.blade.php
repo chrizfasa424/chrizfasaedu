@@ -13,7 +13,7 @@
             </p>
         </div>
         <a href="{{ route('messages.create') }}"
-           class="inline-flex items-center gap-2 rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A2872]">
+           class="inline-flex items-center gap-2 rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A2872]">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
             </svg>
@@ -34,14 +34,14 @@
     {{-- Messages list --}}
     @if($messages->isEmpty())
     <div class="rounded-2xl border border-slate-100 bg-white px-6 py-16 text-center shadow-sm">
-        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2D1D5C]/8">
-            <svg class="h-8 w-8 text-[#2D1D5C]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#25333E]/8">
+            <svg class="h-8 w-8 text-[#25333E]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
             </svg>
         </div>
         <h3 class="text-base font-semibold text-slate-700">No messages sent yet</h3>
         <p class="mt-1 text-sm text-slate-400">Compose your first message to send to students or parents.</p>
-        <a href="{{ route('messages.create') }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#2D1D5C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3A2872]">
+        <a href="{{ route('messages.create') }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#25333E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3A2872]">
             Compose Now
         </a>
     </div>
@@ -63,13 +63,13 @@
                 @foreach($messages as $msg)
                 <tr class="group transition hover:bg-slate-50/60">
                     <td class="px-6 py-4">
-                        <a href="{{ route('messages.show', $msg) }}" class="font-semibold text-slate-800 hover:text-[#2D1D5C]">
+                        <a href="{{ route('messages.show', $msg) }}" class="font-semibold text-slate-800 hover:text-[#25333E]">
                             {{ $msg->subject }}
                         </a>
                         <p class="mt-0.5 text-xs text-slate-400 line-clamp-1">{{ strip_tags($msg->body) }}</p>
                     </td>
                     <td class="px-4 py-4">
-                        <span class="inline-flex items-center rounded-lg bg-[#2D1D5C]/8 px-2.5 py-1 text-xs font-medium text-[#2D1D5C]">
+                        <span class="inline-flex items-center rounded-lg bg-[#25333E]/8 px-2.5 py-1 text-xs font-medium text-[#25333E]">
                             {{ $msg->audienceLabel() }}
                         </span>
                     </td>
@@ -105,7 +105,7 @@
                     <td class="px-4 py-4 text-right">
                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
                             <a href="{{ route('messages.show', $msg) }}"
-                               class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-[#2D1D5C] hover:text-[#2D1D5C]">
+                               class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-[#25333E] hover:text-[#25333E]">
                                 View
                             </a>
                             <form action="{{ route('messages.destroy', $msg) }}" method="POST"

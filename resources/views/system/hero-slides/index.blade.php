@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="space-y-8">
-    <section class="overflow-hidden rounded-[2rem] border border-[#D9D4EA] bg-gradient-to-br from-[#24164A] via-[#2D1D5C] to-[#43316F] text-white shadow-[0_28px_80px_-42px_rgba(17,24,39,0.65)]">
+    <section class="overflow-hidden rounded-[2rem] border border-[#D9D4EA] bg-gradient-to-br from-[#24164A] via-[#25333E] to-[#43316F] text-white shadow-[0_28px_80px_-42px_rgba(17,24,39,0.65)]">
         <div class="grid gap-8 px-6 py-7 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-8">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/60">Homepage Content Studio</p>
@@ -13,11 +13,11 @@
                 <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-200/90 sm:text-base">Each slide controls its own heading, supporting text, calls to action, right-side message card, order, and image. Use this space to create a cleaner landing-page story for KG, Primary, and Secondary families.</p>
                 <div class="mt-6 flex flex-wrap gap-3">
                     @if($slides->count() < $maxSlides)
-                        <a href="{{ route('system.hero-slides.create') }}" class="inline-flex items-center rounded-full bg-[#DFE753] px-5 py-3 text-sm font-bold text-[#2D1D5C] transition duration-200 hover:-translate-y-0.5 hover:bg-white">
+                        <a href="{{ route('system.hero-slides.create') }}" class="inline-flex items-center rounded-full bg-[#DFE753] px-5 py-3 text-sm font-bold text-[#25333E] transition duration-200 hover:-translate-y-0.5 hover:bg-white">
                             Add New Slide
                         </a>
                     @endif
-                    <a href="{{ route('public.home') }}" target="_blank" class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C]">
+                    <a href="{{ route('public.home') }}" target="_blank" class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#25333E]">
                         Preview Homepage
                     </a>
                 </div>
@@ -45,17 +45,17 @@
 
     <section class="grid gap-4 lg:grid-cols-3">
         <article class="rounded-[1.6rem] border border-[#DDD8ED] bg-white p-5 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#2D1D5C]/60">Best Practice</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#25333E]/60">Best Practice</p>
             <h3 class="mt-3 text-lg font-bold text-slate-900">Use one clear message per slide</h3>
             <p class="mt-2 text-sm leading-6 text-slate-600">Let each slide focus on a different school promise: admissions, academics, student life, or parental confidence.</p>
         </article>
         <article class="rounded-[1.6rem] border border-[#DDD8ED] bg-white p-5 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#2D1D5C]/60">Visual Direction</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#25333E]/60">Visual Direction</p>
             <h3 class="mt-3 text-lg font-bold text-slate-900">Choose real school-wide images</h3>
             <p class="mt-2 text-sm leading-6 text-slate-600">Landscape photos of learners, classrooms, labs, campus spaces, and school activities will make the homepage feel much more premium.</p>
         </article>
         <article class="rounded-[1.6rem] border border-[#DDD8ED] bg-white p-5 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#2D1D5C]/60">Action Flow</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#25333E]/60">Action Flow</p>
             <h3 class="mt-3 text-lg font-bold text-slate-900">Guide families to the right page</h3>
             <p class="mt-2 text-sm leading-6 text-slate-600">Use buttons for admissions, programs, academics, and contact so the hero becomes a real navigation tool, not only a banner.</p>
         </article>
@@ -64,12 +64,12 @@
     @if($slides->isEmpty())
         <section class="rounded-[2rem] border border-dashed border-[#C8C0DF] bg-white px-6 py-14 text-center shadow-sm">
             <div class="mx-auto max-w-2xl">
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2D1D5C] text-[#DFE753] shadow-lg">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#25333E] text-[#DFE753] shadow-lg">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-8 w-8"><rect x="3.75" y="5.25" width="16.5" height="13.5" rx="2.25"/><circle cx="8.25" cy="10.125" r="1.125"/><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 15-4.5-4.5L6 20.25"/></svg>
                 </div>
                 <h3 class="mt-6 text-2xl font-black text-slate-900">No hero slides yet</h3>
                 <p class="mt-3 text-sm leading-7 text-slate-600">Create your first slide to start building a modern homepage hero with premium visuals, stronger messaging, and clear call-to-action buttons.</p>
-                <a href="{{ route('system.hero-slides.create') }}" class="mt-6 inline-flex items-center rounded-full bg-[#2D1D5C] px-6 py-3 text-sm font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-[#DFE753] hover:text-[#2D1D5C]">
+                <a href="{{ route('system.hero-slides.create') }}" class="mt-6 inline-flex items-center rounded-full bg-[#25333E] px-6 py-3 text-sm font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-[#DFE753] hover:text-[#25333E]">
                     Create First Slide
                 </a>
             </div>
@@ -78,11 +78,11 @@
         <section class="rounded-[2rem] border border-[#DDD8ED] bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#2D1D5C]/55">Visual Ordering</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[#25333E]/55">Visual Ordering</p>
                     <h3 class="mt-3 text-xl font-black text-slate-900">Drag and drop to reorder the homepage slider</h3>
                     <p class="mt-2 text-sm leading-7 text-slate-600">Move the cards below into the sequence you want. The homepage will follow this order automatically after you drop a card.</p>
                 </div>
-                <div id="hero-order-status" class="inline-flex items-center rounded-full border border-[#DFE753]/60 bg-[#F8F9D9] px-4 py-2 text-sm font-semibold text-[#2D1D5C]">
+                <div id="hero-order-status" class="inline-flex items-center rounded-full border border-[#DFE753]/60 bg-[#F8F9D9] px-4 py-2 text-sm font-semibold text-[#25333E]">
                     Drag the handle and release to save order automatically
                 </div>
             </div>
@@ -92,10 +92,10 @@
                     <article draggable="true" data-slide-id="{{ $slide->id }}" class="hero-sort-card group cursor-move rounded-[1.6rem] border border-[#DDD8ED] bg-[#FBFAFE] p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-[#DFE753] hover:shadow-md">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="hero-sort-order text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2D1D5C]/55">Slide {{ $slide->order }}</p>
+                                <p class="hero-sort-order text-[11px] font-semibold uppercase tracking-[0.18em] text-[#25333E]/55">Slide {{ $slide->order }}</p>
                                 <h4 class="mt-2 text-base font-black leading-snug text-slate-900">{{ \Illuminate\Support\Str::limit($slide->title, 60) }}</h4>
                             </div>
-                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#2D1D5C]/10 bg-white text-[#2D1D5C] shadow-sm transition group-hover:border-[#DFE753] group-hover:bg-[#DFE753]">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#25333E]/10 bg-white text-[#25333E] shadow-sm transition group-hover:border-[#DFE753] group-hover:bg-[#DFE753]">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h.008v.008H8.25V6.75Zm0 5.25h.008v.008H8.25V12Zm0 5.25h.008v.008H8.25v-.008Zm7.5-10.5h.008v.008h-.008V6.75Zm0 5.25h.008v.008h-.008V12Zm0 5.25h.008v.008h-.008v-.008Z"/></svg>
                             </span>
                         </div>
@@ -109,7 +109,7 @@
                                     <span class="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Real image needed</span>
                                 @endif
                             </div>
-                            <a href="{{ route('system.hero-slides.edit', $slide->id) }}" class="text-sm font-semibold text-[#2D1D5C] transition hover:text-[#5A4792]">Edit</a>
+                            <a href="{{ route('system.hero-slides.edit', $slide->id) }}" class="text-sm font-semibold text-[#25333E] transition hover:text-[#5A4792]">Edit</a>
                         </div>
                     </article>
                 @endforeach
@@ -128,7 +128,7 @@
                                 <img src="{{ asset('storage/' . ltrim($slide->image_path, '/')) }}" alt="{{ $slide->title }}" class="absolute inset-0 h-full w-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-slate-900/5 to-transparent"></div>
                             @else
-                                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_28%),linear-gradient(135deg,#201244_0%,#2D1D5C_45%,#4D3A87_100%)]"></div>
+                                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_28%),linear-gradient(135deg,#201244_0%,#25333E_45%,#4D3A87_100%)]"></div>
                                 <div class="absolute -right-10 top-8 h-44 w-44 rounded-full border border-white/10 bg-white/5 blur-sm"></div>
                                 <div class="absolute -left-12 bottom-8 h-36 w-36 rounded-full border border-[#DFE753]/35 bg-[#DFE753]/12 blur-sm"></div>
                                 <div class="absolute inset-0 p-6 text-white">
@@ -153,7 +153,7 @@
                         <div class="p-5 lg:p-6">
                             <div class="flex items-start justify-between gap-4">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#2D1D5C]/65">{{ $slide->badge_text }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#25333E]/65">{{ $slide->badge_text }}</p>
                                     <h3 class="mt-3 text-2xl font-black leading-tight text-slate-900">{{ $slide->title }}</h3>
                                 </div>
                                 <div class="text-right">
@@ -167,7 +167,7 @@
                             <p class="mt-4 text-sm leading-7 text-slate-600">{{ \Illuminate\Support\Str::limit($slide->subtitle, 210) }}</p>
 
                             <div class="mt-5 rounded-[1.5rem] border border-[#E7E2F4] bg-[#F8F7FD] p-4">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2D1D5C]/55">{{ $slide->school_name }}</p>
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#25333E]/55">{{ $slide->school_name }}</p>
                                 <h4 class="mt-2 text-lg font-bold text-slate-900">{{ $slide->right_card_title }}</h4>
                                 <p class="mt-2 text-sm leading-6 text-slate-600">{{ \Illuminate\Support\Str::limit($slide->right_card_text, 145) }}</p>
                             </div>
@@ -186,7 +186,7 @@
                             </div>
 
                             <div class="mt-6 flex flex-wrap gap-2">
-                                <a href="{{ route('system.hero-slides.edit', $slide->id) }}" class="inline-flex items-center rounded-full border border-[#2D1D5C]/15 bg-white px-4 py-2.5 text-sm font-semibold text-[#2D1D5C] transition duration-200 hover:-translate-y-0.5 hover:border-[#DFE753] hover:bg-[#DFE753]">
+                                <a href="{{ route('system.hero-slides.edit', $slide->id) }}" class="inline-flex items-center rounded-full border border-[#25333E]/15 bg-white px-4 py-2.5 text-sm font-semibold text-[#25333E] transition duration-200 hover:-translate-y-0.5 hover:border-[#DFE753] hover:bg-[#DFE753]">
                                     Edit Slide
                                 </a>
 
@@ -240,8 +240,8 @@
             status.className = classes;
         };
 
-        const defaultStatusClass = 'inline-flex items-center rounded-full border border-[#DFE753]/60 bg-[#F8F9D9] px-4 py-2 text-sm font-semibold text-[#2D1D5C]';
-        const savingStatusClass = 'inline-flex items-center rounded-full border border-[#2D1D5C]/15 bg-[#EEF2FF] px-4 py-2 text-sm font-semibold text-[#2D1D5C]';
+        const defaultStatusClass = 'inline-flex items-center rounded-full border border-[#DFE753]/60 bg-[#F8F9D9] px-4 py-2 text-sm font-semibold text-[#25333E]';
+        const savingStatusClass = 'inline-flex items-center rounded-full border border-[#25333E]/15 bg-[#EEF2FF] px-4 py-2 text-sm font-semibold text-[#25333E]';
         const successStatusClass = 'inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700';
         const errorStatusClass = 'inline-flex items-center rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700';
 

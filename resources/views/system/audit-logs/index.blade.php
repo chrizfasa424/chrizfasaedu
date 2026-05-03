@@ -21,7 +21,7 @@
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="rounded-xl bg-[#2D1D5C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#24174A]">
+                <button type="submit" class="rounded-xl bg-[#25333E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#24174A]">
                     Filter
                 </button>
                 <a href="{{ route('system.audit-logs.index') }}" class="rounded-xl border border-slate-300 px-4 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">
@@ -40,7 +40,7 @@
                     <div class="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 md:flex-row md:items-start md:justify-between">
                         <div class="space-y-1.5">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ $isFailedLogin ? 'bg-red-100 text-red-700' : 'bg-[#DFE753]/50 text-[#2D1D5C]' }}">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ $isFailedLogin ? 'bg-red-100 text-red-700' : 'bg-[#DFE753]/50 text-[#25333E]' }}">
                                     {{ \Illuminate\Support\Str::of($log->action)->replace('_', ' ')->title() }}
                                 </span>
                                 <span class="text-sm font-semibold text-slate-900">

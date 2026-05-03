@@ -20,8 +20,8 @@
     {{-- Message list --}}
     @if($recipients->isEmpty())
     <div class="rounded-2xl border border-slate-100 bg-white px-6 py-16 text-center shadow-sm">
-        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2D1D5C]/8">
-            <svg class="h-8 w-8 text-[#2D1D5C]/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#25333E]/8">
+            <svg class="h-8 w-8 text-[#25333E]/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
             </svg>
         </div>
@@ -33,13 +33,13 @@
         @foreach($recipients as $recipient)
         @php $msg = $recipient->message; $isUnread = !$recipient->isRead(); @endphp
         <a href="{{ route('portal.messages.show', $msg) }}"
-           class="group flex items-start gap-4 rounded-2xl border bg-white px-5 py-4 shadow-sm transition hover:shadow-md hover:border-[#2D1D5C]/20
-                  {{ $isUnread ? 'border-[#2D1D5C]/20 bg-[#2D1D5C]/[0.02]' : 'border-slate-100' }}">
+           class="group flex items-start gap-4 rounded-2xl border bg-white px-5 py-4 shadow-sm transition hover:shadow-md hover:border-[#25333E]/20
+                  {{ $isUnread ? 'border-[#25333E]/20 bg-[#25333E]/[0.02]' : 'border-slate-100' }}">
 
             {{-- Unread indicator --}}
             <div class="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center">
                 @if($isUnread)
-                    <span class="h-2.5 w-2.5 rounded-full bg-[#2D1D5C] shadow-sm shadow-[#2D1D5C]/30"></span>
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#25333E] shadow-sm shadow-[#25333E]/30"></span>
                 @else
                     <span class="h-2 w-2 rounded-full bg-slate-200"></span>
                 @endif
@@ -65,7 +65,7 @@
             </div>
 
             {{-- Arrow --}}
-            <div class="mt-1 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#2D1D5C]">
+            <div class="mt-1 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-[#25333E]">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/>
                 </svg>

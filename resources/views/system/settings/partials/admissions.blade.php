@@ -23,7 +23,7 @@
     .admissions-field:focus,
     .admissions-field:focus-visible {
         outline: none;
-        border-color: #2D1D5C;
+        border-color: #25333E;
         box-shadow:
             0 0 0 4px rgba(45, 29, 92, 0.14),
             0 16px 28px -22px rgba(15, 23, 42, 0.5);
@@ -54,7 +54,7 @@
     @endif
 
     <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-100 bg-gradient-to-r from-[#2D1D5C] via-[#3A2B73] to-[#1F1A4B] px-5 py-6 text-white sm:px-6">
+        <div class="border-b border-slate-100 bg-gradient-to-r from-[#25333E] via-[#3A2B73] to-[#1F1A4B] px-5 py-6 text-white sm:px-6">
             <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#DFE753]">Admissions Studio</p>
             <h2 class="mt-2 text-2xl font-black tracking-tight">Admissions Page Settings</h2>
             <p class="mt-2 max-w-3xl text-sm text-indigo-100">Refine your admissions narrative, process highlights, and call-to-action details from one workspace.</p>
@@ -80,7 +80,7 @@
 
     <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div class="flex flex-col gap-2 border-b border-slate-100 pb-4">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2D1D5C]/70">Editor Feed</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#25333E]/70">Editor Feed</p>
             <h3 class="text-xl font-extrabold tracking-tight text-slate-900">Admissions Content Feed</h3>
             <p class="text-sm text-slate-500">Update the card feed and step-by-step flow shown on the public admissions page.</p>
         </div>
@@ -121,7 +121,7 @@
     </section>
 
     <div class="sticky bottom-3 z-10 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur">
-        <button type="submit" data-admissions-save-button class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">
+        <button type="submit" data-admissions-save-button class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">
             Save Admissions Page
         </button>
     </div>
@@ -163,9 +163,9 @@
 
         const feed = document.getElementById('admissions-editor-feed');
         if (feed) {
-            feed.classList.add('ring-2', 'ring-[#2D1D5C]/20', 'rounded-3xl');
+            feed.classList.add('ring-2', 'ring-[#25333E]/20', 'rounded-3xl');
             setTimeout(() => {
-                feed.classList.remove('ring-2', 'ring-[#2D1D5C]/20', 'rounded-3xl');
+                feed.classList.remove('ring-2', 'ring-[#25333E]/20', 'rounded-3xl');
             }, 1800);
         }
 

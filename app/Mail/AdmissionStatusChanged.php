@@ -21,11 +21,11 @@ class AdmissionStatusChanged extends Mailable
 
     public function envelope(): Envelope
     {
-        $status  = $this->admission->status->value;
+        $status = $this->admission->status->value;
         $subject = match ($status) {
-            'approved' => 'Application Approved — ' . ($this->school?->name ?? 'Our School'),
-            'rejected' => 'Application Update — ' . ($this->school?->name ?? 'Our School'),
-            default    => 'Application Status Update — ' . ($this->school?->name ?? 'Our School'),
+            'approved' => 'Application Approved - ' . ($this->school?->name ?? 'Our School'),
+            'rejected' => 'Application Update - ' . ($this->school?->name ?? 'Our School'),
+            default => 'Application Status Update - ' . ($this->school?->name ?? 'Our School'),
         };
 
         return new Envelope(subject: $subject);

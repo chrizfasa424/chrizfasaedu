@@ -1,34 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Contact Message</title>
-</head>
-<body style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5; margin: 0; padding: 20px; background: #f8fafc;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 680px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
-        <tr>
-            <td style="padding: 20px 20px 10px;">
-                <h2 style="margin: 0; font-size: 20px;">New Contact Form Submission</h2>
-                <p style="margin: 8px 0 0; color: #475569;">{{ $schoolName }}</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 10px 20px 20px;">
-                <p style="margin: 0 0 10px;"><strong>Full Name:</strong> {{ $payload['full_name'] }}</p>
-                <p style="margin: 0 0 10px;"><strong>Email:</strong> {{ $payload['email'] }}</p>
-                <p style="margin: 0 0 10px;"><strong>Phone Number:</strong> {{ $payload['phone_number'] ?: 'Not provided' }}</p>
-                <p style="margin: 0 0 10px;"><strong>Subject:</strong> {{ $payload['subject'] }}</p>
-                <p style="margin: 0 0 10px;"><strong>Submitted At:</strong> {{ $submittedAt->format('Y-m-d H:i:s') }}</p>
-                <p style="margin: 0 0 10px;"><strong>IP Address:</strong> {{ $requestIp }}</p>
+@php
+    $schoolName = $schoolName ?? ($school?->name ?? 'School');
+@endphp
 
-                <div style="margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-                    <p style="margin: 0 0 6px;"><strong>Message</strong></p>
-                    <p style="margin: 0; white-space: pre-wrap;">{{ $payload['message'] }}</p>
-                </div>
+<x-email-layout
+    title="New Contact Message"
+    :school="$school"
+    :school-name="$schoolName"
+    :mailer-message="isset($message) ? $message : null"
+    preview-text="A new message was submitted from the public contact form."
+>
+    <table width="100%" cellpadding="0" cellspacing="6" style="margin:0 0 14px;">
+        <tr><td style="width:38%;color:#64748b;font-size:14px;">Full Name</td><td style="color:#0f172a;font-size:14px;font-weight:600;">{{ $payload['full_name'] }}</td></tr>
+        <tr><td style="color:#64748b;font-size:14px;">Email</td><td style="color:#0f172a;font-size:14px;"><a href="mailto:{{ $payload['email'] }}" style="color:#25333E;text-decoration:none;font-weight:600;">{{ $payload['email'] }}</a></td></tr>
+        <tr><td style="color:#64748b;font-size:14px;">Phone Number</td><td style="color:#0f172a;font-size:14px;">{{ $payload['phone_number'] ?: 'Not provided' }}</td></tr>
+        <tr><td style="color:#64748b;font-size:14px;">Subject</td><td style="color:#0f172a;font-size:14px;font-weight:600;">{{ $payload['subject'] }}</td></tr>
+        <tr><td style="color:#64748b;font-size:14px;">Submitted At</td><td style="color:#0f172a;font-size:14px;">{{ $submittedAt->format('Y-m-d H:i:s') }}</td></tr>
+        <tr><td style="color:#64748b;font-size:14px;">IP Address</td><td style="color:#0f172a;font-size:14px;">{{ $requestIp }}</td></tr>
+    </table>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
+        <tr>
+            <td style="padding:14px 16px;">
+                <p style="margin:0 0 8px;color:#334155;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Message</p>
+                <p style="margin:0;color:#334155;font-size:14px;line-height:1.7;white-space:pre-wrap;">{{ $payload['message'] }}</p>
             </td>
         </tr>
     </table>
-</body>
-</html>
-
+</x-email-layout>

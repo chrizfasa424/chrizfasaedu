@@ -118,7 +118,7 @@
                 <div>
                     <label class="mb-1.5 block text-sm font-semibold text-slate-700">Upload New Image</label>
                     <input type="file" name="contact_hero_image" accept="image/*"
-                        class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-[#2D1D5C] file:px-3 file:py-1 file:text-xs file:font-semibold file:text-white">
+                        class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-[#25333E] file:px-3 file:py-1 file:text-xs file:font-semibold file:text-white">
                     <p class="mt-1 text-xs text-slate-400">Max 6MB · JPG, PNG, WebP</p>
                 </div>
                 @if($existingContactHero !== '')
@@ -131,7 +131,7 @@
         </div>
     </div>
 
-    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">Save Contact Page</button>
+    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save Contact Page</button>
 </form>
 
 @include('system.settings.partials._submenu-item-editor', [

@@ -466,6 +466,14 @@ class SettingsController extends Controller
             'highlight_one_text'  => 'nullable|string|max:2000',
             'highlight_two_title' => 'nullable|string|max:120',
             'highlight_two_text'  => 'nullable|string|max:2000',
+            'management_team_cards' => 'nullable|array|max:40',
+            'management_team_cards.*.name' => 'nullable|string|max:120',
+            'management_team_cards.*.subject' => 'nullable|string|max:160',
+            'management_team_cards.*.qualification' => 'nullable|string|max:240',
+            'management_team_cards.*.existing_image' => 'nullable|string|max:500',
+            'management_team_cards.*.remove_image' => 'nullable|boolean',
+            'management_team_cards.*.remove_row' => 'nullable|boolean',
+            'management_team_cards.*.image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         $settings = $school->settings ?? [];
@@ -474,12 +482,83 @@ class SettingsController extends Controller
         $sectionContent = (array) ($submenuContent[$validated['section']] ?? []);
 
         $existing = (array) ($sectionContent[$validated['slug']] ?? []);
+        $existingTeamCards = collect($existing['management_team_cards'] ?? [])
+            ->map(function ($card) {
+                return [
+                    'image' => trim((string) data_get($card, 'image', '')),
+                    'name' => trim((string) data_get($card, 'name', '')),
+                    'subject' => trim((string) data_get($card, 'subject', '')),
+                    'qualification' => trim((string) data_get($card, 'qualification', '')),
+                ];
+            })
+            ->filter(function (array $card) {
+                return $card['image'] !== '' || $card['name'] !== '' || $card['subject'] !== '' || $card['qualification'] !== '';
+            })
+            ->values();
+
+        $oldTeamImagePaths = $existingTeamCards
+            ->pluck('image')
+            ->map(fn ($path) => trim((string) $path))
+            ->filter()
+            ->values();
+
+        $submittedTeamCards = $validated['management_team_cards'] ?? [];
+        $teamCards = [];
+
+        foreach ($submittedTeamCards as $index => $submittedCard) {
+            if (!is_array($submittedCard)) {
+                continue;
+            }
+
+            $rowPath = trim((string) ($submittedCard['existing_image'] ?? ''));
+            $rowName = trim(strip_tags((string) ($submittedCard['name'] ?? '')));
+            $rowSubject = trim(strip_tags((string) ($submittedCard['subject'] ?? '')));
+            $rowQualification = trim(strip_tags((string) ($submittedCard['qualification'] ?? '')));
+
+            if ($request->boolean("management_team_cards.{$index}.remove_row")) {
+                continue;
+            }
+
+            if ($request->boolean("management_team_cards.{$index}.remove_image")) {
+                $rowPath = '';
+            }
+
+            if ($request->hasFile("management_team_cards.{$index}.image")) {
+                $rowPath = $request->file("management_team_cards.{$index}.image")
+                    ->store('schools/submenu-images/' . $school->id, 'public');
+            }
+
+            if ($rowPath === '' && $rowName === '' && $rowSubject === '' && $rowQualification === '') {
+                continue;
+            }
+
+            $teamCards[] = [
+                'image' => $rowPath,
+                'name' => $rowName,
+                'subject' => $rowSubject,
+                'qualification' => $rowQualification,
+            ];
+        }
+
+        $newTeamImagePaths = collect($teamCards)
+            ->pluck('image')
+            ->map(fn ($path) => trim((string) $path))
+            ->filter()
+            ->values();
+
+        $oldTeamImagePaths
+            ->diff($newTeamImagePaths)
+            ->each(function (string $path): void {
+                Storage::disk('public')->delete($path);
+            });
+
         $sectionContent[$validated['slug']] = array_merge($existing, [
             'description'         => RichText::sanitize($validated['description'] ?? ''),
             'highlight_one_title' => trim((string) ($validated['highlight_one_title'] ?? '')),
             'highlight_one_text'  => RichText::sanitize($validated['highlight_one_text'] ?? ''),
             'highlight_two_title' => trim((string) ($validated['highlight_two_title'] ?? '')),
             'highlight_two_text'  => RichText::sanitize($validated['highlight_two_text'] ?? ''),
+            'management_team_cards' => $teamCards,
         ]);
 
         $submenuContent[$validated['section']] = $sectionContent;
@@ -926,7 +1005,7 @@ class SettingsController extends Controller
         $publicPage['hero_subtitle'] = $validated['hero_subtitle'] ?? '';
         $publicPage['cta_primary_text'] = $validated['cta_primary_text'] ?? 'Start Admission';
         $publicPage['cta_secondary_text'] = $validated['cta_secondary_text'] ?? 'Explore Programs';
-        $primaryColor = strtoupper($validated['primary_color'] ?? ($publicPage['primary_color'] ?? '#2D1D5C'));
+        $primaryColor = strtoupper($validated['primary_color'] ?? ($publicPage['primary_color'] ?? '#25333E'));
         $secondaryColor = strtoupper($validated['secondary_color'] ?? ($publicPage['secondary_color'] ?? '#DFE753'));
 
         $publicPage['site_background_color'] = strtoupper($validated['site_background_color'] ?? '#F8FAFC');
@@ -1463,15 +1542,15 @@ class SettingsController extends Controller
         $defaults = PublicPageContent::defaults($school);
 
         $publicPage['site_background_color'] = $defaults['site_background_color'] ?? '#F8FAFC';
-        $publicPage['primary_color'] = $defaults['primary_color'] ?? '#2D1D5C';
+        $publicPage['primary_color'] = $defaults['primary_color'] ?? '#25333E';
         $publicPage['secondary_color'] = $defaults['secondary_color'] ?? '#DFE753';
         $publicPage['heading_text_color'] = $defaults['heading_text_color'] ?? '#0F172A';
         $publicPage['body_text_color'] = $defaults['body_text_color'] ?? '#475569';
         $publicPage['surface_color'] = $defaults['surface_color'] ?? '#FFFFFF';
         $publicPage['soft_surface_color'] = $defaults['soft_surface_color'] ?? '#EEF6FF';
         $publicPage['theme_style'] = $defaults['theme_style'] ?? 'modern-grid';
-        $publicPage['header_bg_color'] = $defaults['header_bg_color'] ?? ($defaults['primary_color'] ?? '#2D1D5C');
-        $publicPage['footer_bg_color'] = $defaults['footer_bg_color'] ?? ($defaults['primary_color'] ?? '#2D1D5C');
+        $publicPage['header_bg_color'] = $defaults['header_bg_color'] ?? ($defaults['primary_color'] ?? '#25333E');
+        $publicPage['footer_bg_color'] = $defaults['footer_bg_color'] ?? ($defaults['primary_color'] ?? '#25333E');
         $publicPage['footer_separator_color'] = $defaults['footer_separator_color'] ?? ($defaults['secondary_color'] ?? '#DFE753');
 
         $settings['public_page'] = $publicPage;
@@ -1548,15 +1627,15 @@ class SettingsController extends Controller
             'cta_primary_text' => $publicPage['cta_primary_text'] ?? '',
             'cta_secondary_text' => $publicPage['cta_secondary_text'] ?? '',
             'site_background_color' => $publicPage['site_background_color'] ?? '#F8FAFC',
-            'primary_color' => $publicPage['primary_color'] ?? '#2D1D5C',
+            'primary_color' => $publicPage['primary_color'] ?? '#25333E',
             'secondary_color' => $publicPage['secondary_color'] ?? '#DFE753',
             'heading_text_color' => $publicPage['heading_text_color'] ?? '#0F172A',
             'body_text_color' => $publicPage['body_text_color'] ?? '#475569',
             'surface_color' => $publicPage['surface_color'] ?? '#FFFFFF',
             'soft_surface_color' => $publicPage['soft_surface_color'] ?? '#EEF6FF',
             'theme_style' => $publicPage['theme_style'] ?? 'modern-grid',
-            'header_bg_color' => $publicPage['header_bg_color'] ?? '#2D1D5C',
-            'footer_bg_color' => $publicPage['footer_bg_color'] ?? '#2D1D5C',
+            'header_bg_color' => $publicPage['header_bg_color'] ?? '#25333E',
+            'footer_bg_color' => $publicPage['footer_bg_color'] ?? '#25333E',
             'footer_separator_color' => $publicPage['footer_separator_color'] ?? '#DFE753',
             'admission_session_text' => $publicPage['admission_session_text'] ?? '',
             'footer_note' => $publicPage['footer_note'] ?? '',

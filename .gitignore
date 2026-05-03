@@ -36,3 +36,5 @@
 !/storage/logs/.gitignore
 /storage/app/public/*
 !/storage/app/public/.gitignore
+/storage/app/admissions/*
+!/storage/app/admissions/.gitignore

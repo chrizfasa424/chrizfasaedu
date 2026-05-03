@@ -67,6 +67,46 @@
 
 @section('content')
 <div class="space-y-6">
+    @if(($hasPendingStudentUpdates ?? false) && (int) ($pendingStudentUpdatesCount ?? 0) > 0)
+    <div id="student-update-popup" class="fixed inset-0 z-[120] flex items-center justify-center px-4 py-6">
+        <div class="absolute inset-0 bg-slate-950/65 backdrop-blur-[2px]"></div>
+        <div class="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-2xl">
+            <div class="border-b border-amber-200 bg-gradient-to-r from-amber-100 via-amber-50 to-white px-6 py-5">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-amber-800">Important Update</p>
+                <h2 class="mt-1 text-xl font-extrabold text-slate-900">You have {{ $pendingStudentUpdatesCount }} new update{{ (int) $pendingStudentUpdatesCount === 1 ? '' : 's' }} to read</h2>
+                <p class="mt-1 text-sm text-slate-600">Please open and read these updates before continuing.</p>
+            </div>
+
+            <div class="px-6 py-5">
+                <div class="space-y-3">
+                    @foreach(($pendingUpdateCards ?? []) as $item)
+                    <a href="{{ $item['route'] }}"
+                       class="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 transition hover:border-slate-300 hover:bg-white">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-900">{{ $item['label'] }}</p>
+                            <p class="mt-0.5 text-xs text-slate-500">{{ $item['count'] }} pending</p>
+                        </div>
+                        <span class="inline-flex items-center rounded-xl bg-[#25333E] px-3 py-1.5 text-xs font-bold text-white">
+                            {{ $item['cta'] }}
+                        </span>
+                    </a>
+                    @endforeach
+                </div>
+
+                <div class="mt-5 flex flex-wrap items-center gap-2">
+                    <a href="{{ route('notifications.index') }}"
+                       class="inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100">
+                        Open Notification Center
+                    </a>
+                    <button id="student-update-popup-close" type="button"
+                            class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-500 transition hover:bg-slate-100">
+                        Remind Me Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     {{-- ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â
          WELCOME HERO BANNER
@@ -325,7 +365,7 @@
             @foreach($timetableSorted as $day => $slots)
             <div class="px-6 py-4">
                 <p class="mb-3 text-xs font-bold uppercase tracking-[0.22em]" style="color:{{ $primaryColor }}">{{ $day }}</p>
-                <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                     @foreach($slots->sortBy('start_time') as $slot)
                     <div class="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold"
@@ -599,6 +639,26 @@
     @endif
 
 </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var popup = document.getElementById('student-update-popup');
+    if (!popup) {
+        return;
+    }
+
+    document.body.classList.add('overflow-hidden');
+
+    var closeBtn = document.getElementById('student-update-popup-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+            popup.remove();
+            document.body.classList.remove('overflow-hidden');
+        });
+    }
+});
+</script>
+@endpush
 @endsection
 
 

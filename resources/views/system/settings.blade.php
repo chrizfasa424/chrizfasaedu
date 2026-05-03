@@ -167,7 +167,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Primary Brand Color</label>
-                        <input type="color" name="primary_color" value="{{ old('primary_color', $publicPage['primary_color'] ?? '#2D1D5C') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-white p-1">
+                        <input type="color" name="primary_color" value="{{ old('primary_color', $publicPage['primary_color'] ?? '#25333E') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-white p-1">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Secondary Brand Color</label>
@@ -195,11 +195,11 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Header Color</label>
-                        <input type="color" name="header_bg_color" value="{{ old('header_bg_color', $publicPage['header_bg_color'] ?? '#2D1D5C') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-white p-1">
+                        <input type="color" name="header_bg_color" value="{{ old('header_bg_color', $publicPage['header_bg_color'] ?? '#25333E') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-white p-1">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Footer Color</label>
-                        <input type="color" name="footer_bg_color" value="{{ old('footer_bg_color', $publicPage['footer_bg_color'] ?? '#2D1D5C') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-white p-1">
+                        <input type="color" name="footer_bg_color" value="{{ old('footer_bg_color', $publicPage['footer_bg_color'] ?? '#25333E') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-white p-1">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Footer Separator Color</label>
@@ -813,7 +813,7 @@
             $smtpEncryption = old('smtp_encryption', $smtp['encryption'] ?? 'tls');
         @endphp
 
-        <div class="relative border-b border-slate-200 bg-gradient-to-r from-[#20124d] via-[#2D1D5C] to-[#3f2a7d] px-6 py-7 md:px-8">
+        <div class="relative border-b border-slate-200 bg-gradient-to-r from-[#20124d] via-[#25333E] to-[#3f2a7d] px-6 py-7 md:px-8">
             <span class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/90">Control Center</span>
             <h3 class="mt-3 text-2xl font-semibold text-white">System Preferences</h3>
             <p class="mt-1 text-sm text-indigo-100">Configure grading, notifications, and SMTP delivery from one premium console.</p>
@@ -916,7 +916,7 @@
                 </div>
 
                 <div>
-                    <button type="submit" class="inline-flex items-center rounded-xl bg-gradient-to-r from-[#2D1D5C] to-[#4a2fa1] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-indigo-300">
+                    <button type="submit" class="inline-flex items-center rounded-xl bg-gradient-to-r from-[#25333E] to-[#4a2fa1] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-indigo-300">
                         Save System Preferences
                     </button>
                 </div>

@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Net Amount</p>
             <p class="mt-2 text-2xl font-extrabold text-slate-900">NGN {{ number_format((float) $invoice->net_amount, 2) }}</p>

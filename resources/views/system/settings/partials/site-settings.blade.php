@@ -23,7 +23,7 @@
     .site-settings-input:focus,
     .site-settings-input:focus-visible {
         outline: none;
-        border-color: #2D1D5C;
+        border-color: #25333E;
         box-shadow:
             0 0 0 4px rgba(45, 29, 92, 0.14),
             0 14px 28px -20px rgba(15, 23, 42, 0.48);
@@ -58,7 +58,7 @@
 
     <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div class="flex flex-col gap-2 border-b border-slate-100 pb-4">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2D1D5C]/70">Site Identity</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#25333E]/70">Site Identity</p>
             <h2 class="text-xl font-extrabold tracking-tight text-slate-900">Core School Details</h2>
             <p class="text-sm text-slate-500">These values appear across the dashboard and public pages.</p>
         </div>
@@ -88,7 +88,7 @@
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Current Public Link</p>
                 @if($publicLink)
-                    <a href="{{ $publicLink }}" target="_blank" rel="noopener" class="mt-2 inline-block break-all text-sm font-semibold text-[#2D1D5C] hover:underline">{{ $publicLink }}</a>
+                    <a href="{{ $publicLink }}" target="_blank" rel="noopener" class="mt-2 inline-block break-all text-sm font-semibold text-[#25333E] hover:underline">{{ $publicLink }}</a>
                 @else
                     <p class="mt-2 text-sm text-slate-500">No custom domain saved yet.</p>
                 @endif
@@ -98,7 +98,7 @@
 
     <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div class="flex flex-col gap-2 border-b border-slate-100 pb-4">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2D1D5C]/70">Messaging</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#25333E]/70">Messaging</p>
             <h2 class="text-xl font-extrabold tracking-tight text-slate-900">Brand Voice</h2>
         </div>
 
@@ -116,7 +116,7 @@
 
     <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div class="flex flex-col gap-2 border-b border-slate-100 pb-4">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2D1D5C]/70">Brand Assets</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#25333E]/70">Brand Assets</p>
             <h2 class="text-xl font-extrabold tracking-tight text-slate-900">Logo and Favicon</h2>
             <p class="text-sm text-slate-500">Upload fresh assets or remove the existing ones if you are rebranding.</p>
         </div>
@@ -163,7 +163,7 @@
 
     <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div class="flex flex-col gap-2 border-b border-slate-100 pb-4">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2D1D5C]/70">Navigation Text</p>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#25333E]/70">Navigation Text</p>
             <h2 class="text-xl font-extrabold tracking-tight text-slate-900">Shared Header and Mobile Labels</h2>
             <p class="text-sm text-slate-500">These labels are saved via the dedicated public-page settings endpoint.</p>
         </div>
@@ -198,8 +198,8 @@
 
     <div class="sticky bottom-3 z-10 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur">
         <div class="flex flex-wrap items-center gap-3">
-            <button type="submit" class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">Save Site Settings</button>
-            <button type="submit" form="public-site-settings-form" class="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#2D1D5C] hover:text-[#2D1D5C]">Save Shared Navigation Text</button>
+            <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save Site Settings</button>
+            <button type="submit" form="public-site-settings-form" class="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#25333E] hover:text-[#25333E]">Save Shared Navigation Text</button>
         </div>
     </div>
 </form>

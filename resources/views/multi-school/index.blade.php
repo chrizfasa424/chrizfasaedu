@@ -58,7 +58,7 @@
     </section>
 
     <section class="flex flex-wrap items-center gap-3">
-        <a href="{{ route('multi-school.domains') }}" class="inline-flex items-center rounded-full bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
+        <a href="{{ route('multi-school.domains') }}" class="inline-flex items-center rounded-full bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
             Open Domain Manager
         </a>
         <p class="text-sm text-slate-500">Use this workspace to assign and update custom domains for each school.</p>
@@ -154,7 +154,7 @@
                     The first school admin account will receive an auto-generated temporary password. Share it securely and require immediate password change after first login.
                 </div>
 
-                <button type="submit" class="inline-flex items-center rounded-full bg-[#2D1D5C] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
+                <button type="submit" class="inline-flex items-center rounded-full bg-[#25333E] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
                     Create School Tenant
                 </button>
             </form>

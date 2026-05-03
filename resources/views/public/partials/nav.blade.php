@@ -4,10 +4,10 @@
 --}}
 @php
     $navSchoolName        = $school?->name ?? 'Our School';
-    $navPrimary           = data_get($theme, 'primary.500',          '#2D1D5C');
+    $navPrimary           = data_get($theme, 'primary.500',          '#25333E');
     $navSecondary         = data_get($theme, 'secondary.500',        '#DFE753');
-    $navHeader            = data_get($theme, 'header',               '#2D1D5C');
-    $navHoverText         = data_get($theme, 'primary_text_on_secondary', '#2D1D5C');
+    $navHeader            = data_get($theme, 'header',               '#25333E');
+    $navHoverText         = data_get($theme, 'primary_text_on_secondary', '#25333E');
 
     $navApplyText         = trim((string) ($publicPage['header_apply_text']        ?? 'Apply'));
     $navLoginText         = trim((string) ($publicPage['header_portal_login_text'] ?? 'Portal Login'));
@@ -44,7 +44,7 @@
     ];
 @endphp
 
-<header class="sticky top-0 z-50 backdrop-blur"
+<header class="sticky top-0 z-50"
         style="background-color:{{ $navHeader }};--submenu-primary:{{ $navPrimary }};--submenu-secondary:{{ $navSecondary }};--submenu-hover-text:{{ $navHoverText }};">
 
     <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
@@ -62,7 +62,7 @@
         </a>
 
         {{-- Desktop nav --}}
-        <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex"
+        <nav class="public-desktop-nav items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm"
              style="--submenu-secondary:{{ $navSecondary }};--submenu-hover-text:{{ $navHoverText }};">
             @foreach($navSections as $section)
             @php $alignClass = ($loop->last || $loop->iteration >= count($navSections) - 1) ? 'right-0' : 'left-0'; @endphp
@@ -114,7 +114,7 @@
                 {{ $navLoginText ?: 'Portal Login' }}
             </a>
             <button type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="public-mobile-menu"
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/40 text-white transition duration-200 hover:bg-white/10 xl:hidden">
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/40 text-white transition duration-200 hover:bg-white/10 lg:hidden">
                 <svg data-mobile-menu-open-icon class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -126,11 +126,11 @@
     </div>
 
     {{-- Mobile backdrop --}}
-    <div data-mobile-menu-backdrop class="pointer-events-none fixed inset-0 z-40 bg-slate-950/40 opacity-0 transition duration-300 xl:hidden"></div>
+    <div data-mobile-menu-backdrop class="pointer-events-none fixed inset-0 z-40 bg-slate-950/40 opacity-0 transition duration-300 lg:hidden"></div>
 
     {{-- Mobile drawer --}}
     <aside id="public-mobile-menu" data-mobile-menu
-           class="pointer-events-none fixed inset-y-0 right-0 z-50 w-full max-w-sm translate-x-full overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition duration-300 xl:hidden">
+           class="pointer-events-none fixed inset-y-0 right-0 z-50 w-full max-w-sm translate-x-full overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition duration-300 lg:hidden">
         <div class="sticky top-0 flex items-center justify-between bg-white/95 px-5 py-4 backdrop-blur">
             <p class="text-lg font-semibold text-slate-900">{{ $navMobileMenuTitle ?: 'Menu' }}</p>
             <button type="button" data-mobile-menu-close

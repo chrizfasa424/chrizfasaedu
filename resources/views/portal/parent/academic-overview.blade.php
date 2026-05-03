@@ -3,7 +3,7 @@
 @section('header', 'Academic Overview')
 
 @php
-    $primaryColor = trim((string) ($publicPage['primary_color'] ?? '#2D1D5C'));
+    $primaryColor = trim((string) ($publicPage['primary_color'] ?? '#25333E'));
     $secondaryColor = trim((string) ($publicPage['secondary_color'] ?? '#DFE753'));
     $parentAccountName = auth()->user()?->full_name ?? ($parent?->first_name ?? 'Parent');
 

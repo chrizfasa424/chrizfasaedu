@@ -7,7 +7,7 @@
     <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
         <div class="border-b border-slate-100 px-6 py-5">
             <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2D1D5C]/8 text-[#2D1D5C]">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#25333E]/8 text-[#25333E]">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
                     </svg>
@@ -34,7 +34,7 @@
                         ] as [$val, $lbl, $icon])
                             <label class="audience-card cursor-pointer" data-audience="{{ $val }}">
                                 <input type="radio" name="audience" value="{{ $val }}" class="sr-only" {{ old('audience', 'all_students') === $val ? 'checked' : '' }}>
-                                <div class="audience-option flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 text-center transition {{ old('audience', 'all_students') === $val ? 'border-[#2D1D5C] bg-[#2D1D5C] text-white shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-[#2D1D5C]/40' }}">
+                                <div class="audience-option flex flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 text-center transition {{ old('audience', 'all_students') === $val ? 'border-[#25333E] bg-[#25333E] text-white shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-[#25333E]/40' }}">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $icon }}"/>
                                     </svg>
@@ -48,7 +48,7 @@
 
                 <div id="classRow" style="display:{{ old('audience') === 'class' ? 'block' : 'none' }}">
                     <label class="mb-1.5 block text-sm font-semibold text-slate-700" for="class_id">Select Class</label>
-                    <select id="class_id" name="class_id" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 shadow-sm focus:border-[#2D1D5C] focus:outline-none focus:ring-1 focus:ring-[#2D1D5C]">
+                    <select id="class_id" name="class_id" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 shadow-sm focus:border-[#25333E] focus:outline-none focus:ring-1 focus:ring-[#25333E]">
                         <option value="">-- choose a class --</option>
                         @foreach($classes as $class)
                             <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
@@ -59,13 +59,13 @@
 
                 <div>
                     <label class="mb-1.5 block text-sm font-semibold text-slate-700" for="subject">Subject</label>
-                    <input type="text" id="subject" name="subject" value="{{ old('subject') }}" placeholder="Enter message subject..." class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 shadow-sm focus:border-[#2D1D5C] focus:outline-none focus:ring-1 focus:ring-[#2D1D5C] @error('subject') border-red-400 @enderror">
+                    <input type="text" id="subject" name="subject" value="{{ old('subject') }}" placeholder="Enter message subject..." class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 shadow-sm focus:border-[#25333E] focus:outline-none focus:ring-1 focus:ring-[#25333E] @error('subject') border-red-400 @enderror">
                     @error('subject')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
                     <label class="mb-1.5 block text-sm font-semibold text-slate-700" for="body">Message</label>
-                    <textarea id="body" name="body" rows="10" placeholder="Type your message here..." class="js-ck-editor w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#2D1D5C] focus:outline-none focus:ring-1 focus:ring-[#2D1D5C] resize-none @error('body') border-red-400 @enderror">{{ old('body') }}</textarea>
+                    <textarea id="body" name="body" rows="10" placeholder="Type your message here..." class="js-ck-editor w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 shadow-sm focus:border-[#25333E] focus:outline-none focus:ring-1 focus:ring-[#25333E] resize-none @error('body') border-red-400 @enderror">{{ old('body') }}</textarea>
                     <div class="mt-1 flex justify-between">
                         @error('body')<p class="text-xs text-red-500">{{ $message }}</p>@enderror
                         <span id="charCount" class="ml-auto text-xs text-slate-400">0 characters</span>
@@ -75,7 +75,7 @@
 
             <div class="flex items-center justify-between gap-4 bg-slate-50/70 px-6 py-4">
                 <a href="{{ route('messages.index') }}" class="text-sm font-medium text-slate-500 hover:text-slate-700">&larr; Back</a>
-                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-[#2D1D5C] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A2872] active:scale-95">
+                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-[#25333E] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A2872] active:scale-95">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12zm0 0h7.5"/>
                     </svg>
@@ -97,12 +97,12 @@
             card.querySelector('input[type=radio]').checked = true;
 
             document.querySelectorAll('.audience-option').forEach((opt) => {
-                opt.classList.remove('border-[#2D1D5C]', 'bg-[#2D1D5C]', 'text-white', 'shadow-md');
+                opt.classList.remove('border-[#25333E]', 'bg-[#25333E]', 'text-white', 'shadow-md');
                 opt.classList.add('border-slate-200', 'bg-white', 'text-slate-600');
             });
 
             const selected = card.querySelector('.audience-option');
-            selected.classList.add('border-[#2D1D5C]', 'bg-[#2D1D5C]', 'text-white', 'shadow-md');
+            selected.classList.add('border-[#25333E]', 'bg-[#25333E]', 'text-white', 'shadow-md');
             selected.classList.remove('border-slate-200', 'bg-white', 'text-slate-600');
 
             const classRow = document.getElementById('classRow');

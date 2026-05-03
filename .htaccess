@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes -MultiViews
+    RewriteEngine On
+
+    # If a matching file/folder exists under /public, serve it from there.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -d
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # All other requests go through Laravel front controller in project root.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+

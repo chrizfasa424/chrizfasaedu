@@ -16,16 +16,16 @@ class StudentEnrolled extends Mailable
 
     public function __construct(
         public Admission $admission,
-        public ?School   $school,
-        public string    $loginEmail,
-        public string    $plainPassword,
-        public string    $loginUrl,
+        public ?School $school,
+        public string $loginEmail,
+        public string $plainPassword,
+        public string $loginUrl,
     ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Enrolment Confirmed — ' . ($this->school?->name ?? 'Our School'),
+            subject: 'Enrolment Confirmed - ' . ($this->school?->name ?? 'Our School'),
         );
     }
 

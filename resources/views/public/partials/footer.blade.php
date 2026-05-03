@@ -47,11 +47,11 @@
     <div class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div class="grid gap-10 lg:grid-cols-4">
             <div class="lg:col-span-1">
-                <a href="{{ route('public.home') }}" class="inline-flex items-center gap-3">
+                <a href="{{ route('public.home') }}" class="inline-flex max-w-full items-center gap-3">
                     @if($footerLogoPath || $fallbackLogoPath)
                         <img src="{{ asset('storage/' . ltrim($footerLogoPath ?: $fallbackLogoPath, '/')) }}" alt="{{ $schoolName }} Footer Logo" class="h-12 w-12 rounded-xl border border-white/10 bg-white/5 object-cover">
                     @endif
-                    <span class="font-display text-lg font-semibold text-white">{{ $schoolName }}</span>
+                    <span class="font-display text-base font-semibold leading-tight text-white sm:text-lg whitespace-nowrap">{{ $schoolName }}</span>
                 </a>
                 @if($footerDescription !== '')
                     <div class="footer-rich-text mt-4 text-sm leading-relaxed text-slate-300">{!! \App\Support\RichText::render($footerDescription) !!}</div>
@@ -212,7 +212,7 @@
                     {{ $cookieBannerRejectText }}
                 </button>
                 <button type="button" id="cookie-consent-accept" class="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition hover:opacity-95"
-                        style="background-color: var(--submenu-primary, #2D1D5C);">
+                        style="background-color: var(--submenu-primary, #25333E);">
                     {{ $cookieBannerAcceptText }}
                 </button>
             </div>

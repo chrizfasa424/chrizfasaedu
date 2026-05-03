@@ -10,21 +10,44 @@
         $panelLabel = $panelLabel ?? ($isStaffLogin ? 'Staff Area' : 'Admin Area');
         $loginAction = $loginAction ?? route('login');
         $primaryCtaLabel = $primaryCtaLabel ?? ($isStaffLogin ? 'Sign In to Staff Dashboard' : 'Sign In to Admin Console');
+        $credentialHint = $credentialHint ?? ($isStaffLogin
+            ? 'Use your staff account credentials to continue.'
+            : 'Use your administrator account credentials to continue.');
+        $focusColor = $isStaffLogin ? 'rgba(245, 158, 11, 0.24)' : 'rgba(14, 165, 233, 0.2)';
+        $bgOrbOne = $isStaffLogin ? 'rgba(245, 158, 11, 0.22)' : 'rgba(14, 165, 233, 0.2)';
+        $bgOrbTwo = $isStaffLogin ? 'rgba(16, 185, 129, 0.18)' : 'rgba(16, 185, 129, 0.14)';
+        $bgGradient = $isStaffLogin
+            ? 'linear-gradient(130deg, #1a1208 0%, #1f2937 55%, #0b1416 100%)'
+            : 'linear-gradient(130deg, #0b1324 0%, #111827 55%, #0b1220 100%)';
+        $leftPaneClass = $isStaffLogin ? 'bg-emerald-900/70' : 'bg-sky-900/70';
+        $leftOrbOneClass = $isStaffLogin ? 'bg-emerald-400/20' : 'bg-cyan-400/20';
+        $leftOrbTwoClass = $isStaffLogin ? 'bg-amber-300/20' : 'bg-sky-400/20';
+        $iconColorClass = $isStaffLogin ? 'text-emerald-100' : 'text-cyan-100';
+        $panelLabelClass = $isStaffLogin ? 'text-emerald-100/75' : 'text-sky-100/75';
+        $titleAccentClass = $isStaffLogin ? 'text-emerald-200' : 'text-sky-200';
+        $descClass = $isStaffLogin ? 'text-emerald-100/75' : 'text-sky-100/75';
+        $quickItemClass = $isStaffLogin ? 'text-emerald-50' : 'text-sky-50';
+        $copyClass = $isStaffLogin ? 'text-emerald-100/55' : 'text-sky-100/55';
+        $mobileLabelClass = $isStaffLogin ? 'text-emerald-300/80' : 'text-sky-300/80';
+        $forgotClass = $isStaffLogin ? 'text-emerald-300 hover:text-emerald-200' : 'text-sky-300 hover:text-sky-200';
+        $buttonClass = $isStaffLogin
+            ? 'bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-400 hover:to-amber-400'
+            : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400';
     @endphp
     <title>{{ $pageTitle }} - {{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --auth-focus: rgba(14, 165, 233, 0.2);
+            --auth-focus: {{ $focusColor }};
         }
 
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .page-bg {
             background:
-                radial-gradient(circle at 18% 22%, rgba(14, 165, 233, 0.2), transparent 34%),
-                radial-gradient(circle at 82% 82%, rgba(16, 185, 129, 0.14), transparent 40%),
-                linear-gradient(130deg, #0b1324 0%, #111827 55%, #0b1220 100%);
+                radial-gradient(circle at 18% 22%, {{ $bgOrbOne }}, transparent 34%),
+                radial-gradient(circle at 82% 82%, {{ $bgOrbTwo }}, transparent 40%),
+                {{ $bgGradient }};
         }
         .card-bg {
             background: linear-gradient(180deg, rgba(15,23,42,0.96) 0%, rgba(15,23,42,0.9) 100%);
@@ -139,20 +162,20 @@
 <body class="min-h-screen page-bg text-slate-100">
     <div class="mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 py-8 sm:px-6 lg:px-8">
         <div class="grid w-full overflow-hidden rounded-3xl shadow-2xl shadow-black/30 lg:grid-cols-2">
-            <section class="relative hidden overflow-hidden bg-sky-900/70 p-10 lg:block">
-                <div class="absolute -right-24 -top-20 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl"></div>
-                <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-sky-400/20 blur-3xl"></div>
+            <section class="relative hidden overflow-hidden {{ $leftPaneClass }} p-10 lg:block">
+                <div class="absolute -right-24 -top-20 h-72 w-72 rounded-full {{ $leftOrbOneClass }} blur-3xl"></div>
+                <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full {{ $leftOrbTwoClass }} blur-3xl"></div>
                 <div class="relative z-10 flex h-full flex-col justify-between">
                     <div class="flex items-center gap-3">
                         <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
-                            <svg class="h-6 w-6 text-cyan-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <svg class="h-6 w-6 {{ $iconColorClass }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 15l7.5-4.5"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 13.5 12 18l7.5-4.5"/>
                             </svg>
                         </div>
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-100/75">{{ $panelLabel }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] {{ $panelLabelClass }}">{{ $panelLabel }}</p>
                             <h1 class="text-lg font-extrabold text-white">{{ config('app.name') }}</h1>
                         </div>
                     </div>
@@ -160,31 +183,31 @@
                     <div class="max-w-md">
                         <h2 class="text-4xl font-extrabold leading-tight text-white">
                             School Operations
-                            <span class="text-sky-200">In One Secure Console</span>
+                            <span class="{{ $titleAccentClass }}">In One Secure Console</span>
                         </h2>
-                        <p class="mt-5 text-sm leading-relaxed text-sky-100/75">
+                        <p class="mt-5 text-sm leading-relaxed {{ $descClass }}">
                             Manage academics, finance, admissions, and school reporting from one place.
                         </p>
                         <div class="mt-8 space-y-3">
-                            <div class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm text-sky-50">Academic and assessment management</div>
-                            <div class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm text-sky-50">Students, staff, and communication tools</div>
-                            <div class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm text-sky-50">Secure access for authorized personnel</div>
+                            <div class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm {{ $quickItemClass }}">Academic and assessment management</div>
+                            <div class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm {{ $quickItemClass }}">Students, staff, and communication tools</div>
+                            <div class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm {{ $quickItemClass }}">Secure access for authorized personnel</div>
                         </div>
                     </div>
 
-                    <p class="text-xs text-sky-100/55">&copy; {{ date('Y') }} {{ config('app.name') }}</p>
+                    <p class="text-xs {{ $copyClass }}">&copy; {{ date('Y') }} {{ config('app.name') }}</p>
                 </div>
             </section>
 
             <section class="card-bg p-6 sm:p-10">
                 <div class="mx-auto w-full max-w-md">
                     <div class="mb-8 lg:hidden">
-                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-300/80">{{ $panelLabel }}</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] {{ $mobileLabelClass }}">{{ $panelLabel }}</p>
                         <h2 class="mt-2 text-xl font-bold text-white">{{ config('app.name') }}</h2>
                     </div>
 
                     <h3 class="text-2xl font-extrabold text-white">Sign In</h3>
-                    <p class="mt-1 text-sm text-slate-400">Use your staff account credentials to continue.</p>
+                    <p class="mt-1 text-sm text-slate-400">{{ $credentialHint }}</p>
 
                     @if(session('status'))
                         <div class="mt-5 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
@@ -227,10 +250,10 @@
                                 <input type="checkbox" name="remember" class="h-3.5 w-3.5 rounded border-slate-600 bg-slate-800">
                                 Remember me
                             </label>
-                            <a href="{{ route('admin.password.request') }}" class="text-xs font-semibold text-sky-300 hover:text-sky-200">Forgot password?</a>
+                            <a href="{{ route('admin.password.request') }}" class="text-xs font-semibold {{ $forgotClass }}">Forgot password?</a>
                         </div>
 
-                        <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-5 py-3 text-sm font-bold text-white transition hover:from-cyan-400 hover:to-blue-400">
+                        <button type="submit" class="w-full rounded-xl {{ $buttonClass }} px-5 py-3 text-sm font-bold text-white transition">
                             {{ $primaryCtaLabel }}
                         </button>
                     </form>

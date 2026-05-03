@@ -7,7 +7,20 @@
     @php
         $faviconPath = data_get($school?->settings, 'branding.favicon');
         $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
+        $seoContactTitle = (trim((string) ($publicPage['contact_page_browser_title'] ?? 'Contact Us')) ?: 'Contact Us') . ' | ' . $schoolName;
+        $seoContactDescription = trim((string) ($publicPage['contact_page_subheading'] ?? ($publicPage['contact_intro'] ?? '')));
+        $seoContactLogo = $school?->logo ? asset('storage/' . ltrim($school->logo, '/')) : '';
     @endphp
+    @include('public.partials.seo', [
+        'title' => $seoContactTitle,
+        'description' => $seoContactDescription,
+        'canonical' => route('public.contact'),
+        'type' => 'website',
+        'schemaType' => 'ContactPage',
+        'siteName' => $schoolName,
+        'image' => $seoContactLogo,
+        'school' => $school,
+    ])
     @if($faviconPath)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
     @endif
@@ -97,11 +110,11 @@
     .theme-nav-link:hover,
     .theme-nav-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-nav-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
 
@@ -123,53 +136,53 @@
     .theme-header-action-outline:focus-visible {
         border-color: var(--submenu-secondary, #DFE753);
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-header-action-solid {
         background-color: #ffffff;
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-header-action-solid:hover,
     .theme-header-action-solid:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-mobile-action-outline {
-        border-color: var(--submenu-primary, #2D1D5C);
-        color: var(--submenu-primary, #2D1D5C);
+        border-color: var(--submenu-primary, #25333E);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-mobile-action-outline:hover,
     .theme-mobile-action-outline:focus-visible {
         border-color: var(--submenu-secondary, #DFE753);
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-mobile-action-solid {
-        background-color: var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
         color: #ffffff;
     }
 
     .theme-mobile-action-solid:hover,
     .theme-mobile-action-solid:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-cta-solid {
-        background-color: var(--submenu-primary, #2D1D5C);
-        border: 1px solid var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
+        border: 1px solid var(--submenu-primary, #25333E);
         color: #ffffff;
     }
 
     .theme-cta-outline {
         background-color: #ffffff;
-        border: 1px solid var(--submenu-primary, #2D1D5C);
-        color: var(--submenu-primary, #2D1D5C);
+        border: 1px solid var(--submenu-primary, #25333E);
+        color: var(--submenu-primary, #25333E);
     }
 
     .theme-cta-solid:hover,
@@ -178,12 +191,12 @@
     .theme-cta-outline:focus-visible {
         background-color: var(--submenu-secondary, #DFE753);
         border-color: var(--submenu-secondary, #DFE753);
-        color: var(--submenu-hover-text, #2D1D5C);
+        color: var(--submenu-hover-text, #25333E);
     }
 
     .theme-submenu-panel {
-        background-color: var(--submenu-primary, #2D1D5C);
-        border-color: var(--submenu-primary, #2D1D5C);
+        background-color: var(--submenu-primary, #25333E);
+        border-color: var(--submenu-primary, #25333E);
     }
 
     .theme-submenu-heading {
@@ -198,11 +211,11 @@
     .theme-submenu-link:hover,
     .theme-submenu-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-submenu-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
 
@@ -213,11 +226,11 @@
     .theme-mobile-submenu-link:hover,
     .theme-mobile-submenu-link:focus-visible {
         background-color: var(--submenu-secondary, #DFE753) !important;
-        color: var(--submenu-hover-text, #2D1D5C) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-mobile-submenu-link-active {
-        background-color: var(--submenu-primary, #2D1D5C) !important;
+        background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
     }
     .text-slate-950,
@@ -273,7 +286,7 @@
         font-style: italic;
     }
     .rich-text-content a {
-        color: var(--submenu-primary, #2D1D5C);
+        color: var(--submenu-primary, #25333E);
         font-weight: 700;
         text-decoration: underline;
     }
@@ -366,7 +379,7 @@
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
-        <header class="sticky top-0 z-50 backdrop-blur" style="background-color: {{ $headerBgColor }};">
+        <header class="sticky top-0 z-50" style="background-color: {{ $headerBgColor }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
                     @if($school?->logo)

@@ -10,7 +10,7 @@ class StoreStudentAssignmentSubmissionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $user = $this->user();
+        $user = auth('portal')->user() ?? $this->user();
 
         return $user && (string) ($user->role?->value ?? $user->role ?? '') === UserRole::STUDENT->value;
     }

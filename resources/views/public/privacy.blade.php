@@ -19,7 +19,20 @@
         if ($policyEffectiveDate === '') {
             $policyEffectiveDate = $effectiveDate ?? now()->toFormattedDateString();
         }
+        $seoPrivacyTitle = 'Privacy Policy | ' . $schoolName;
+        $seoPrivacyDescription = $privacyIntro !== '' ? $privacyIntro : 'Read how we collect, use, and protect your personal information.';
+        $seoPrivacyLogo = $school?->logo ? asset('storage/' . ltrim($school->logo, '/')) : '';
     @endphp
+    @include('public.partials.seo', [
+        'title' => $seoPrivacyTitle,
+        'description' => $seoPrivacyDescription,
+        'canonical' => route('public.privacy'),
+        'type' => 'website',
+        'schemaType' => 'WebPage',
+        'siteName' => $schoolName,
+        'image' => $seoPrivacyLogo,
+        'school' => $school,
+    ])
     @if($faviconPath)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . ltrim($faviconPath, '/')) }}">
     @endif
@@ -29,7 +42,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('public.partials.nav-styles')
 </head>
-<body class="text-muted antialiased" style="background-color: {{ $siteBackground }}; color: {{ $bodyColor }}; --submenu-primary: {{ $theme['primary']['500'] ?? '#2D1D5C' }}; --submenu-secondary: {{ $theme['secondary']['500'] ?? '#DFE753' }}; --submenu-hover-text: {{ $theme['primary_text_on_secondary'] ?? '#2D1D5C' }}; {{ $tailwindThemeVars }};">
+<body class="text-muted antialiased" style="background-color: {{ $siteBackground }}; color: {{ $bodyColor }}; --submenu-primary: {{ $theme['primary']['500'] ?? '#25333E' }}; --submenu-secondary: {{ $theme['secondary']['500'] ?? '#DFE753' }}; --submenu-hover-text: {{ $theme['primary_text_on_secondary'] ?? '#25333E' }}; {{ $tailwindThemeVars }};">
     <div class="min-h-screen">
         @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
@@ -87,7 +100,7 @@
         }
 
         .policy-rich-text a {
-            color: {{ $theme['primary']['600'] ?? '#2D1D5C' }};
+            color: {{ $theme['primary']['600'] ?? '#25333E' }};
             text-decoration: underline;
             text-underline-offset: 0.18em;
         }

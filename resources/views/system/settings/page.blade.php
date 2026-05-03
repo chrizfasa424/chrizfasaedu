@@ -43,7 +43,7 @@
     .settings-rich-editor .ck.ck-toolbar .ck-dropdown__button.ck-on,
     .settings-rich-editor .ck.ck-toolbar .ck-button:not(.ck-disabled):focus {
         background: rgba(223, 231, 83, 0.96);
-        color: #2D1D5C;
+        color: #25333E;
     }
 
     .settings-rich-editor .ck.ck-button:not(.ck-disabled):hover .ck-icon,
@@ -54,7 +54,7 @@
     .settings-rich-editor .ck.ck-button.ck-on .ck-button__label,
     .settings-rich-editor .ck.ck-toolbar .ck-dropdown__button.ck-on .ck-button__label,
     .settings-rich-editor .ck.ck-toolbar .ck-button:not(.ck-disabled):focus .ck-button__label {
-        color: #2D1D5C;
+        color: #25333E;
     }
 
     .settings-rich-editor .ck.ck-dropdown__panel,
@@ -100,7 +100,7 @@
     <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-3xl">
-                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#2D1D5C]/60">Settings</p>
+                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#25333E]/60">Settings</p>
                 <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900">{{ $pageMeta['title'] }}</h1>
                 <p class="mt-3 text-sm leading-7 text-slate-600">{{ $pageMeta['description'] }}</p>
             </div>
@@ -113,7 +113,7 @@
     <section class="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div class="flex gap-3 overflow-x-auto pb-1">
             @foreach($settingsPages as $item)
-                <a href="{{ $item['route'] }}" class="inline-flex shrink-0 items-center rounded-2xl border px-4 py-2.5 text-sm font-semibold transition {{ $settingsPage === $item['key'] ? 'border-[#DFE753] bg-[#DFE753] text-[#2D1D5C]' : 'border-slate-200 bg-white text-slate-600 hover:border-[#2D1D5C]/25 hover:text-[#2D1D5C]' }}">
+                <a href="{{ $item['route'] }}" class="inline-flex shrink-0 items-center rounded-2xl border px-4 py-2.5 text-sm font-semibold transition {{ $settingsPage === $item['key'] ? 'border-[#DFE753] bg-[#DFE753] text-[#25333E]' : 'border-slate-200 bg-white text-slate-600 hover:border-[#25333E]/25 hover:text-[#25333E]' }}">
                     {{ $item['title'] }}
                 </a>
             @endforeach

@@ -23,6 +23,7 @@ class LoginController extends Controller
             'pageTitle' => 'Admin Login',
             'primaryCtaLabel' => 'Sign In to Admin Console',
             'panelLabel' => 'Admin Area',
+            'credentialHint' => 'Use your administrator account credentials to continue.',
         ]);
     }
 
@@ -34,6 +35,7 @@ class LoginController extends Controller
             'pageTitle' => 'Staff Login',
             'primaryCtaLabel' => 'Sign In to Staff Dashboard',
             'panelLabel' => 'Staff Area',
+            'credentialHint' => 'Use your staff account credentials to continue.',
         ]);
     }
 
@@ -55,12 +57,16 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
         $credentials['email'] = Str::lower(trim((string) $credentials['email']));
+        $allowedRoles = $loginMode === 'staff'
+            ? $this->staffWebRoles()
+            : $this->adminWebRoles();
 
-        // Admin/staff login uses the default 'web' guard
+        // Admin/staff login uses the default 'web' guard, scoped by role group.
         if (Auth::guard('web')->attempt([
             'email' => $credentials['email'],
             'password' => $credentials['password'],
             'is_active' => true,
+            'role' => $allowedRoles,
         ], $request->boolean('remember'))) {
             $user = Auth::guard('web')->user();
             SchoolContext::ensureUserSchool($user);
@@ -71,9 +77,28 @@ class LoginController extends Controller
             return redirect()->intended($this->redirectPath($user));
         }
 
+        $account = User::query()
+            ->whereRaw('LOWER(email) = ?', [$credentials['email']])
+            ->first();
+        $message = 'Invalid credentials.';
+
+        if ($account && (bool) $account->is_active) {
+            $role = (string) ($account->role?->value ?? $account->role ?? '');
+            $staffRoles = $this->staffWebRoles();
+            $adminRoles = $this->adminWebRoles();
+
+            if ($loginMode === 'admin' && in_array($role, $staffRoles, true)) {
+                $message = 'This is a staff account. Please sign in from the Staff Login page.';
+            } elseif ($loginMode === 'staff' && in_array($role, $adminRoles, true)) {
+                $message = 'This is an admin account. Please sign in from the Admin Login page.';
+            } elseif (in_array($role, [UserRole::STUDENT->value, UserRole::PARENT->value], true)) {
+                $message = 'This is a student/parent account. Please sign in from the Portal Login page.';
+            }
+        }
+
         $this->logFailedLoginAttempt($request, $credentials['email']);
 
-        return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
+        return back()->withErrors(['email' => $message])->onlyInput('email');
     }
 
     public function staffLogin(Request $request)
@@ -109,9 +134,39 @@ class LoginController extends Controller
             return redirect()->intended($this->redirectPath($user));
         }
 
-        $this->logFailedLoginAttempt($request, $credentials['email']);
+        $account = User::withTrashed()
+            ->whereRaw('LOWER(email) = ?', [$credentials['email']])
+            ->first();
 
-        return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
+        $message = 'Invalid credentials.';
+        $failureReason = 'Invalid credentials';
+
+        if ($account) {
+            $role = (string) ($account->role?->value ?? $account->role ?? '');
+            $adminRoles = $this->adminWebRoles();
+            $staffRoles = $this->staffWebRoles();
+
+            if ($account->trashed()) {
+                $message = 'This account has been archived. Please contact the school admin.';
+                $failureReason = 'Archived account';
+            } elseif (!(bool) $account->is_active) {
+                $message = 'This account is inactive. Please contact the school admin.';
+                $failureReason = 'Inactive account';
+            } elseif (in_array($role, $adminRoles, true)) {
+                $message = 'This is an admin account. Please sign in from the Admin Login page.';
+                $failureReason = 'Wrong login panel (admin account)';
+            } elseif (in_array($role, $staffRoles, true)) {
+                $message = 'This is a staff account. Please sign in from the Staff Login page.';
+                $failureReason = 'Wrong login panel (staff account)';
+            } elseif (in_array($role, [UserRole::STUDENT->value, UserRole::PARENT->value], true)) {
+                $message = 'Incorrect password. Please try again or use Forgot password.';
+                $failureReason = 'Wrong password';
+            }
+        }
+
+        $this->logFailedLoginAttempt($request, $credentials['email'], $failureReason);
+
+        return back()->withErrors(['email' => $message])->onlyInput('email');
     }
 
     public function logout(Request $request)
@@ -178,10 +233,10 @@ class LoginController extends Controller
         };
     }
 
-    private function logFailedLoginAttempt(Request $request, string $email): void
+    private function logFailedLoginAttempt(Request $request, string $email, string $reason = 'Invalid credentials'): void
     {
         $school = SchoolContext::current($request);
-        $knownUser = User::query()->where('email', $email)->first();
+        $knownUser = User::withTrashed()->whereRaw('LOWER(email) = ?', [Str::lower(trim($email))])->first();
 
         AuditLog::query()->create([
             'school_id' => $school?->id,
@@ -191,11 +246,43 @@ class LoginController extends Controller
             'model_id' => $knownUser?->id,
             'changes' => [
                 'email' => Str::lower(trim($email)),
-                'reason' => 'Invalid credentials',
+                'reason' => $reason,
                 'path' => $request->path(),
             ],
             'ip_address' => $request->ip(),
             'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
         ]);
+    }
+
+    /**
+     * Roles allowed in the admin login panel.
+     *
+     * @return array<int, string>
+     */
+    private function adminWebRoles(): array
+    {
+        return [
+            UserRole::SUPER_ADMIN->value,
+            UserRole::SCHOOL_ADMIN->value,
+            UserRole::PRINCIPAL->value,
+            UserRole::VICE_PRINCIPAL->value,
+        ];
+    }
+
+    /**
+     * Roles allowed in the staff login panel.
+     *
+     * @return array<int, string>
+     */
+    private function staffWebRoles(): array
+    {
+        return [
+            UserRole::TEACHER->value,
+            UserRole::STAFF->value,
+            UserRole::ACCOUNTANT->value,
+            UserRole::LIBRARIAN->value,
+            UserRole::DRIVER->value,
+            UserRole::NURSE->value,
+        ];
     }
 }

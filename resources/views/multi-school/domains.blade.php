@@ -87,14 +87,14 @@
                         placeholder="Search by school, email, or domain"
                         class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
                     >
-                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
                         Search
                     </button>
                 </form>
 
                 <form method="POST" action="{{ route('multi-school.domains.clear-cache') }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
                         Clear Domain Cache
                     </button>
                 </form>
@@ -162,7 +162,7 @@
                                         <button
                                             type="button"
                                             data-copy-value="{{ $school->domain }} A {{ $dnsGuide['appIp'] ?? 'Use your server public IP' }}"
-                                            class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C]"
+                                            class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#25333E]"
                                         >
                                             Copy
                                         </button>
@@ -176,7 +176,7 @@
                                         <button
                                             type="button"
                                             data-copy-value="www CNAME @"
-                                            class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C]"
+                                            class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#25333E]"
                                         >
                                             Copy
                                         </button>
@@ -211,7 +211,7 @@
                                 </div>
 
                                 <div class="flex flex-col gap-3 sm:flex-row">
-                                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
+                                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E] focus:outline-none focus:ring-2 focus:ring-[#DFE753] focus:ring-offset-2">
                                         {{ $school->domain ? 'Save Domain Changes' : 'Add Domain' }}
                                     </button>
 

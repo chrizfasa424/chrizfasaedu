@@ -63,7 +63,7 @@
         <p class="mt-2 text-xs text-slate-500">Use one line per item in the format: Title | Description</p>
     </div>
 
-    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">Save Academic Excellence Page</button>
+    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save Academic Excellence Page</button>
 </form>
 
 @include('system.settings.partials._submenu-item-editor', [

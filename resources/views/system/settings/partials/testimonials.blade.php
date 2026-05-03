@@ -21,6 +21,6 @@
         <div class="md:col-span-2"><label class="mb-2 block text-sm font-semibold text-slate-700">Error Text</label><input type="text" name="testimonials_error_text" value="{{ old('testimonials_error_text', $publicPage['testimonials_error_text'] ?? '') }}" class="w-full rounded-2xl border-slate-300"></div>
     </div>
 
-    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#2D1D5C] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#2D1D5C]">Save Testimonials Page</button>
+    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save Testimonials Page</button>
 </form>
 

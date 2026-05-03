@@ -3,7 +3,7 @@
     Requires: $school, $primary (hex colour string)
 --}}
 @php
-    $loaderPrimary = $primary ?? '#2D1D5C';
+    $loaderPrimary = $primary ?? '#25333E';
     $loaderLogo    = $school?->logo ? asset('storage/' . ltrim($school->logo, '/')) : null;
     $loaderInitials = \Illuminate\Support\Str::upper(
         collect(preg_split('/\s+/', trim($school?->name ?? 'S')))

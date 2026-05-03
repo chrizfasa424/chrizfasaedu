@@ -378,7 +378,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="min-h-screen bg-[#F4F6FB] text-slate-900 antialiased">
+<body class="min-h-screen overflow-x-hidden bg-[#F4F6FB] text-slate-900 antialiased">
     @php
         $sidebarOpen = false;
     @endphp
@@ -456,8 +456,10 @@
                             'label' => "My Children",
                             'items' => [
                                 ['label' => 'Academic Overview',  'route' => route('parent.academic-overview'), 'pattern' => ['parent.academic-overview'], 'icon' => 'chart'],
+                                ['label' => 'Assignments',       'route' => route('parent.academic-overview') . '#academic-overview', 'pattern' => ['parent.academic-overview'], 'icon' => 'book'],
                                 ['label' => 'Results & Grades',   'route' => route('parent.results-grades'),    'pattern' => ['parent.results-grades'], 'icon' => 'book'],
                                 ['label' => 'Fees Summary',       'route' => route('parent.fees-summary'),      'pattern' => ['parent.fees-summary'], 'icon' => 'wallet'],
+                                ['label' => 'Invoices',           'route' => route('parent.fees-summary') . '#fees-summary', 'pattern' => ['parent.fees-summary'], 'icon' => 'receipt'],
                                 ['label' => 'My Inbox',           'route' => route('portal.messages.index'),                    'pattern' => ['portal.messages.*'], 'icon' => 'inbox'],
                             ],
                         ];
@@ -741,16 +743,16 @@
                 </div>
             </aside>
 
-            <main id="app-main" class="min-h-screen flex flex-col transition-all duration-300">
-                <header class="sticky top-0 z-30 border-b border-[#2D1D5C]/15 bg-gradient-to-r from-white/95 via-[#f5f3ff]/95 to-[#eef6ff]/95 shadow-[0_10px_30px_-20px_rgba(45,29,92,0.55)] backdrop-blur-xl">
+            <main id="app-main" class="min-h-screen flex min-w-0 flex-col transition-all duration-300">
+                <header class="sticky top-0 z-30 border-b border-[#25333E]/15 bg-gradient-to-r from-white/95 via-[#f5f3ff]/95 to-[#eef6ff]/95 shadow-[0_10px_30px_-20px_rgba(45,29,92,0.55)] backdrop-blur-xl">
                     <div class="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                         <div class="flex items-center gap-3">
-                            <button type="button" id="open-admin-sidebar" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#2D1D5C]/15 bg-white/90 text-[#2D1D5C] shadow-sm transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#2D1D5C] lg:hidden">
+                            <button type="button" id="open-admin-sidebar" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#25333E]/15 bg-white/90 text-[#25333E] shadow-sm transition hover:border-[#DFE753] hover:bg-[#DFE753] hover:text-[#25333E] lg:hidden">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 7.5h15M4.5 12h15M4.5 16.5h15"/></svg>
                             </button>
-                            <div class="rounded-2xl border border-white/60 bg-white/55 px-4 py-2 shadow-sm ring-1 ring-[#2D1D5C]/5">
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#2D1D5C]/70">Control Panel</p>
-                                <h2 class="mt-0.5 bg-gradient-to-r from-[#1f2a44] via-[#2D1D5C] to-[#355AA0] bg-clip-text text-xl font-extrabold tracking-tight text-transparent">@yield('header', 'Dashboard')</h2>
+                            <div class="rounded-2xl border border-white/60 bg-white/55 px-4 py-2 shadow-sm ring-1 ring-[#25333E]/5">
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#25333E]/70">Control Panel</p>
+                                <h2 class="mt-0.5 bg-gradient-to-r from-[#1f2a44] via-[#25333E] to-[#355AA0] bg-clip-text text-xl font-extrabold tracking-tight text-transparent">@yield('header', 'Dashboard')</h2>
                             </div>
                         </div>
 
@@ -769,11 +771,11 @@
                                     \Illuminate\Support\Str::substr((string) $currentUser->last_name, 0, 1)
                                 ) ?: 'U';
                             @endphp
-                            <a href="{{ ($currentUser->isStudent() || $currentUser->isParent()) ? route('portal.profile.show') : route('profile.show') }}" class="hidden items-center gap-2.5 rounded-2xl border border-[#2D1D5C]/10 bg-white/85 px-4 py-2 shadow-[0_8px_22px_-15px_rgba(45,29,92,0.5)] ring-1 ring-white/80 transition hover:-translate-y-0.5 hover:border-[#2D1D5C]/25 hover:shadow-[0_14px_28px_-16px_rgba(45,29,92,0.6)] md:flex">
+                            <a href="{{ ($currentUser->isStudent() || $currentUser->isParent()) ? route('portal.profile.show') : route('profile.show') }}" class="hidden items-center gap-2.5 rounded-2xl border border-[#25333E]/10 bg-white/85 px-4 py-2 shadow-[0_8px_22px_-15px_rgba(45,29,92,0.5)] ring-1 ring-white/80 transition hover:-translate-y-0.5 hover:border-[#25333E]/25 hover:shadow-[0_14px_28px_-16px_rgba(45,29,92,0.6)] md:flex">
                                 @if($topbarPhotoSrc)
-                                    <img src="{{ $topbarPhotoSrc }}" alt="{{ $currentUser->full_name }}" class="h-10 w-10 rounded-full border border-[#2D1D5C]/20 object-cover shadow-[0_8px_18px_-12px_rgba(45,29,92,0.55)]">
+                                    <img src="{{ $topbarPhotoSrc }}" alt="{{ $currentUser->full_name }}" class="h-10 w-10 rounded-full border border-[#25333E]/20 object-cover shadow-[0_8px_18px_-12px_rgba(45,29,92,0.55)]">
                                 @else
-                                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#2D1D5C] via-[#355AA0] to-[#4F46E5] text-sm font-bold text-white shadow-inner shadow-white/10">{{ $topbarInitials }}</span>
+                                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#25333E] via-[#355AA0] to-[#4F46E5] text-sm font-bold text-white shadow-inner shadow-white/10">{{ $topbarInitials }}</span>
                                 @endif
                                 <div>
                                     <p class="text-sm font-semibold text-slate-900">{{ $currentUser->full_name }}</p>
@@ -807,7 +809,7 @@
                                     }
                                 }
                             @endphp
-                            <a href="{{ $bellRoute }}" class="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#2D1D5C]/10 bg-white/90 text-[#2D1D5C] shadow-[0_8px_20px_-14px_rgba(45,29,92,0.5)] ring-1 ring-white/70 transition hover:-translate-y-0.5 hover:border-[#2D1D5C]/30 hover:bg-white hover:shadow-[0_14px_26px_-14px_rgba(45,29,92,0.55)]">
+                            <a href="{{ $bellRoute }}" class="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#25333E]/10 bg-white/90 text-[#25333E] shadow-[0_8px_20px_-14px_rgba(45,29,92,0.5)] ring-1 ring-white/70 transition hover:-translate-y-0.5 hover:border-[#25333E]/30 hover:bg-white hover:shadow-[0_14px_26px_-14px_rgba(45,29,92,0.55)]">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75v-.7V9a6 6 0 1 0-12 0v.05c0 .232 0 .465-.001.697a8.967 8.967 0 0 1-2.311 6.025 23.848 23.848 0 0 0 5.454 1.31m5.715 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
                                 @if($bellCount > 0)
                                     <span class="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-[9px] font-bold text-white ring-2 ring-white">
@@ -824,7 +826,7 @@
             $mainContentClass = auth()->check() ? 'px-4 py-6 sm:px-6 lg:px-8' : '';
         @endphp
 
-        <div class="{{ $mainContentClass }} app-content-shell flex-1">
+        <div class="{{ $mainContentClass }} app-content-shell flex-1 min-w-0 overflow-x-hidden">
             @if(session('success'))
             <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 shadow-sm">
                 {{ session('success') }}

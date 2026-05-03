@@ -24,31 +24,31 @@
         </section>
     @endif
 
-    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <section class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+        <div class="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Invoices</p>
             <p class="mt-2 text-3xl font-extrabold text-slate-900">{{ number_format($totalInvoices) }}</p>
         </div>
-        <div class="rounded-2xl border border-red-200 bg-red-50 p-4 shadow-sm">
+        <div class="min-w-0 rounded-2xl border border-red-200 bg-red-50 p-4 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wide text-red-600">Outstanding</p>
             <p class="mt-2 text-3xl font-extrabold text-red-700">{{ number_format($outstandingCount) }}</p>
             <p class="mt-1 text-xs text-red-600/80">NGN {{ number_format($totalOutstandingAmount, 2) }}</p>
         </div>
-        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
+        <div class="min-w-0 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Cleared</p>
             <p class="mt-2 text-3xl font-extrabold text-emerald-700">{{ number_format($paidCount) }}</p>
             <p class="mt-1 text-xs text-emerald-600/80">Paid so far</p>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Net Vs Paid</p>
-            <p class="mt-2 text-lg font-extrabold text-slate-900">NGN {{ number_format($totalPaidAmount, 2) }}</p>
+            <p class="mt-2 text-base font-extrabold text-slate-900 lg:text-lg">NGN {{ number_format($totalPaidAmount, 2) }}</p>
             <p class="mt-1 text-xs text-slate-500">of NGN {{ number_format($totalNetAmount, 2) }}</p>
         </div>
     </section>
 
     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <form method="GET" action="{{ route('portal.invoices.index') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            <div class="xl:col-span-2">
+        <form method="GET" action="{{ route('portal.invoices.index') }}" class="grid gap-4 md:grid-cols-2 2xl:grid-cols-5">
+            <div class="2xl:col-span-2">
                 <label for="q" class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Search</label>
                 <input id="q" name="q" type="text" value="{{ $search }}" placeholder="Invoice number"
                     class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-100">
@@ -81,14 +81,14 @@
                 </select>
             </div>
 
-            <div class="flex items-end gap-2 md:col-span-2 xl:col-span-5">
+            <div class="flex flex-wrap items-end gap-2 md:col-span-2 2xl:col-span-5">
                 <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
                     Filter
                 </button>
                 <a href="{{ route('portal.invoices.index') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Reset
                 </a>
-                <a href="{{ route('portal.payments.index') }}" class="ml-auto inline-flex items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50 px-5 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100">
+                <a href="{{ route('portal.payments.index') }}" class="inline-flex items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50 px-5 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 2xl:ml-auto">
                     Open Payments
                 </a>
             </div>

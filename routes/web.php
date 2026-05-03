@@ -45,6 +45,8 @@ Route::get('/', [PublicPageController::class, 'index'])->name('public.home');
 Route::get('/contact', [PublicPageController::class, 'contactPage'])->name('public.contact');
 Route::get('/privacy-policy', [PublicPageController::class, 'privacyPage'])->name('public.privacy');
 Route::get('/cookies-policy', [PublicPageController::class, 'cookiesPage'])->name('public.cookies');
+Route::get('/robots.txt', [PublicPageController::class, 'robots'])->name('public.robots');
+Route::get('/sitemap.xml', [PublicPageController::class, 'sitemap'])->name('public.sitemap');
 Route::post('/contact', [PublicPageController::class, 'submitContact'])
     ->middleware('throttle:5,1')
     ->name('public.contact.submit');

@@ -4,7 +4,7 @@
     $smtpEncryption = old('smtp_encryption', $smtp['encryption'] ?? 'tls');
 
     $labelClass = 'mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500';
-    $fieldClass = 'w-full h-11 rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-[#2D1D5C] focus:ring-2 focus:ring-[#2D1D5C]/10';
+    $fieldClass = 'w-full h-11 rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-[#25333E] focus:ring-2 focus:ring-[#25333E]/10';
     $cardClass = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm';
 @endphp
 
@@ -32,19 +32,19 @@
         <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Operational Toggles</p>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
             <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
-                <input type="checkbox" name="result_approval_required" value="1" class="rounded border-slate-300 text-[#2D1D5C] focus:ring-[#2D1D5C]" {{ old('result_approval_required', $system['result_approval_required'] ?? false) ? 'checked' : '' }}>
+                <input type="checkbox" name="result_approval_required" value="1" class="rounded border-slate-300 text-[#25333E] focus:ring-[#25333E]" {{ old('result_approval_required', $system['result_approval_required'] ?? false) ? 'checked' : '' }}>
                 Result approval required
             </label>
             <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
-                <input type="checkbox" name="online_admission_enabled" value="1" class="rounded border-slate-300 text-[#2D1D5C] focus:ring-[#2D1D5C]" {{ old('online_admission_enabled', $system['online_admission_enabled'] ?? true) ? 'checked' : '' }}>
+                <input type="checkbox" name="online_admission_enabled" value="1" class="rounded border-slate-300 text-[#25333E] focus:ring-[#25333E]" {{ old('online_admission_enabled', $system['online_admission_enabled'] ?? true) ? 'checked' : '' }}>
                 Online admission enabled
             </label>
             <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
-                <input type="checkbox" name="sms_notifications_enabled" value="1" class="rounded border-slate-300 text-[#2D1D5C] focus:ring-[#2D1D5C]" {{ old('sms_notifications_enabled', $system['sms_notifications_enabled'] ?? false) ? 'checked' : '' }}>
+                <input type="checkbox" name="sms_notifications_enabled" value="1" class="rounded border-slate-300 text-[#25333E] focus:ring-[#25333E]" {{ old('sms_notifications_enabled', $system['sms_notifications_enabled'] ?? false) ? 'checked' : '' }}>
                 SMS notifications enabled
             </label>
             <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
-                <input type="checkbox" name="email_notifications_enabled" value="1" class="rounded border-slate-300 text-[#2D1D5C] focus:ring-[#2D1D5C]" {{ old('email_notifications_enabled', $system['email_notifications_enabled'] ?? false) ? 'checked' : '' }}>
+                <input type="checkbox" name="email_notifications_enabled" value="1" class="rounded border-slate-300 text-[#25333E] focus:ring-[#25333E]" {{ old('email_notifications_enabled', $system['email_notifications_enabled'] ?? false) ? 'checked' : '' }}>
                 Email notifications enabled
             </label>
         </div>
@@ -58,7 +58,7 @@
 
         <div class="p-4 md:p-5">
             <label class="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700">
-                <input type="checkbox" name="smtp_enabled" value="1" class="rounded border-indigo-300 text-[#2D1D5C] focus:ring-[#2D1D5C]" {{ old('smtp_enabled', $smtp['enabled'] ?? false) ? 'checked' : '' }}>
+                <input type="checkbox" name="smtp_enabled" value="1" class="rounded border-indigo-300 text-[#25333E] focus:ring-[#25333E]" {{ old('smtp_enabled', $smtp['enabled'] ?? false) ? 'checked' : '' }}>
                 Enable SMTP sending for Contact Us form
             </label>
 
@@ -111,7 +111,7 @@
         </div>
     </div>
 
-    <button type="submit" class="inline-flex items-center rounded-xl bg-gradient-to-r from-[#2D1D5C] to-[#4a2fa1] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-indigo-300">
+    <button type="submit" class="inline-flex items-center rounded-xl bg-gradient-to-r from-[#25333E] to-[#4a2fa1] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-indigo-300">
         Save System Preferences
     </button>
 </form>
@@ -129,7 +129,7 @@
         <input type="email" name="smtp_test_recipient" value="{{ old('smtp_test_recipient', $smtp['to_address'] ?? ($school->email ?? '')) }}" class="{{ $fieldClass }}" placeholder="recipient@school.com">
     </div>
     <div class="md:self-end">
-        <button type="submit" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#2D1D5C] hover:text-[#2D1D5C]">
+        <button type="submit" class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#25333E] hover:text-[#25333E]">
             Send Test SMTP Email
         </button>
     </div>
