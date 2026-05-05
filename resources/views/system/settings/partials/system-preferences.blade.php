@@ -45,7 +45,7 @@
             </label>
             <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
                 <input type="checkbox" name="email_notifications_enabled" value="1" class="rounded border-slate-300 text-[#25333E] focus:ring-[#25333E]" {{ old('email_notifications_enabled', $system['email_notifications_enabled'] ?? false) ? 'checked' : '' }}>
-                Email notifications enabled
+                Email notifications enabled (required for admission/contact emails)
             </label>
         </div>
     </div>
@@ -53,13 +53,13 @@
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-indigo-50 px-4 py-4">
             <h2 class="text-base font-bold text-slate-900">SMTP Setup (Admin Controlled)</h2>
-            <p class="mt-1 text-sm text-slate-500">These credentials are used for Contact Us form email delivery.</p>
+            <p class="mt-1 text-sm text-slate-500">These credentials are used for Contact Us and Admissions email delivery.</p>
         </div>
 
         <div class="p-4 md:p-5">
             <label class="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700">
                 <input type="checkbox" name="smtp_enabled" value="1" class="rounded border-indigo-300 text-[#25333E] focus:ring-[#25333E]" {{ old('smtp_enabled', $smtp['enabled'] ?? false) ? 'checked' : '' }}>
-                Enable SMTP sending for Contact Us form
+                Enable school SMTP delivery
             </label>
 
             <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">

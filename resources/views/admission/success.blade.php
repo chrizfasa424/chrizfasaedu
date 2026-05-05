@@ -50,8 +50,9 @@
         }
     </style>
 </head>
-<body style="background:{{ $bg }};font-family:'Manrope',sans-serif;min-height:100vh;">
+<body class="site-body" style="background:{{ $bg }};font-family:'Manrope',sans-serif;min-height:100vh;">
 @include('public.partials.page-loader', ['school' => $school, 'primary' => $primary])
+<div class="site-bg min-h-screen">
 @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
     <div class="bg-pattern-grid min-h-[calc(100vh-68px)] flex items-center justify-center py-16 px-4">
@@ -151,6 +152,7 @@
     </div>
 
     @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
+</div>
 
     <script>
         (function () {

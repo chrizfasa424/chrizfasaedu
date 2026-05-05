@@ -65,11 +65,6 @@ class SettingsController extends Controller
             'description' => 'Edit the Student Life label, intro, and supporting student experience content.',
             'partial' => 'system.settings.partials.student-life',
         ],
-        'parents' => [
-            'title' => 'Parents',
-            'description' => 'Manage parent-facing content, portal button text, and homepage parent cards.',
-            'partial' => 'system.settings.partials.parents',
-        ],
         'contact-us' => [
             'title' => 'Contact Us',
             'description' => 'Manage contact page headings, form labels, contact details, submenu helper text, and map content.',
@@ -715,10 +710,13 @@ class SettingsController extends Controller
         $publicPage = PublicPageContent::forSchool($school);
 
         $this->mergeMissingPublicPageInputs($request, $publicPage);
+        $request->merge([
+            'map_embed_url' => $this->normalizeMapEmbedInput($request->input('map_embed_url')),
+        ]);
 
         $validated = $request->validate([
             'hero_badge_text' => 'nullable|string|max:120',
-            'hero_title' => 'required|string|max:220',
+            'hero_title' => 'nullable|string|max:220',
             'hero_subtitle' => 'nullable|string|max:4000',
             'cta_primary_text' => 'nullable|string|max:60',
             'cta_secondary_text' => 'nullable|string|max:60',
@@ -1001,7 +999,7 @@ class SettingsController extends Controller
         }
 
         $publicPage['hero_badge_text'] = $validated['hero_badge_text'] ?? '';
-        $publicPage['hero_title'] = $validated['hero_title'];
+        $publicPage['hero_title'] = $validated['hero_title'] ?? '';
         $publicPage['hero_subtitle'] = $validated['hero_subtitle'] ?? '';
         $publicPage['cta_primary_text'] = $validated['cta_primary_text'] ?? 'Start Admission';
         $publicPage['cta_secondary_text'] = $validated['cta_secondary_text'] ?? 'Explore Programs';
@@ -1063,22 +1061,35 @@ class SettingsController extends Controller
         $publicPage['mobile_portal_login_text'] = $validated['mobile_portal_login_text'] ?? 'Portal Login';
         $publicPage['hero_slider_placeholder_text'] = $validated['hero_slider_placeholder_text'] ?? 'Upload hero slider images from Admin Settings to personalize this section.';
         $publicPage['parents_portal_button_text'] = $validated['parents_portal_button_text'] ?? 'Parent Portal Login';
-        $publicPage['testimonials_badge_text'] = $validated['testimonials_badge_text'] ?? 'Testimonials';
-        $publicPage['testimonials_heading'] = $validated['testimonials_heading'] ?? 'What Parents and Student Say';
-        $publicPage['testimonials_subheading'] = $validated['testimonials_subheading'] ?? 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.';
-        $publicPage['testimonials_form_title'] = $validated['testimonials_form_title'] ?? 'Share Your Testimonial';
-        $publicPage['testimonials_form_name_label'] = $validated['testimonials_form_name_label'] ?? 'Full Name';
-        $publicPage['testimonials_form_name_placeholder'] = $validated['testimonials_form_name_placeholder'] ?? 'Enter your full name';
-        $publicPage['testimonials_form_role_label'] = $validated['testimonials_form_role_label'] ?? 'Role or Context';
-        $publicPage['testimonials_form_role_placeholder'] = $validated['testimonials_form_role_placeholder'] ?? 'Parent, student, alumni, guardian, etc.';
-        $publicPage['testimonials_form_rating_label'] = $validated['testimonials_form_rating_label'] ?? 'Rating';
-        $publicPage['testimonials_form_message_label'] = $validated['testimonials_form_message_label'] ?? 'Your Testimonial';
-        $publicPage['testimonials_form_message_placeholder'] = $validated['testimonials_form_message_placeholder'] ?? 'Write your experience with the school...';
-        $publicPage['testimonials_form_submit_text'] = $validated['testimonials_form_submit_text'] ?? 'Submit Testimonial';
-        $publicPage['testimonials_slider_title'] = $validated['testimonials_slider_title'] ?? 'Approved Testimonials';
-        $publicPage['testimonials_empty_text'] = $validated['testimonials_empty_text'] ?? 'No testimonials have been approved yet. Be the first to share your experience.';
-        $publicPage['testimonials_success_text'] = $validated['testimonials_success_text'] ?? 'Thank you for your testimonial. It has been submitted for admin review.';
-        $publicPage['testimonials_error_text'] = $validated['testimonials_error_text'] ?? 'Unable to submit testimonial. Please try again.';
+        $testimonialFields = [
+            'testimonials_badge_text' => 'Testimonials',
+            'testimonials_heading' => 'What Parents and Student Say',
+            'testimonials_subheading' => 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.',
+            'testimonials_form_title' => 'Share Your Testimonial',
+            'testimonials_form_name_label' => 'Full Name',
+            'testimonials_form_name_placeholder' => 'Enter your full name',
+            'testimonials_form_role_label' => 'Role or Context',
+            'testimonials_form_role_placeholder' => 'Parent, student, alumni, guardian, etc.',
+            'testimonials_form_rating_label' => 'Rating',
+            'testimonials_form_message_label' => 'Your Testimonial',
+            'testimonials_form_message_placeholder' => 'Write your experience with the school...',
+            'testimonials_form_submit_text' => 'Submit Testimonial',
+            'testimonials_slider_title' => 'Approved Testimonials',
+            'testimonials_empty_text' => 'No testimonials have been approved yet. Be the first to share your experience.',
+            'testimonials_success_text' => 'Thank you for your testimonial. It has been submitted for admin review.',
+            'testimonials_error_text' => 'Unable to submit testimonial. Please try again.',
+        ];
+
+        foreach ($testimonialFields as $field => $defaultValue) {
+            if (array_key_exists($field, $validated)) {
+                $publicPage[$field] = trim((string) ($validated[$field] ?? ''));
+                continue;
+            }
+
+            if (! array_key_exists($field, $publicPage)) {
+                $publicPage[$field] = $defaultValue;
+            }
+        }
         $publicPage['quick_contact_label'] = $validated['quick_contact_label'] ?? 'Quick Contact';
         $publicPage['contact_phone_label'] = $validated['contact_phone_label'] ?? 'Phone';
         $publicPage['contact_whatsapp_label'] = $validated['contact_whatsapp_label'] ?? 'WhatsApp';
@@ -1092,11 +1103,11 @@ class SettingsController extends Controller
         $publicPage['footer_quick_links_title'] = $validated['footer_quick_links_title'] ?? 'Quick Links';
         $publicPage['footer_resources_title'] = $validated['footer_resources_title'] ?? 'Resources';
         $publicPage['footer_contact_title'] = $validated['footer_contact_title'] ?? 'Contact';
-        $publicPage['contact_page_browser_title'] = $validated['contact_page_browser_title'] ?? 'Contact Us';
-        $publicPage['contact_page_badge_text'] = $validated['contact_page_badge_text'] ?? 'Contact Us';
-        $publicPage['contact_page_heading'] = $validated['contact_page_heading'] ?? 'We are here to help you';
-        $publicPage['contact_page_subheading'] = $validated['contact_page_subheading'] ?? 'Send us a message and our admissions or support team will respond as soon as possible.';
-        $publicPage['contact_form_title'] = $validated['contact_form_title'] ?? 'Contact Us Form';
+        $publicPage['contact_page_browser_title'] = trim((string) ($validated['contact_page_browser_title'] ?? ''));
+        $publicPage['contact_page_badge_text'] = trim((string) ($validated['contact_page_badge_text'] ?? ''));
+        $publicPage['contact_page_heading'] = trim((string) ($validated['contact_page_heading'] ?? ''));
+        $publicPage['contact_page_subheading'] = trim((string) ($validated['contact_page_subheading'] ?? ''));
+        $publicPage['contact_form_title'] = trim((string) ($validated['contact_form_title'] ?? ''));
         $publicPage['contact_form_full_name_label'] = $validated['contact_form_full_name_label'] ?? 'Full Name';
         $publicPage['contact_form_full_name_placeholder'] = $validated['contact_form_full_name_placeholder'] ?? 'Enter your full name';
         $publicPage['contact_form_email_label'] = $validated['contact_form_email_label'] ?? 'Email';
@@ -1779,6 +1790,38 @@ class SettingsController extends Controller
                 $request->merge([$key => $value]);
             }
         }
+    }
+
+    private function normalizeMapEmbedInput(mixed $rawInput): string
+    {
+        $raw = trim((string) $rawInput);
+        if ($raw === '') {
+            return '';
+        }
+
+        $extracted = $this->extractEmbedSrc($raw);
+        if ($extracted !== null) {
+            $raw = $extracted;
+        }
+
+        if (str_starts_with($raw, '//')) {
+            $raw = 'https:' . $raw;
+        }
+
+        return trim($raw);
+    }
+
+    private function extractEmbedSrc(string $raw): ?string
+    {
+        if (preg_match('/\bsrc\s*=\s*([\"\'])(.*?)\1/i', $raw, $matches) === 1) {
+            return html_entity_decode(trim($matches[2]), ENT_QUOTES | ENT_HTML5);
+        }
+
+        if (preg_match('/\bsrc\s*=\s*([^\"\'>\s]+)/i', $raw, $matches) === 1) {
+            return html_entity_decode(trim($matches[1]), ENT_QUOTES | ENT_HTML5);
+        }
+
+        return null;
     }
 
     private function configureSmtpMailer(array $smtp, string $fallbackFromName): void

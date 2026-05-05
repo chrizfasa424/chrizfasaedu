@@ -5,6 +5,127 @@
 
 @push('styles')
 <style>
+    .settings-premium-scope {
+        --settings-border: #cfd8e3;
+        --settings-card-border: #d8e1ee;
+        --settings-text: #0f172a;
+        --settings-muted: #475569;
+        --settings-focus: rgba(59, 130, 246, 0.2);
+    }
+
+    .settings-premium-scope form {
+        color: var(--settings-text);
+    }
+
+    .settings-premium-scope form > div.rounded-xl,
+    .settings-premium-scope form > section.rounded-xl,
+    .settings-premium-scope form > div.rounded-2xl,
+    .settings-premium-scope form > section.rounded-2xl,
+    .settings-premium-scope form > div.rounded-3xl,
+    .settings-premium-scope form > section.rounded-3xl {
+        position: relative;
+        overflow: hidden;
+        border-color: var(--settings-border) !important;
+        background: linear-gradient(140deg, #f7fbff 0%, #eef5ff 48%, #f7fde7 100%) !important;
+        box-shadow: 0 18px 45px -30px rgba(28, 44, 67, 0.3);
+    }
+
+    .settings-premium-scope form > div.rounded-xl::before,
+    .settings-premium-scope form > section.rounded-xl::before,
+    .settings-premium-scope form > div.rounded-2xl::before,
+    .settings-premium-scope form > section.rounded-2xl::before,
+    .settings-premium-scope form > div.rounded-3xl::before,
+    .settings-premium-scope form > section.rounded-3xl::before {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        top: -140px;
+        right: -70px;
+        border-radius: 9999px;
+        background: rgba(223, 231, 83, 0.28);
+        filter: blur(48px);
+        pointer-events: none;
+    }
+
+    .settings-premium-scope form > div.rounded-xl::after,
+    .settings-premium-scope form > section.rounded-xl::after,
+    .settings-premium-scope form > div.rounded-2xl::after,
+    .settings-premium-scope form > section.rounded-2xl::after,
+    .settings-premium-scope form > div.rounded-3xl::after,
+    .settings-premium-scope form > section.rounded-3xl::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        left: -120px;
+        bottom: -170px;
+        border-radius: 9999px;
+        background: rgba(59, 130, 246, 0.16);
+        filter: blur(58px);
+        pointer-events: none;
+    }
+
+    .settings-premium-scope form > div.rounded-xl > *,
+    .settings-premium-scope form > section.rounded-xl > *,
+    .settings-premium-scope form > div.rounded-2xl > *,
+    .settings-premium-scope form > section.rounded-2xl > *,
+    .settings-premium-scope form > div.rounded-3xl > *,
+    .settings-premium-scope form > section.rounded-3xl > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .settings-premium-scope form .grid > div {
+        border-color: var(--settings-card-border);
+    }
+
+    .settings-premium-scope form label {
+        color: #334155 !important;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+    }
+
+    .settings-premium-scope form input[type="text"],
+    .settings-premium-scope form input[type="email"],
+    .settings-premium-scope form input[type="url"],
+    .settings-premium-scope form input[type="number"],
+    .settings-premium-scope form input[type="password"],
+    .settings-premium-scope form select,
+    .settings-premium-scope form textarea {
+        min-height: 46px;
+        border: 2px solid #c7d2e3 !important;
+        border-radius: 0.95rem !important;
+        background-color: rgba(255, 255, 255, 0.9) !important;
+        color: #0f172a !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .settings-premium-scope form textarea {
+        min-height: 118px;
+        line-height: 1.65;
+    }
+
+    .settings-premium-scope form input:focus,
+    .settings-premium-scope form select:focus,
+    .settings-premium-scope form textarea:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 4px var(--settings-focus) !important;
+        outline: none !important;
+        background-color: #ffffff !important;
+    }
+
+    .settings-premium-scope form button[type="submit"] {
+        border-radius: 1rem !important;
+    }
+
+    .settings-premium-scope form .rounded-lg.border,
+    .settings-premium-scope form .rounded-xl.border,
+    .settings-premium-scope form .rounded-2xl.border {
+        border-color: var(--settings-card-border) !important;
+    }
+
     .settings-rich-editor .ck.ck-editor__main > .ck-editor__editable {
         min-height: 220px;
         border-radius: 0 0 1rem 1rem;
@@ -92,6 +213,57 @@
         color: #64748b;
         font-size: 0.875rem;
     }
+
+    .settings-premium-scope [data-settings-submenu-content] {
+        border-color: #bcd0ea !important;
+        background:
+            radial-gradient(circle at top right, rgba(223, 231, 83, 0.2), transparent 32%),
+            radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.14), transparent 36%),
+            linear-gradient(150deg, #f7fbff 0%, #eef5ff 52%, #f6fae8 100%) !important;
+        box-shadow: 0 20px 40px -30px rgba(28, 44, 67, 0.35);
+    }
+
+    .settings-premium-scope [data-settings-submenu-content] > div:first-child {
+        background: linear-gradient(110deg, rgba(37, 51, 62, 0.96), rgba(45, 29, 92, 0.96));
+        border-bottom-color: rgba(191, 219, 254, 0.28);
+    }
+
+    .settings-premium-scope [data-settings-submenu-content] > div:first-child h3 {
+        color: #f8fafc;
+    }
+
+    .settings-premium-scope [data-settings-submenu-content] > div:first-child p {
+        color: rgba(226, 232, 240, 0.9);
+    }
+
+    .settings-premium-scope [data-settings-submenu-item] {
+        border-top: 1px solid rgba(148, 163, 184, 0.26);
+    }
+
+    .settings-premium-scope [data-settings-submenu-summary] {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.88), rgba(241, 245, 249, 0.72));
+    }
+
+    .settings-premium-scope [data-settings-submenu-summary]:hover {
+        background: linear-gradient(90deg, rgba(223, 231, 83, 0.26), rgba(255, 255, 255, 0.96));
+    }
+
+    .settings-premium-scope [data-settings-submenu-item][open] [data-settings-submenu-summary] {
+        border-left: 4px solid #3b82f6;
+        background: linear-gradient(90deg, rgba(59, 130, 246, 0.12), rgba(223, 231, 83, 0.14), rgba(255, 255, 255, 0.96));
+        padding-left: 1.25rem;
+    }
+
+    .settings-premium-scope [data-settings-submenu-body] {
+        background:
+            linear-gradient(155deg, rgba(255, 255, 255, 0.92), rgba(240, 248, 255, 0.85) 58%, rgba(248, 251, 232, 0.82));
+    }
+
+    .settings-premium-scope [data-settings-submenu-body] > .rounded-2xl {
+        border-color: rgba(148, 163, 184, 0.35) !important;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 252, 255, 0.94)) !important;
+        box-shadow: 0 18px 34px -30px rgba(15, 23, 42, 0.28);
+    }
 </style>
 @endpush
 
@@ -120,7 +292,7 @@
         </div>
     </section>
 
-    <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <section class="settings-premium-scope rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         @include($pageMeta['partial'])
     </section>
 </div>

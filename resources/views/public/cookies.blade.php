@@ -42,8 +42,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('public.partials.nav-styles')
 </head>
-<body class="text-muted antialiased" style="background-color: {{ $siteBackground }}; color: {{ $bodyColor }}; --submenu-primary: {{ $theme['primary']['500'] ?? '#25333E' }}; --submenu-secondary: {{ $theme['secondary']['500'] ?? '#DFE753' }}; --submenu-hover-text: {{ $theme['primary_text_on_secondary'] ?? '#25333E' }}; {{ $tailwindThemeVars }};">
-    <div class="min-h-screen">
+<body class="site-body text-muted antialiased" style="background-color: {{ $siteBackground }}; color: {{ $bodyColor }}; --submenu-primary: {{ $theme['primary']['500'] ?? '#25333E' }}; --submenu-secondary: {{ $theme['secondary']['500'] ?? '#DFE753' }}; --submenu-hover-text: {{ $theme['primary_text_on_secondary'] ?? '#25333E' }}; {{ $tailwindThemeVars }};">
+    <div class="site-bg min-h-screen">
         @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
         <main class="bg-pattern-grid">

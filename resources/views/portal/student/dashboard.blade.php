@@ -94,7 +94,7 @@
                 </div>
 
                 <div class="mt-5 flex flex-wrap items-center gap-2">
-                    <a href="{{ route('notifications.index') }}"
+                    <a href="{{ route('portal.notifications.index') }}"
                        class="inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100">
                         Open Notification Center
                     </a>

@@ -86,7 +86,10 @@ Route::post('/portal/reset-password', [PasswordResetController::class, 'resetPor
 // Online Admission (public)
 Route::get('/apply', [AdmissionController::class, 'applyOnline'])->name('admission.apply');
 Route::get('/apply/success', [AdmissionController::class, 'success'])->name('admission.success');
-Route::post('/apply', [AdmissionController::class, 'store'])->name('admission.apply.store')->middleware('throttle:5,10');
+Route::post('/apply', [AdmissionController::class, 'store'])
+    ->name('admission.apply.store')
+    ->middleware('throttle:5,10')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 // ── Authenticated Routes ───────────────────────────────────
 Route::middleware(['redirect.portal.from.admin', 'auth', 'force.password.change'])->group(function () {
@@ -438,10 +441,22 @@ Route::middleware(['portal.guard', 'auth:portal', 'role:student,parent'])->group
     });
 });
 
-Route::middleware(['redirect.portal.from.admin', 'auth:web,portal'])->group(function () {
+Route::middleware(['redirect.portal.from.admin', 'auth:web'])->group(function () {
     Route::get('/notifications', [NotificationCenterController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/{notification}/open', [NotificationCenterController::class, 'open'])->name('notifications.open');
     Route::post('/notifications/read-all', [NotificationCenterController::class, 'markAllRead'])->name('notifications.read-all');
+});
+
+Route::middleware(['redirect.portal.from.admin', 'auth:web', 'role:teacher,staff,accountant,librarian,driver,nurse'])->group(function () {
+    Route::get('/staff/notifications', [NotificationCenterController::class, 'index'])->name('staff.notifications.index');
+    Route::get('/staff/notifications/{notification}/open', [NotificationCenterController::class, 'open'])->name('staff.notifications.open');
+    Route::post('/staff/notifications/read-all', [NotificationCenterController::class, 'markAllRead'])->name('staff.notifications.read-all');
+});
+
+Route::middleware(['portal.guard', 'auth:portal', 'role:student,parent'])->group(function () {
+    Route::get('/my/notifications', [NotificationCenterController::class, 'index'])->name('portal.notifications.index');
+    Route::get('/my/notifications/{notification}/open', [NotificationCenterController::class, 'open'])->name('portal.notifications.open');
+    Route::post('/my/notifications/read-all', [NotificationCenterController::class, 'markAllRead'])->name('portal.notifications.read-all');
 });
 
 

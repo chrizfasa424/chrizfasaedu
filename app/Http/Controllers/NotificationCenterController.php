@@ -97,6 +97,8 @@ class NotificationCenterController extends Controller
             'bellCount' => $bellCount,
             'recentNotifications' => $recentNotifications,
             'databaseUnreadCount' => $user->unreadNotifications()->count(),
+            'isPortalUser' => ($user->isStudent() || $user->isParent()),
+            'notificationRoutePrefix' => $this->notificationRoutePrefix($user),
         ]);
     }
 
@@ -123,14 +125,34 @@ class NotificationCenterController extends Controller
 
         $user->unreadNotifications()->update(['read_at' => now()]);
 
+        $routeName = $this->notificationRoutePrefix($user) . '.index';
+
         return redirect()
-            ->route('notifications.index')
+            ->route($routeName)
             ->with('success', 'All notifications marked as read.');
     }
 
     private function currentUser()
     {
-        return auth('portal')->user() ?? auth()->user();
+        if (request()->routeIs('portal.notifications.*')) {
+            return auth('portal')->user() ?? auth()->user();
+        }
+
+        return auth()->user() ?? auth('portal')->user();
+    }
+
+    private function notificationRoutePrefix($user): string
+    {
+        if ($user->isStudent() || $user->isParent()) {
+            return 'portal.notifications';
+        }
+
+        $roleValue = (string) ($user->role?->value ?? $user->role ?? '');
+        if (in_array($roleValue, ['teacher', 'staff', 'accountant', 'librarian', 'driver', 'nurse'], true)) {
+            return 'staff.notifications';
+        }
+
+        return 'notifications';
     }
 
     private function notificationTitle(string $type): string

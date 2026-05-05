@@ -20,7 +20,7 @@
 @if(!empty($_normalizedItems))
 
 {{-- ── Cover Images ────────────────────────────────────────── --}}
-<div class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+<div class="mt-8 hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div class="border-b border-slate-100 px-6 py-5">
         <h3 class="font-display text-lg font-semibold text-slate-900">{{ $_sectionLabel ?? 'Section' }} — Submenu Cover Images</h3>
         <p class="mt-1 text-sm text-slate-500">Upload a full-width hero image for each item's detail page. Displays at the top of <code class="rounded bg-slate-100 px-1 text-xs">/menu/{{ $_section }}/{slug}</code>.</p>
@@ -79,7 +79,7 @@
 </div>
 
 {{-- ── Per-item Page Content ───────────────────────────────── --}}
-<div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+<div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" data-settings-submenu-content>
     <div class="border-b border-slate-100 px-6 py-5">
         <h3 class="font-display text-lg font-semibold text-slate-900">{{ $_sectionLabel ?? 'Section' }} — Submenu Page Content</h3>
         <p class="mt-1 text-sm text-slate-500">Customise the description and both highlight boxes shown on each item's detail page. Leave blank to use the global defaults.</p>
@@ -90,11 +90,12 @@
             @php
                 $_itemTitle = trim((string) ($_item['title'] ?? ''));
                 $_itemSlug  = \Illuminate\Support\Str::slug($_itemTitle);
-                $_saved     = (array) ($_content[$_itemSlug] ?? []);
+                $_saved       = (array) ($_content[$_itemSlug] ?? []);
+                $_existingImg = trim((string) ($_images[$_itemSlug] ?? ''));
             @endphp
 
-            <details class="group">
-                <summary class="flex cursor-pointer list-none items-center justify-between px-6 py-4 transition hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+            <details class="group" data-settings-submenu-item>
+                <summary class="flex cursor-pointer list-none items-center justify-between px-6 py-4 transition hover:bg-slate-50 [&::-webkit-details-marker]:hidden" data-settings-submenu-summary>
                     <div class="flex items-center gap-3">
                         @php $_hasContent = !empty($_saved['description']) || !empty($_saved['highlight_one_title']) || !empty($_saved['highlight_one_text']) || !empty($_saved['highlight_two_title']) || !empty($_saved['highlight_two_text']) || !empty($_saved['management_team_cards']); @endphp
                         @if($_hasContent)
@@ -109,7 +110,45 @@
                     </svg>
                 </summary>
 
-                <div class="border-t border-slate-100 bg-slate-50/50 px-6 pb-6 pt-5 space-y-6">
+                <div class="border-t border-slate-100 bg-slate-50/50 px-6 pb-6 pt-5 space-y-6" data-settings-submenu-body>
+
+                    {{-- Cover Image --}}
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5">
+                        <p class="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">Cover Image (Hero)</p>
+                        @if($_existingImg !== '')
+                            <img src="{{ asset('storage/' . ltrim($_existingImg, '/')) }}"
+                                 alt="{{ $_itemTitle }} cover image"
+                                 class="mb-3 h-56 w-full rounded-xl border border-slate-200 bg-white object-contain shadow-sm sm:h-64 lg:h-72">
+                        @else
+                            <div class="mb-3 flex h-56 w-full items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white text-xs text-slate-400 sm:h-64 lg:h-72">No image yet</div>
+                        @endif
+
+                        <div class="grid gap-2 sm:grid-cols-2">
+                            <form action="{{ route('settings.submenu-image.upload') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-2">
+                                @csrf
+                                <input type="hidden" name="section" value="{{ $_section }}">
+                                <input type="hidden" name="slug"    value="{{ $_itemSlug }}">
+                                <input type="file" name="image" accept="image/*" required
+                                    class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 file:mr-2 file:rounded-lg file:border-0 file:bg-[#25333E] file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-white">
+                                <button type="submit"
+                                    class="rounded-xl bg-[#25333E] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">
+                                    {{ $_existingImg !== '' ? 'Replace Cover' : 'Upload Cover' }}
+                                </button>
+                            </form>
+                            @if($_existingImg !== '')
+                                <form action="{{ route('settings.submenu-image.remove') }}" method="POST"
+                                      onsubmit="return confirm('Remove cover image for {{ addslashes($_itemTitle) }}?')">
+                                    @csrf
+                                    <input type="hidden" name="section" value="{{ $_section }}">
+                                    <input type="hidden" name="slug"    value="{{ $_itemSlug }}">
+                                    <button type="submit"
+                                        class="w-full rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100">
+                                        Remove Cover
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
 
                     {{-- Page Images --}}
                     <div class="rounded-2xl border border-slate-200 bg-white p-5">
@@ -122,9 +161,9 @@
                                     @if($_imgPath !== '')
                                         <img src="{{ asset('storage/' . ltrim($_imgPath, '/')) }}"
                                              alt="{{ $_slotLabel }}"
-                                             class="mb-3 h-32 w-full rounded-xl border border-slate-200 object-cover shadow-sm">
+                                             class="mb-3 h-40 w-full rounded-xl border border-slate-200 bg-white object-contain shadow-sm">
                                     @else
-                                        <div class="mb-3 flex h-32 w-full items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white text-xs text-slate-400">No image yet</div>
+                                        <div class="mb-3 flex h-40 w-full items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white text-xs text-slate-400">No image yet</div>
                                     @endif
                                     <form action="{{ route('settings.submenu-content-image.upload') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-2">
                                         @csrf
@@ -294,10 +333,10 @@
                                                 <img
                                                     src="{{ $_existingImage !== '' ? asset('storage/' . ltrim($_existingImage, '/')) : '' }}"
                                                     alt="Staff card {{ $loop->iteration }}"
-                                                    class="h-40 w-full object-cover{{ $_existingImage === '' ? ' hidden' : '' }}"
+                                                    class="h-48 w-full bg-white object-contain{{ $_existingImage === '' ? ' hidden' : '' }}"
                                                     data-management-team-image-preview
                                                 >
-                                                <div class="flex h-40 w-full items-center justify-center text-xs font-semibold uppercase tracking-[0.1em] text-slate-400{{ $_existingImage !== '' ? ' hidden' : '' }}" data-management-team-image-placeholder>
+                                                <div class="flex h-48 w-full items-center justify-center text-xs font-semibold uppercase tracking-[0.1em] text-slate-400{{ $_existingImage !== '' ? ' hidden' : '' }}" data-management-team-image-placeholder>
                                                     No image uploaded
                                                 </div>
                                             </div>
@@ -346,8 +385,8 @@
                                         </div>
 
                                         <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white" data-management-team-image-preview-shell>
-                                            <img src="" alt="Staff card preview" class="hidden h-40 w-full object-cover" data-management-team-image-preview>
-                                            <div class="flex h-40 w-full items-center justify-center text-xs font-semibold uppercase tracking-[0.1em] text-slate-400" data-management-team-image-placeholder>
+                                            <img src="" alt="Staff card preview" class="hidden h-48 w-full bg-white object-contain" data-management-team-image-preview>
+                                            <div class="flex h-48 w-full items-center justify-center text-xs font-semibold uppercase tracking-[0.1em] text-slate-400" data-management-team-image-placeholder>
                                                 No image uploaded
                                             </div>
                                         </div>

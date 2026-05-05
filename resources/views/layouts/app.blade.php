@@ -155,6 +155,19 @@
             }
         }
 
+        @keyframes announcement-gate-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.32);
+            }
+            50% {
+                box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
+            }
+        }
+
+        .announcement-gate-card {
+            animation: announcement-gate-pulse 1.6s ease-in-out infinite;
+        }
+
         .sidebar-shell {
             --sidebar-bg: #131d38;
             --sidebar-bg-soft: #1a2748;
@@ -581,7 +594,6 @@
                             ['label' => 'Facilities', 'route' => route('settings.page', ['page' => 'facilities']), 'page' => 'facilities', 'icon' => 'layers'],
                             ['label' => 'About Us', 'route' => route('settings.page', ['page' => 'about-us']), 'page' => 'about-us', 'icon' => 'users'],
                             ['label' => 'Student Life', 'route' => route('settings.page', ['page' => 'student-life']), 'page' => 'student-life', 'icon' => 'calendar'],
-                            ['label' => 'Parents', 'route' => route('settings.page', ['page' => 'parents']), 'page' => 'parents', 'icon' => 'users'],
                             ['label' => 'Contact Us', 'route' => route('settings.page', ['page' => 'contact-us']), 'page' => 'contact-us', 'icon' => 'megaphone'],
                             ['label' => 'Testimonials', 'route' => route('settings.page', ['page' => 'testimonials']), 'page' => 'testimonials', 'icon' => 'quote'],
                             ['label' => 'FAQs', 'route' => route('settings.page', ['page' => 'faqs']), 'page' => 'faqs', 'icon' => 'checklist'],
@@ -770,6 +782,37 @@
                                     \Illuminate\Support\Str::substr((string) $currentUser->first_name, 0, 1) .
                                     \Illuminate\Support\Str::substr((string) $currentUser->last_name, 0, 1)
                                 ) ?: 'U';
+                                $currentRoleValue = (string) ($currentUser->role?->value ?? $currentUser->role ?? '');
+                                $staffFacingRoles = ['teacher', 'staff', 'accountant', 'librarian', 'driver', 'nurse'];
+                                $isStaffFacingUser = in_array($currentRoleValue, $staffFacingRoles, true);
+                                $roleValue = (string) ($currentUser->role?->value ?? $currentUser->role ?? '');
+                                $announcementGateEligible = in_array($roleValue, [
+                                    'student',
+                                    'parent',
+                                    'principal',
+                                    'vice_principal',
+                                    'teacher',
+                                    'staff',
+                                    'accountant',
+                                    'librarian',
+                                    'driver',
+                                    'nurse',
+                                ], true);
+                                $announcementGateRoutePrefix = ($currentUser->isStudent() || $currentUser->isParent())
+                                    ? 'portal.notifications'
+                                    : ($isStaffFacingUser ? 'staff.notifications' : 'notifications');
+                                $unreadAnnouncementNotifications = $announcementGateEligible
+                                    ? $currentUser->unreadNotifications()
+                                        ->where('type', \App\Notifications\AnnouncementPublishedNotification::class)
+                                        ->latest()
+                                        ->get(['id'])
+                                    : collect();
+                                $unreadAnnouncementCount = $unreadAnnouncementNotifications->count();
+                                $mustReadAnnouncement = $unreadAnnouncementCount > 0;
+                                $announcementGateOpenRoute = $mustReadAnnouncement
+                                    ? route($announcementGateRoutePrefix . '.open', (string) $unreadAnnouncementNotifications->first()->id)
+                                    : null;
+                                $announcementGateCenterRoute = route($announcementGateRoutePrefix . '.index');
                             @endphp
                             <a href="{{ ($currentUser->isStudent() || $currentUser->isParent()) ? route('portal.profile.show') : route('profile.show') }}" class="hidden items-center gap-2.5 rounded-2xl border border-[#25333E]/10 bg-white/85 px-4 py-2 shadow-[0_8px_22px_-15px_rgba(45,29,92,0.5)] ring-1 ring-white/80 transition hover:-translate-y-0.5 hover:border-[#25333E]/25 hover:shadow-[0_14px_28px_-16px_rgba(45,29,92,0.6)] md:flex">
                                 @if($topbarPhotoSrc)
@@ -783,26 +826,24 @@
                             </a>
                             @php
                                 $bellCount = 0;
-                                $bellRoute = route('notifications.index');
+                                $bellRoute = ($currentUser->isStudent() || $currentUser->isParent())
+                                    ? route('portal.notifications.index')
+                                    : ($isStaffFacingUser ? route('staff.notifications.index') : route('notifications.index'));
                                 $canManageResultFeedbackInbox = ($actsAsSchoolAdmin || $currentUser->isTeacher())
                                     || in_array((string) ($currentUser->role?->value ?? ''), ['principal', 'vice_principal'], true);
                                 if ($currentUser->isStudent()) {
                                     $unreadMessages = $currentUser->unreadMessagesCount();
                                     $unreadFeedbackResponses = $currentUser->unreadResultFeedbackResponsesCount();
-                                    $unreadAssignmentReviews = $currentUser->unreadNotifications()
-                                        ->where('type', \App\Notifications\StudentAssignmentReviewedNotification::class)
-                                        ->count();
+                                    $unreadDatabaseNotifications = $currentUser->unreadNotifications()->count();
 
-                                    $bellCount = $unreadMessages + $unreadFeedbackResponses + $unreadAssignmentReviews;
+                                    $bellCount = $unreadMessages + $unreadFeedbackResponses + $unreadDatabaseNotifications;
                                 } elseif ($currentUser->isParent()) {
-                                    $bellCount = $currentUser->unreadMessagesCount();
+                                    $bellCount = $currentUser->unreadMessagesCount() + $currentUser->unreadNotifications()->count();
                                 } else {
                                     $unreadReplies = $currentUser->unreadAdminRepliesCount();
-                                    $unreadAssignmentSubmissions = $currentUser->unreadNotifications()
-                                        ->where('type', \App\Notifications\StudentAssignmentSubmittedNotification::class)
-                                        ->count();
+                                    $unreadDatabaseNotifications = $currentUser->unreadNotifications()->count();
 
-                                    $bellCount = $unreadReplies + $unreadAssignmentSubmissions;
+                                    $bellCount = $unreadReplies + $unreadDatabaseNotifications;
 
                                     if ($canManageResultFeedbackInbox) {
                                         $bellCount += $currentUser->openResultFeedbackCount();
@@ -851,6 +892,41 @@
 
             @yield('content')
         </div>
+
+        @if(($mustReadAnnouncement ?? false) && !empty($announcementGateOpenRoute))
+            <div id="announcement-gate-overlay" class="fixed inset-0 z-[220] flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-[2px]">
+                <div class="announcement-gate-card w-full max-w-xl rounded-3xl border border-rose-300 bg-white p-6 shadow-2xl">
+                    <div class="flex items-start gap-3">
+                        <span class="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" class="h-5 w-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 3.94c.752-1.257 2.568-1.257 3.32 0l6.18 10.334c.773 1.292-.157 2.926-1.66 2.926H5.82c-1.503 0-2.433-1.634-1.66-2.926L10.34 3.94Z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8.7v3.6M12 14.7h.01"/>
+                            </svg>
+                        </span>
+                        <div class="flex-1">
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-rose-600">Action Required</p>
+                            <h3 class="mt-1 text-xl font-extrabold text-slate-900">New Announcement{{ $unreadAnnouncementCount > 1 ? 's' : '' }} Pending</h3>
+                            <p class="mt-2 text-sm text-slate-600">
+                                You have <span class="font-bold text-slate-900">{{ $unreadAnnouncementCount }}</span>
+                                unread announcement notification{{ $unreadAnnouncementCount > 1 ? 's' : '' }}.
+                                Please read {{ $unreadAnnouncementCount > 1 ? 'them' : 'it' }} before continuing.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid gap-2 sm:grid-cols-2">
+                        <a href="{{ $announcementGateOpenRoute }}"
+                           class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-rose-600 to-pink-600 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5">
+                            Read Announcement Now
+                        </a>
+                        <a href="{{ $announcementGateCenterRoute }}"
+                           class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+                            Open Notification Center
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         @auth
             <footer class="mt-auto bg-[#0F1B34]">

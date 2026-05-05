@@ -10,11 +10,29 @@
     }
 
     .bg-pattern-grid {
-        background-color: #22323C;
-        background-image:
-            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        background-size: 40px 40px;
+        position: relative;
+        isolation: isolate;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(223, 231, 83, 0.30), transparent 34rem),
+            radial-gradient(circle at 90% 0%, rgba(45, 29, 92, 0.34), transparent 34rem),
+            radial-gradient(circle at 88% 100%, rgba(15, 23, 42, 0.26), transparent 36rem),
+            linear-gradient(180deg, rgba(225, 238, 255, 0.92) 0%, rgba(204, 224, 250, 0.86) 54%, rgba(192, 214, 245, 0.90) 100%);
+    }
+
+    .bg-pattern-grid::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background:
+            radial-gradient(circle at 8% 24%, rgba(16, 185, 129, 0.24), transparent 24rem),
+            radial-gradient(circle at 92% 78%, rgba(59, 130, 246, 0.22), transparent 22rem);
+    }
+
+    .bg-pattern-grid > * {
+        position: relative;
+        z-index: 1;
     }
 
     h1,

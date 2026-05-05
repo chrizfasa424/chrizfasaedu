@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\TrustProxies::class);
         $middleware->append(\App\Http\Middleware\AddSecurityHeaders::class);
+        $middleware->validateCsrfTokens(except: [
+            'apply',
+            'apply/*',
+        ]);
 
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
@@ -61,7 +65,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 return route('portal.login');
             }
 
-            if ($request->routeIs('staff.dashboard') || $request->is('staff/dashboard')) {
+            if (
+                $request->routeIs('staff.*')
+                || $request->is('staff')
+                || $request->is('staff/*')
+                || (string) $request->session()->get('auth.login_mode', '') === 'staff'
+            ) {
                 return route('staff.login');
             }
 

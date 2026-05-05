@@ -301,12 +301,70 @@
         color: #64748b;
         font-size: 0.875rem;
     }
+
+    .contact-vibrant-shell {
+        border-color: rgba(148, 163, 184, 0.35);
+        background:
+            radial-gradient(circle at 12% 8%, rgba(59, 130, 246, 0.12) 0%, transparent 42%),
+            radial-gradient(circle at 88% 92%, rgba(16, 185, 129, 0.11) 0%, transparent 46%),
+            linear-gradient(135deg, rgba(248, 250, 252, 0.96) 0%, rgba(255, 255, 255, 0.95) 100%);
+    }
+
+    .contact-vibrant-panel {
+        border-color: rgba(148, 163, 184, 0.32);
+    }
+
+    .contact-vibrant-panel--info {
+        background: linear-gradient(145deg, #ffffff 0%, #f3f8ff 100%);
+    }
+
+    .contact-vibrant-panel--map {
+        background: linear-gradient(145deg, #ffffff 0%, #f3fff9 100%);
+    }
+
+    .contact-vibrant-card {
+        border-color: rgba(148, 163, 184, 0.28);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .contact-vibrant-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px -24px rgba(15, 23, 42, 0.5);
+    }
+
+    .contact-vibrant-card--address {
+        background: linear-gradient(135deg, #eef5ff 0%, #ffffff 100%);
+        border-left: 4px solid #3b82f6;
+    }
+
+    .contact-vibrant-card--phone {
+        background: linear-gradient(135deg, #fff6e8 0%, #ffffff 100%);
+        border-left: 4px solid #f59e0b;
+    }
+
+    .contact-vibrant-card--whatsapp {
+        background: linear-gradient(135deg, #ebfff5 0%, #ffffff 100%);
+        border-left: 4px solid #10b981;
+    }
+
+    .contact-vibrant-card--email {
+        background: linear-gradient(135deg, #f3eeff 0%, #ffffff 100%);
+        border-left: 4px solid #8b5cf6;
+    }
+
+    .contact-vibrant-map-frame {
+        border-color: rgba(16, 185, 129, 0.3);
+        box-shadow: 0 10px 30px -24px rgba(16, 185, 129, 0.5);
+    }
 </style>
 </head>
 @php
     $sectionKey = 'contact';
 
     $menuSections = collect($menuCatalog ?? [])
+        ->reject(function ($section, $id) {
+            return $id === 'parents';
+        })
         ->map(function ($section, $id) {
             $items = collect($section['items'] ?? [])
                 ->map(function ($menuItem) {
@@ -365,17 +423,14 @@
     $contactFormMessageLabel = trim((string) ($publicPage['contact_form_message_label'] ?? 'Message'));
     $contactFormMessagePlaceholder = trim((string) ($publicPage['contact_form_message_placeholder'] ?? 'Write your message...'));
     $contactFormSubmitText = trim((string) ($publicPage['contact_form_submit_text'] ?? 'Send Message'));
-    $contactInfoTitle = trim((string) ($publicPage['contact_info_title'] ?? 'Contact Information'));
-    $contactNotProvidedText = trim((string) ($publicPage['contact_not_provided_text'] ?? 'Not provided yet'));
-    $contactMoreDetailsTitle = trim((string) ($publicPage['contact_more_details_title'] ?? 'More Contact Details'));
     $contactAddressLabel = trim((string) ($publicPage['contact_address_label'] ?? 'Address'));
     $contactPhoneLabel = trim((string) ($publicPage['contact_phone_label'] ?? 'Phone number'));
     $contactWhatsappLabel = trim((string) ($publicPage['contact_whatsapp_label'] ?? 'WhatsApp'));
     $contactEmailLabel = trim((string) ($publicPage['contact_email_label'] ?? 'Email'));
 @endphp
-<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }}; --theme-surface: {{ $themeSurfaceColor }}; --theme-soft-surface: {{ $themeSoftSurfaceColor }}; {{ $tailwindThemeVars }};">
+<body class="site-body text-ink antialiased" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }}; --theme-surface: {{ $themeSurfaceColor }}; --theme-soft-surface: {{ $themeSoftSurfaceColor }}; {{ $tailwindThemeVars }};">
     @include('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor])
-    <div class="relative min-h-screen overflow-x-hidden">
+    <div class="site-bg relative min-h-screen overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
@@ -499,14 +554,18 @@
                     <div class="pointer-events-none" style="position:absolute;inset:0;background:radial-gradient(circle at 80% 20%, {{ $submenuSecondaryColor }}22 0%, transparent 50%);"></div>
                 @endif
                 <div class="relative px-6 pb-16 pt-28 lg:px-8 lg:pb-20 lg:pt-36" style="max-width:80rem;margin:0 auto;width:100%;">
-                    <span class="inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.2em]"
-                        style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.28);color:#ffffff;backdrop-filter:blur(4px);">
-                        {{ $contactPageBadgeText !== '' ? $contactPageBadgeText : 'Contact Us' }}
-                    </span>
-                    <h1 class="mt-5 font-display font-bold leading-tight text-white"
-                        style="font-size:clamp(2rem,5vw,3.5rem);text-shadow:0 2px 20px rgba(0,0,0,0.4);max-width:44rem;">
-                        {{ $contactPageHeading !== '' ? $contactPageHeading : 'We are here to help you' }}
-                    </h1>
+                    @if($contactPageBadgeText !== '')
+                        <span class="inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.2em]"
+                            style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.28);color:#ffffff;backdrop-filter:blur(4px);">
+                            {{ $contactPageBadgeText }}
+                        </span>
+                    @endif
+                    @if($contactPageHeading !== '')
+                        <h1 class="mt-5 font-display font-bold leading-tight text-white"
+                            style="font-size:clamp(2rem,5vw,3.5rem);text-shadow:0 2px 20px rgba(0,0,0,0.4);max-width:44rem;">
+                            {{ $contactPageHeading }}
+                        </h1>
+                    @endif
                     @if($contactPageSubheading !== '')
                         <div class="rich-text-content mt-4 max-w-2xl text-base font-medium leading-relaxed"
                             style="color:rgba(255,255,255,0.82);text-shadow:0 1px 8px rgba(0,0,0,0.3);">
@@ -516,92 +575,97 @@
                 </div>
             </div>
 
-            <section class="mx-auto max-w-7xl px-6 pb-14 pt-10 lg:px-8">
-                @if(session('contact_success'))
-                    <div class="mb-6 rounded-xl border border-secondary-200 bg-secondary-50 px-4 py-3 text-sm font-semibold text-secondary-700">
-                        {{ session('contact_success') }}
-                    </div>
-                @endif
-                @if($errors->has('contact_form'))
-                    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-                        {{ $errors->first('contact_form') }}
-                    </div>
-                @endif
-
-                <div class="grid gap-8 lg:grid-cols-2">
-                    <div class="rounded-2xl bg-white p-6 shadow-soft">
-                        <h2 class="font-display text-2xl font-semibold text-slate-900">{{ $contactFormTitle !== '' ? $contactFormTitle : 'Contact Us Form' }}</h2>
-                        <form action="{{ route('public.contact.submit') }}" method="POST" class="mt-5 space-y-4">
-                            @csrf
-                            <div>
-                                <label for="full_name" class="mb-1 block text-sm font-semibold text-slate-700">{{ $contactFormFullNameLabel !== '' ? $contactFormFullNameLabel : 'Full Name' }}</label>
-                                <input id="full_name" name="full_name" type="text" value="{{ old('full_name') }}" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-200" placeholder="{{ $contactFormFullNamePlaceholder !== '' ? $contactFormFullNamePlaceholder : 'Enter your full name' }}" required>
-                                @error('full_name')
-                                    <p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>
-                                @enderror
+            <section class="contact-vibrant mx-auto w-full max-w-7xl px-6 pb-14 pt-10 lg:px-8">
+                <div class="contact-vibrant-shell rounded-3xl border p-4 shadow-soft backdrop-blur-sm md:p-6">
+                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                        <div class="contact-vibrant-panel contact-vibrant-panel--info rounded-2xl border p-6">
+                            <div class="border-b border-slate-200 pb-4">
+                                <h2 class="font-display text-2xl font-semibold text-slate-900">Contact Information</h2>
+                                <p class="mt-2 text-sm text-slate-500">Reach our team through the channels below.</p>
                             </div>
 
-                            <div>
-                                <label for="email" class="mb-1 block text-sm font-semibold text-slate-700">{{ $contactFormEmailLabel !== '' ? $contactFormEmailLabel : 'Email' }}</label>
-                                <input id="email" name="email" type="email" value="{{ old('email') }}" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-200" placeholder="{{ $contactFormEmailPlaceholder !== '' ? $contactFormEmailPlaceholder : 'you@example.com' }}" required>
-                                @error('email')
-                                    <p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>
-                                @enderror
+                            @php
+                                $fallbackContactValue = 'Not provided yet';
+                                $addressValue = trim((string) ($school?->address ?? ''));
+                                $phoneValue = trim((string) ($school?->phone ?? ''));
+                                $whatsappValue = trim((string) ($publicPage['whatsapp'] ?? ''));
+                                $emailValue = trim((string) ($school?->email ?? ''));
+                                $phoneHref = preg_replace('/\s+/', '', $phoneValue);
+                                $whatsappDigits = preg_replace('/\D+/', '', $whatsappValue);
+                                $normalizeLabel = function (string $candidate, string $fallback): string {
+                                    $candidate = trim($candidate);
+                                    if ($candidate === '') {
+                                        return $fallback;
+                                    }
+
+                                    if (mb_strlen($candidate) > 24 || preg_match('/[@\d]|https?:|,|\+/', $candidate) === 1) {
+                                        return $fallback;
+                                    }
+
+                                    return $candidate;
+                                };
+                                $addressLabelText = $normalizeLabel($contactAddressLabel, 'Address');
+                                $phoneLabelText = $normalizeLabel($contactPhoneLabel, 'Phone');
+                                $whatsappLabelText = $normalizeLabel($contactWhatsappLabel, 'WhatsApp');
+                                $emailLabelText = $normalizeLabel($contactEmailLabel, 'Email');
+                            @endphp
+
+                            <div class="mt-5 grid grid-cols-1 gap-4">
+                                <article class="contact-vibrant-card contact-vibrant-card--address flex min-h-[8.5rem] flex-col rounded-xl border px-4 py-4 shadow-sm">
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{{ $addressLabelText }}</p>
+                                    <p class="mt-2 text-sm font-medium leading-relaxed text-slate-800 break-words">{{ $addressValue !== '' ? $addressValue : $fallbackContactValue }}</p>
+                                </article>
+
+                                <article class="contact-vibrant-card contact-vibrant-card--phone flex min-h-[8.5rem] flex-col rounded-xl border px-4 py-4 shadow-sm">
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{{ $phoneLabelText }}</p>
+                                    @if($phoneValue !== '')
+                                        <a href="tel:{{ $phoneHref }}" class="mt-2 inline-block text-sm font-semibold leading-relaxed text-slate-800 hover:text-brand-700 hover:underline">{{ $phoneValue }}</a>
+                                    @else
+                                        <p class="mt-2 text-sm font-medium leading-relaxed text-slate-800">{{ $fallbackContactValue }}</p>
+                                    @endif
+                                </article>
+
+                                <article class="contact-vibrant-card contact-vibrant-card--whatsapp flex min-h-[8.5rem] flex-col rounded-xl border px-4 py-4 shadow-sm">
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{{ $whatsappLabelText }}</p>
+                                    @if($whatsappValue !== '')
+                                        <a href="https://wa.me/{{ $whatsappDigits }}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-block text-sm font-semibold leading-relaxed text-slate-800 hover:text-brand-700 hover:underline">{{ $whatsappValue }}</a>
+                                    @else
+                                        <p class="mt-2 text-sm font-medium leading-relaxed text-slate-800">{{ $fallbackContactValue }}</p>
+                                    @endif
+                                </article>
+
+                                <article class="contact-vibrant-card contact-vibrant-card--email flex min-h-[8.5rem] flex-col rounded-xl border px-4 py-4 shadow-sm">
+                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{{ $emailLabelText }}</p>
+                                    @if($emailValue !== '')
+                                        <a href="mailto:{{ $emailValue }}" class="mt-2 inline-block break-all text-sm font-semibold leading-relaxed text-slate-800 hover:text-brand-700 hover:underline">{{ $emailValue }}</a>
+                                    @else
+                                        <p class="mt-2 text-sm font-medium leading-relaxed text-slate-800">{{ $fallbackContactValue }}</p>
+                                    @endif
+                                </article>
                             </div>
 
-                            <div>
-                                <label for="phone_number" class="mb-1 block text-sm font-semibold text-slate-700">{{ $contactFormPhoneLabel !== '' ? $contactFormPhoneLabel : 'Phone Number' }}</label>
-                                <input id="phone_number" name="phone_number" type="text" value="{{ old('phone_number') }}" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-200" placeholder="{{ $contactFormPhonePlaceholder !== '' ? $contactFormPhonePlaceholder : '+234...' }}" >
-                                @error('phone_number')
-                                    <p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="subject" class="mb-1 block text-sm font-semibold text-slate-700">{{ $contactFormSubjectLabel !== '' ? $contactFormSubjectLabel : 'Subject' }}</label>
-                                <input id="subject" name="subject" type="text" value="{{ old('subject') }}" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-200" placeholder="{{ $contactFormSubjectPlaceholder !== '' ? $contactFormSubjectPlaceholder : 'How can we help?' }}" required>
-                                @error('subject')
-                                    <p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="message" class="mb-1 block text-sm font-semibold text-slate-700">{{ $contactFormMessageLabel !== '' ? $contactFormMessageLabel : 'Message' }}</label>
-                                <textarea id="message" name="message" rows="5" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-200" placeholder="{{ $contactFormMessagePlaceholder !== '' ? $contactFormMessagePlaceholder : 'Write your message...' }}" required>{{ old('message') }}</textarea>
-                                @error('message')
-                                    <p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <button type="submit" class="theme-cta-solid inline-flex rounded-full px-6 py-3 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">
-                                {{ $contactFormSubmitText !== '' ? $contactFormSubmitText : 'Send Message' }}
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="rounded-2xl bg-white p-6 shadow-soft">
-                        <h2 class="font-display text-2xl font-semibold text-slate-900">{{ $contactInfoTitle !== '' ? $contactInfoTitle : 'Contact Information' }}</h2>
-                        <div class="mt-5 space-y-3 text-sm text-slate-700">
-                            <p><span class="font-semibold">{{ $contactAddressLabel !== '' ? $contactAddressLabel : 'Address' }}:</span> {{ $school?->address ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
-                            <p><span class="font-semibold">{{ $contactPhoneLabel !== '' ? $contactPhoneLabel : 'Phone number' }}:</span> {{ $school?->phone ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
-                            <p><span class="font-semibold">{{ $contactWhatsappLabel !== '' ? $contactWhatsappLabel : 'WhatsApp' }}:</span> {{ ($publicPage['whatsapp'] ?? '') ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
-                            <p><span class="font-semibold">{{ $contactEmailLabel !== '' ? $contactEmailLabel : 'Email' }}:</span> {{ $school?->email ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
                         </div>
 
-                        @if(!empty($contactItems))
-                            <div class="mt-7 rounded-xl bg-slate-50 p-4">
-                                <h3 class="text-sm font-bold uppercase tracking-wide text-brand-700">{{ $contactMoreDetailsTitle !== '' ? $contactMoreDetailsTitle : 'More Contact Details' }}</h3>
-                                <div class="mt-3 space-y-2">
-                                    @foreach($contactItems as $contactItem)
-                                        <div class="rounded-lg bg-white px-3 py-2">
-                                            <p class="text-sm font-semibold text-slate-900">{{ $contactItem['title'] }}</p>
-                                            <div class="rich-text-content mt-1 text-sm text-slate-600">{!! \App\Support\RichText::render($contactItem['description']) !!}</div>
-                                        </div>
-                                    @endforeach
+                        <div class="contact-vibrant-panel contact-vibrant-panel--map flex flex-col rounded-2xl border p-5 shadow-soft">
+                            <h2 class="font-display text-2xl font-semibold text-slate-900">School Map</h2>
+                            <p class="mt-2 text-sm text-slate-500">Locate us quickly and plan your visit with ease.</p>
+                            @if(!empty($mapEmbedUrl))
+                                <div class="contact-vibrant-map-frame mt-4 h-[34rem] flex-1 overflow-hidden rounded-xl border bg-white shadow-sm">
+                                    <iframe
+                                        src="{{ $mapEmbedUrl }}"
+                                        title="School location map"
+                                        class="block h-full min-h-[34rem] w-full"
+                                        style="border:0;"
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade"
+                                    ></iframe>
                                 </div>
-                            </div>
-                        @endif
-
+                            @else
+                                <div class="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm font-medium text-slate-500">
+                                    Map location is not available yet.
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </section>

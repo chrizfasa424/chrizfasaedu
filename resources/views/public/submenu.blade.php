@@ -393,10 +393,79 @@
     .sidebar-program-link-active .sidebar-program-link-meta {
         color: rgba(255, 255, 255, 0.8) !important;
     }
+
+    .submenu-feature-image-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.5rem;
+        background: #ffffff;
+        box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.45);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .submenu-feature-image-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            110deg,
+            transparent 20%,
+            rgba(255, 255, 255, 0.06) 38%,
+            rgba(255, 255, 255, 0.32) 50%,
+            rgba(255, 255, 255, 0.08) 62%,
+            transparent 80%
+        );
+        transform: translateX(-140%) skewX(-18deg);
+        transition: transform 0.55s ease;
+        pointer-events: none;
+    }
+
+    .submenu-feature-image-card:hover,
+    .submenu-feature-image-card:focus-within {
+        transform: translateY(-8px) scale(1.01);
+        border-color: #cbd5e1;
+        box-shadow: 0 22px 40px -24px rgba(15, 23, 42, 0.55);
+    }
+
+    .submenu-feature-image-card:hover::after,
+    .submenu-feature-image-card:focus-within::after {
+        transform: translateX(140%) skewX(-18deg);
+    }
+
+    .submenu-feature-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        background: transparent;
+        transition: filter 0.3s ease;
+    }
+
+    .submenu-feature-image-card:hover .submenu-feature-image,
+    .submenu-feature-image-card:focus-within .submenu-feature-image {
+        filter: contrast(1.03) saturate(1.03);
+    }
+
+    .submenu-lead-highlight-first p:first-of-type,
+    .submenu-lead-highlight-first p:first-child,
+    .submenu-lead-highlight-first > *:first-child {
+        font-weight: 800 !important;
+        color: var(--submenu-primary, #25333E) !important;
+    }
+
+    .submenu-lead-inline-global {
+        font-weight: 800 !important;
+        color: var(--submenu-primary, #25333E) !important;
+    }
+
 </style>
 </head>
 @php
     $menuSections = collect($menuCatalog ?? [])
+        ->reject(function ($section, $id) {
+            return $id === 'parents';
+        })
         ->map(function ($section, $id) {
             $items = collect($section['items'] ?? [])
                 ->map(function ($menuItem) {
@@ -451,9 +520,9 @@
     $submenuBackButtonPrefix = trim((string) ($publicPage['submenu_back_button_prefix'] ?? 'Back to'));
     $submenuMoreInPrefix = trim((string) ($publicPage['submenu_more_in_prefix'] ?? 'More In'));
 @endphp
-<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }}; --theme-surface: {{ $themeSurfaceColor }}; --theme-soft-surface: {{ $themeSoftSurfaceColor }}; {{ $tailwindThemeVars }};">
+<body class="site-body text-ink antialiased" style="background-color: {{ $siteBackgroundColor }}; color: {{ $themeBodyColor }}; --submenu-primary: {{ $submenuPrimaryColor }}; --submenu-secondary: {{ $submenuSecondaryColor }}; --submenu-hover-text: {{ $submenuHoverTextColor }}; --theme-heading: {{ $themeHeadingColor }}; --theme-body: {{ $themeBodyColor }}; --theme-surface: {{ $themeSurfaceColor }}; --theme-soft-surface: {{ $themeSoftSurfaceColor }}; {{ $tailwindThemeVars }};">
     @include('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor])
-    <div class="relative min-h-screen overflow-x-hidden">
+    <div class="site-bg relative min-h-screen overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
@@ -727,6 +796,22 @@
                     $displayDescription = !empty($item['rich_description'])
                         ? $item['rich_description']
                         : $item['description'];
+                    $renderedDescription = \App\Support\RichText::render($displayDescription);
+                    $renderedDescriptionHtml = (string) $renderedDescription;
+
+                    if (trim($renderedDescriptionHtml) !== '' && !preg_match('/^\s*</', $renderedDescriptionHtml)) {
+                        // Plain text descriptions are rendered as escaped text + <br>; style the first visible chunk.
+                        $parts = preg_split('/<br\s*\/?>/i', $renderedDescriptionHtml, 2);
+                        $firstChunk = trim((string) ($parts[0] ?? ''));
+
+                        if ($firstChunk !== '') {
+                            $renderedDescriptionHtml = '<span class="submenu-lead-inline-global">' . $firstChunk . '</span>';
+
+                            if (!empty($parts[1])) {
+                                $renderedDescriptionHtml .= '<br>' . $parts[1];
+                            }
+                        }
+                    }
                     $managementTeamCards = collect($item['management_team_cards'] ?? [])
                         ->map(function ($card) {
                             return [
@@ -768,7 +853,7 @@
                             <span class="inline-flex items-center rounded-full bg-white px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{{ $readingMinutes }} min read</span>
                         </div>
 
-                        <div class="rich-text-content max-w-4xl text-base leading-relaxed text-muted sm:text-lg">{!! \App\Support\RichText::render($displayDescription) !!}</div>
+                        <div class="rich-text-content submenu-lead-highlight-first max-w-4xl text-base leading-relaxed text-muted sm:text-lg">{!! $renderedDescriptionHtml !!}</div>
 
                         @if($sectionKey === 'about' && $item['slug'] === 'management-team' && $managementTeamCards->isNotEmpty())
                         <div class="space-y-4">
@@ -783,7 +868,7 @@
                                         <img
                                             src="{{ asset('storage/' . ltrim($card['image'], '/')) }}"
                                             alt="{{ $card['name'] !== '' ? $card['name'] : 'Management team member' }}"
-                                            class="h-52 w-full object-cover"
+                                            class="h-52 w-full bg-white object-contain"
                                         >
                                     @else
                                         <div class="flex h-52 w-full items-center justify-center bg-slate-100 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
@@ -808,21 +893,22 @@
                         @php
                             $pageImgOne = trim((string) ($item['image_one'] ?? ''));
                             $pageImgTwo = trim((string) ($item['image_two'] ?? ''));
+                            $hasBothPageImages = $pageImgOne !== '' && $pageImgTwo !== '';
                         @endphp
                         @if($pageImgOne !== '' || $pageImgTwo !== '')
-                        <div class="grid gap-4 sm:grid-cols-12">
+                        <div class="grid gap-4 {{ $hasBothPageImages ? 'sm:grid-cols-2' : 'sm:grid-cols-1' }}">
                             @if($pageImgOne !== '')
-                            <figure class="overflow-hidden rounded-3xl bg-white shadow-sm {{ $pageImgTwo !== '' ? 'sm:col-span-8' : 'sm:col-span-12' }}">
+                            <figure class="submenu-feature-image-card">
                                 <img src="{{ asset('storage/' . ltrim($pageImgOne, '/')) }}"
                                      alt="{{ $item['title'] }}"
-                                     class="h-64 w-full object-cover transition duration-500 hover:scale-105 sm:h-[20rem]">
+                                     class="submenu-feature-image h-72 sm:h-[28rem]">
                             </figure>
                             @endif
                             @if($pageImgTwo !== '')
-                            <figure class="overflow-hidden rounded-3xl bg-white shadow-sm sm:col-span-4">
+                            <figure class="submenu-feature-image-card">
                                 <img src="{{ asset('storage/' . ltrim($pageImgTwo, '/')) }}"
                                      alt="{{ $item['title'] }}"
-                                     class="h-64 w-full object-cover transition duration-500 hover:scale-105 sm:h-[20rem]">
+                                     class="submenu-feature-image h-72 sm:h-[28rem]">
                             </figure>
                             @endif
                         </div>

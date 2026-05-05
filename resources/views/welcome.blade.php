@@ -43,11 +43,29 @@
     }
 
     .bg-pattern-grid {
-        background-color: #22323C;
-        background-image:
-            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        background-size: 40px 40px;
+        position: relative;
+        isolation: isolate;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(223, 231, 83, 0.30), transparent 34rem),
+            radial-gradient(circle at 90% 0%, rgba(45, 29, 92, 0.34), transparent 34rem),
+            radial-gradient(circle at 88% 100%, rgba(15, 23, 42, 0.26), transparent 36rem),
+            linear-gradient(180deg, rgba(225, 238, 255, 0.92) 0%, rgba(204, 224, 250, 0.86) 54%, rgba(192, 214, 245, 0.90) 100%);
+    }
+
+    .bg-pattern-grid::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background:
+            radial-gradient(circle at 8% 24%, rgba(16, 185, 129, 0.24), transparent 24rem),
+            radial-gradient(circle at 92% 78%, rgba(59, 130, 246, 0.22), transparent 22rem);
+    }
+
+    .bg-pattern-grid > * {
+        position: relative;
+        z-index: 1;
     }
 
     h1,
@@ -1004,20 +1022,20 @@
     $mobilePortalLoginText = trim((string) ($publicPage['mobile_portal_login_text'] ?? 'Portal Login'));
     $heroSliderPlaceholderText = trim((string) ($publicPage['hero_slider_placeholder_text'] ?? 'Upload hero slider images from Admin Settings to personalize this section.'));
     $parentsPortalButtonText = trim((string) ($publicPage['parents_portal_button_text'] ?? 'Parent Portal Login'));
-    $testimonialsBadgeText = trim((string) ($publicPage['testimonials_badge_text'] ?? 'Testimonials'));
-    $testimonialsHeading = trim((string) ($publicPage['testimonials_heading'] ?? 'What Parents and Student Say'));
-    $testimonialsSubheading = trim((string) ($publicPage['testimonials_subheading'] ?? 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.'));
-    $testimonialsFormTitle = trim((string) ($publicPage['testimonials_form_title'] ?? 'Share Your Testimonial'));
-    $testimonialsFormNameLabel = trim((string) ($publicPage['testimonials_form_name_label'] ?? 'Full Name'));
-    $testimonialsFormNamePlaceholder = trim((string) ($publicPage['testimonials_form_name_placeholder'] ?? 'Enter your full name'));
-    $testimonialsFormRoleLabel = trim((string) ($publicPage['testimonials_form_role_label'] ?? 'Role or Context'));
-    $testimonialsFormRolePlaceholder = trim((string) ($publicPage['testimonials_form_role_placeholder'] ?? 'Parent, student, alumni, guardian, etc.'));
-    $testimonialsFormRatingLabel = trim((string) ($publicPage['testimonials_form_rating_label'] ?? 'Rating'));
-    $testimonialsFormMessageLabel = trim((string) ($publicPage['testimonials_form_message_label'] ?? 'Your Testimonial'));
-    $testimonialsFormMessagePlaceholder = trim((string) ($publicPage['testimonials_form_message_placeholder'] ?? 'Write your experience with the school...'));
-    $testimonialsFormSubmitText = trim((string) ($publicPage['testimonials_form_submit_text'] ?? 'Submit Testimonial'));
-    $testimonialsSliderTitle = trim((string) ($publicPage['testimonials_slider_title'] ?? 'Approved Testimonials'));
-    $testimonialsEmptyText = trim((string) ($publicPage['testimonials_empty_text'] ?? 'No testimonials have been approved yet. Be the first to share your experience.'));
+    $testimonialsBadgeText = trim((string) ($publicPage['testimonials_badge_text'] ?? ''));
+    $testimonialsHeading = trim((string) ($publicPage['testimonials_heading'] ?? ''));
+    $testimonialsSubheading = trim((string) ($publicPage['testimonials_subheading'] ?? ''));
+    $testimonialsFormTitle = trim((string) ($publicPage['testimonials_form_title'] ?? ''));
+    $testimonialsFormNameLabel = trim((string) ($publicPage['testimonials_form_name_label'] ?? ''));
+    $testimonialsFormNamePlaceholder = trim((string) ($publicPage['testimonials_form_name_placeholder'] ?? ''));
+    $testimonialsFormRoleLabel = trim((string) ($publicPage['testimonials_form_role_label'] ?? ''));
+    $testimonialsFormRolePlaceholder = trim((string) ($publicPage['testimonials_form_role_placeholder'] ?? ''));
+    $testimonialsFormRatingLabel = trim((string) ($publicPage['testimonials_form_rating_label'] ?? ''));
+    $testimonialsFormMessageLabel = trim((string) ($publicPage['testimonials_form_message_label'] ?? ''));
+    $testimonialsFormMessagePlaceholder = trim((string) ($publicPage['testimonials_form_message_placeholder'] ?? ''));
+    $testimonialsFormSubmitText = trim((string) ($publicPage['testimonials_form_submit_text'] ?? ''));
+    $testimonialsSliderTitle = trim((string) ($publicPage['testimonials_slider_title'] ?? ''));
+    $testimonialsEmptyText = trim((string) ($publicPage['testimonials_empty_text'] ?? ''));
     $testimonialFormStartedAt = now()->timestamp;
     $testimonials = ($approvedTestimonials ?? collect())->values();
     $quickContactLabel = trim((string) ($publicPage['quick_contact_label'] ?? 'Quick Contact'));
@@ -1341,7 +1359,6 @@
         ['label' => ($facilitiesLabel !== '' ? $facilitiesLabel : 'Facilities'), 'id' => 'facilities', 'link' => $firstSubmenuLink('facilities', $facilities) ?? route('public.home'), 'items' => collect($facilities)->filter()->values()->all()],
         ['label' => ($aboutLabel !== '' ? $aboutLabel : 'About Us'), 'id' => 'about', 'link' => $firstSubmenuLink('about', $aboutItems) ?? route('public.home'), 'items' => collect($aboutItems)->pluck('title')->filter()->values()->all()],
         ['label' => ($studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life'), 'id' => 'student-life', 'link' => $firstSubmenuLink('student-life', $studentLifeItems) ?? route('public.home'), 'items' => collect($studentLifeItems)->pluck('title')->filter()->values()->all()],
-        ['label' => ($parentsLabel !== '' ? $parentsLabel : 'Parents'), 'id' => 'parents', 'link' => $firstSubmenuLink('parents', $parentsItems) ?? route('public.home'), 'items' => collect($parentsItems)->pluck('title')->filter()->values()->all()],
         ['label' => ($contactLabel !== '' ? $contactLabel : 'Contact'), 'id' => 'contact', 'link' => route('public.contact'), 'items' => []],
     ];
     $siteBackgroundColor = $theme['site_background'];
@@ -1355,9 +1372,9 @@
     $themeSoftSurfaceColor = $theme['soft_surface'];
     $themeStyle = $theme['theme_style'];
 ?>
-<body class="text-ink antialiased" style="background-color: {{ $siteBackgroundColor ?? ($theme['site_background'] ?? '#F8FAFC') }}; color: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }}; --theme-heading: {{ $themeHeadingColor ?? ($theme['ink'] ?? '#0F172A') }}; --theme-body: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --theme-surface: {{ $themeSurfaceColor ?? ($theme['surface'] ?? '#FFFFFF') }}; --theme-soft-surface: {{ $themeSoftSurfaceColor ?? ($theme['soft_surface'] ?? '#EEF6FF') }}; {{ $tailwindThemeVars }};">
+<body class="site-body text-ink antialiased" style="background-color: {{ $siteBackgroundColor ?? ($theme['site_background'] ?? '#F8FAFC') }}; color: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }}; --theme-heading: {{ $themeHeadingColor ?? ($theme['ink'] ?? '#0F172A') }}; --theme-body: {{ $themeBodyColor ?? ($theme['muted'] ?? '#475569') }}; --theme-surface: {{ $themeSurfaceColor ?? ($theme['surface'] ?? '#FFFFFF') }}; --theme-soft-surface: {{ $themeSoftSurfaceColor ?? ($theme['soft_surface'] ?? '#EEF6FF') }}; {{ $tailwindThemeVars }};">
     @include('public.partials.page-loader', ['school' => $school, 'primary' => $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E')])
-    <div class="relative overflow-x-hidden">
+    <div class="site-bg relative min-h-screen overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
@@ -1594,15 +1611,15 @@
                                 : '0.0';
                         @endphp
                         <div class="mx-auto max-w-4xl text-center">
-                            <p class="section-kicker-unified">
-                                {{ $testimonialsBadgeText !== '' ? $testimonialsBadgeText : 'Testimonials' }}
-                            </p>
-                            <h2 class="section-heading-unified mt-3">
-                                {{ $testimonialsHeading !== '' ? $testimonialsHeading : 'What Parents and Student Say' }}
-                            </h2>
-                            <p class="mx-auto mt-4 max-w-3xl text-center text-base leading-relaxed text-slate-600">
-                                {{ $testimonialsSubheading !== '' ? $testimonialsSubheading : 'We value authentic feedback from our school community. Submitted testimonials are reviewed by the admin before publication.' }}
-                            </p>
+                            @if($testimonialsBadgeText !== '')
+                                <p class="section-kicker-unified">{{ $testimonialsBadgeText }}</p>
+                            @endif
+                            @if($testimonialsHeading !== '')
+                                <h2 class="section-heading-unified mt-3">{{ $testimonialsHeading }}</h2>
+                            @endif
+                            @if($testimonialsSubheading !== '')
+                                <p class="mx-auto mt-4 max-w-3xl text-center text-base leading-relaxed text-slate-600">{{ $testimonialsSubheading }}</p>
+                            @endif
                             <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
                                 <span class="testimonials-metric-chip">
                                     <span class="testimonials-metric-chip-label">Rated</span>
@@ -1627,7 +1644,7 @@
 
                             @if($testimonials->isEmpty())
                                 <div class="testimonials-empty rounded-2xl px-5 py-10 text-center text-base font-medium">
-                                    {{ $testimonialsEmptyText !== '' ? $testimonialsEmptyText : 'No testimonials have been approved yet. Be the first to share your experience.' }}
+                                    {{ $testimonialsEmptyText }}
                                 </div>
                             @else
                                 <div data-testimonial-slider class="testimonials-slider relative overflow-hidden rounded-2xl">
@@ -1693,45 +1710,6 @@
                                         @endforeach
                                     </div>
                                 @endif
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="contact" class="bg-slate-50 py-16">
-                <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="mx-auto mb-10 max-w-3xl text-center">
-                        <p class="section-kicker-unified">{{ $contactLabel !== '' ? $contactLabel : 'Contact' }}</p>
-                        <h2 class="section-heading-unified mt-3">{{ $contactHeading }}</h2>
-                    </div>
-                    <div class="grid gap-6 lg:grid-cols-2">
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            @foreach($contactItems as $item)
-                                <div id="contact-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('contact-'.$loop->index)) }}" class="contact-primary-card rounded-xl p-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-sm">
-                                    <h3 class="contact-primary-title text-sm font-bold uppercase tracking-wide">{{ $item['title'] ?? '' }}</h3>
-                                    <div class="contact-primary-text rich-text-content mt-2 text-sm">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
-                                </div>
-                            @endforeach
-                        </div>
-                        <div class="contact-primary-card rounded-2xl p-5 shadow-sm">
-                            <h3 class="contact-primary-title font-semibold">{{ $quickContactLabel !== '' ? $quickContactLabel : 'Quick Contact' }}</h3>
-                            <div class="contact-primary-text mt-3 space-y-2 text-sm">
-                                <p><span class="font-semibold">{{ $contactPhoneLabel !== '' ? $contactPhoneLabel : 'Phone' }}:</span> {{ $school?->phone ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
-                                <p><span class="font-semibold">{{ $contactWhatsappLabel !== '' ? $contactWhatsappLabel : 'WhatsApp' }}:</span> {{ ($publicPage['whatsapp'] ?? '') ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
-                                <p><span class="font-semibold">{{ $contactEmailLabel !== '' ? $contactEmailLabel : 'Email' }}:</span> {{ $school?->email ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
-                                <p><span class="font-semibold">{{ $contactAddressLabel !== '' ? $contactAddressLabel : 'Address' }}:</span> {{ $school?->address ?: ($contactNotProvidedText !== '' ? $contactNotProvidedText : 'Not provided yet') }}</p>
-                            </div>
-                            <div class="mt-5 flex flex-wrap gap-3">
-                                @if(!empty($publicPage['visit_booking_url']))
-                                    <a href="{{ $publicPage['visit_booking_url'] }}" target="_blank" rel="noopener" class="theme-cta-solid rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $visitBookingButtonText !== '' ? $visitBookingButtonText : 'Visit Booking' }}</a>
-                                @endif
-                                <a href="{{ route('admission.apply') }}" class="theme-cta-outline rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $quickApplyButtonText !== '' ? $quickApplyButtonText : 'Apply Now' }}</a>
-                            </div>
-                            @if(!empty($publicPage['map_embed_url']))
-                                <div class="mt-5 overflow-hidden rounded-xl">
-                                    <iframe src="{{ $publicPage['map_embed_url'] }}" title="{{ $mapEmbedTitleText !== '' ? $mapEmbedTitleText : 'School map' }}" class="h-60 w-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                                </div>
                             @endif
                         </div>
                     </div>
@@ -2083,6 +2061,8 @@
     @endif
 </body>
 </html>
+
+
 
 
 

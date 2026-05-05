@@ -107,6 +107,17 @@
                     @endforeach
                 </select>
             </div>
+            <div class="grid grid-cols-1 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <label class="inline-flex items-center gap-2 text-sm text-slate-700">
+                    <input type="checkbox" name="send_email" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    Send as email notification
+                </label>
+                <label class="inline-flex items-center gap-2 text-sm text-slate-700">
+                    <input type="checkbox" name="send_sms" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    Send as SMS notification
+                </label>
+                <p class="text-xs text-slate-500">Database notification is always sent to the selected audience.</p>
+            </div>
             <div class="flex justify-end gap-2 pt-2">
                 <button type="button" onclick="document.getElementById('create-modal').classList.add('hidden')"
                     class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>

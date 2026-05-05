@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Support\PublicPageContent;
@@ -11,6 +12,7 @@ use App\Support\SchoolContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class LoginController extends Controller
@@ -66,7 +68,7 @@ class LoginController extends Controller
             'email' => $credentials['email'],
             'password' => $credentials['password'],
             'is_active' => true,
-            'role' => $allowedRoles,
+            'role' => static fn ($query) => $query->whereIn('role', $allowedRoles),
         ], $request->boolean('remember'))) {
             $user = Auth::guard('web')->user();
             SchoolContext::ensureUserSchool($user);
@@ -77,10 +79,19 @@ class LoginController extends Controller
             return redirect()->intended($this->redirectPath($user));
         }
 
+        if ($loginMode === 'admin') {
+            $adminRedirect = $this->attemptAdminTableLogin($request, $credentials['email'], $credentials['password']);
+
+            if ($adminRedirect instanceof RedirectResponse) {
+                return $adminRedirect;
+            }
+        }
+
         $account = User::query()
             ->whereRaw('LOWER(email) = ?', [$credentials['email']])
             ->first();
         $message = 'Invalid credentials.';
+        $failureReason = 'Invalid credentials';
 
         if ($account && (bool) $account->is_active) {
             $role = (string) ($account->role?->value ?? $account->role ?? '');
@@ -89,14 +100,36 @@ class LoginController extends Controller
 
             if ($loginMode === 'admin' && in_array($role, $staffRoles, true)) {
                 $message = 'This is a staff account. Please sign in from the Staff Login page.';
+                $failureReason = 'Wrong login panel (staff account)';
             } elseif ($loginMode === 'staff' && in_array($role, $adminRoles, true)) {
                 $message = 'This is an admin account. Please sign in from the Admin Login page.';
+                $failureReason = 'Wrong login panel (admin account)';
             } elseif (in_array($role, [UserRole::STUDENT->value, UserRole::PARENT->value], true)) {
                 $message = 'This is a student/parent account. Please sign in from the Portal Login page.';
+                $failureReason = 'Wrong login panel (portal account)';
+            } else {
+                $failureReason = 'Wrong password';
+            }
+        } elseif ($loginMode === 'admin') {
+            $legacyAdmin = Admin::withTrashed()
+                ->whereRaw('LOWER(email) = ?', [$credentials['email']])
+                ->first();
+
+            if ($legacyAdmin) {
+                if ($legacyAdmin->trashed()) {
+                    $message = 'This admin account has been archived. Please contact support.';
+                    $failureReason = 'Archived admin account';
+                } elseif (!(bool) $legacyAdmin->is_active) {
+                    $message = 'This admin account is inactive. Please contact support.';
+                    $failureReason = 'Inactive admin account';
+                } else {
+                    $message = 'Incorrect password. Please try again or use Forgot password.';
+                    $failureReason = 'Wrong password (admins table account)';
+                }
             }
         }
 
-        $this->logFailedLoginAttempt($request, $credentials['email']);
+        $this->logFailedLoginAttempt($request, $credentials['email'], $failureReason);
 
         return back()->withErrors(['email' => $message])->onlyInput('email');
     }
@@ -119,10 +152,10 @@ class LoginController extends Controller
             'email' => $credentials['email'],
             'password' => $credentials['password'],
             'is_active' => true,
-            'role' => [
+            'role' => static fn ($query) => $query->whereIn('role', [
                 UserRole::STUDENT->value,
                 UserRole::PARENT->value,
-            ],
+            ]),
         ];
 
         if (Auth::guard('portal')->attempt($portalCredentials, $request->boolean('remember'))) {
@@ -231,6 +264,84 @@ class LoginController extends Controller
             $user->isParent() => '/parent/dashboard',
             default => '/dashboard',
         };
+    }
+
+    private function attemptAdminTableLogin(Request $request, string $email, string $plainPassword): ?RedirectResponse
+    {
+        $admin = Admin::withTrashed()
+            ->whereRaw('LOWER(email) = ?', [$email])
+            ->first();
+
+        if (!$admin || $admin->trashed() || !(bool) $admin->is_active) {
+            return null;
+        }
+
+        if (!Hash::check($plainPassword, (string) $admin->password)) {
+            return null;
+        }
+
+        $user = $this->syncAdminToUser($admin);
+
+        Auth::guard('web')->login($user, $request->boolean('remember'));
+
+        SchoolContext::ensureUserSchool($user);
+        $user->refresh();
+
+        $loginMeta = [
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
+        ];
+
+        $user->update($loginMeta);
+        $admin->update($loginMeta);
+
+        $request->session()->regenerate();
+        $request->session()->put('auth.login_mode', 'admin');
+
+        return redirect()->intended($this->redirectPath($user));
+    }
+
+    private function syncAdminToUser(Admin $admin): User
+    {
+        $user = User::withTrashed()
+            ->whereRaw('LOWER(email) = ?', [Str::lower(trim((string) $admin->email))])
+            ->first();
+
+        if ($user) {
+            if ($user->trashed()) {
+                $user->restore();
+            }
+
+            $user->fill([
+                'school_id' => $admin->school_id,
+                'first_name' => $admin->first_name,
+                'last_name' => $admin->last_name,
+                'other_names' => $admin->other_names,
+                'email' => Str::lower(trim((string) $admin->email)),
+                'phone' => $admin->phone,
+                'password' => $admin->password,
+                'avatar' => $admin->avatar,
+                'is_active' => (bool) $admin->is_active,
+                'role' => UserRole::SCHOOL_ADMIN->value,
+            ])->save();
+
+            return $user;
+        }
+
+        return User::query()->create([
+            'school_id' => $admin->school_id,
+            'first_name' => $admin->first_name,
+            'last_name' => $admin->last_name,
+            'other_names' => $admin->other_names,
+            'email' => Str::lower(trim((string) $admin->email)),
+            'phone' => $admin->phone,
+            'password' => $admin->password,
+            'must_change_password' => false,
+            'role' => UserRole::SCHOOL_ADMIN->value,
+            'avatar' => $admin->avatar,
+            'is_active' => (bool) $admin->is_active,
+            'email_verified_at' => now(),
+        ]);
     }
 
     private function logFailedLoginAttempt(Request $request, string $email, string $reason = 'Invalid credentials'): void

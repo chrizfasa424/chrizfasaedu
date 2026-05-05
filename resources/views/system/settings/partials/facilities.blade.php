@@ -1,29 +1,23 @@
-<form action="{{ route('settings.public-page') }}" method="POST" class="space-y-8">
+<form id="facilities-settings-form" action="{{ route('settings.public-page') }}" method="POST" class="space-y-8">
     @csrf
     @method('PUT')
+    <input type="hidden" name="settings_page" value="facilities">
+    <input type="hidden" name="facilities_label" value="{{ old('facilities_label', $publicPage['facilities_label'] ?? 'Facilities') }}">
+    <input type="hidden" name="facilities_intro" value="{{ old('facilities_intro', strip_tags((string) ($publicPage['facilities_intro'] ?? ''))) }}">
+    <input type="hidden" name="facilities" value="{{ old('facilities', $facilitiesText) }}">
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div>
-            <label class="mb-2 block text-sm font-semibold text-slate-700">Facilities Label</label>
-            <input type="text" name="facilities_label" value="{{ old('facilities_label', $publicPage['facilities_label'] ?? 'Facilities') }}" class="w-full rounded-2xl border-slate-300">
+    @if(session('success'))
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+            {{ session('success') }}
         </div>
-        <div class="lg:col-span-2">
-            <label class="mb-2 block text-sm font-semibold text-slate-700">Facilities Intro</label>
-            <textarea name="facilities_intro" rows="4" class="js-ck-editor w-full rounded-2xl border-slate-300">{{ old('facilities_intro', $publicPage['facilities_intro'] ?? '') }}</textarea>
-        </div>
-        <div class="lg:col-span-2">
-            <label class="mb-2 block text-sm font-semibold text-slate-700">Facilities Items</label>
-            <textarea name="facilities" rows="10" class="w-full rounded-2xl border-slate-300">{{ old('facilities', $facilitiesText) }}</textarea>
-            <p class="mt-2 text-xs text-slate-500">Use one facility per line.</p>
-        </div>
-    </div>
-
-    <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save Facilities Page</button>
+    @endif
 </form>
 
-@include('system.settings.partials._submenu-item-editor', [
-    '_section'      => 'facilities',
-    '_sectionLabel' => trim((string) ($publicPage['facilities_label'] ?? 'Facilities')),
-    '_items'        => $publicPage['facilities'] ?? [],
-    '_publicPage'   => $publicPage,
-])
+<section id="facilities-editor-feed" class="space-y-4">
+    @include('system.settings.partials._submenu-item-editor', [
+        '_section'      => 'facilities',
+        '_sectionLabel' => trim((string) ($publicPage['facilities_label'] ?? 'Facilities')),
+        '_items'        => $publicPage['facilities'] ?? [],
+        '_publicPage'   => $publicPage,
+    ])
+</section>

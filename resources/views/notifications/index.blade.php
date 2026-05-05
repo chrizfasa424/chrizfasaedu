@@ -4,6 +4,9 @@
 
 @section('content')
 <div class="space-y-6">
+    @php
+        $notificationRoutePrefix = $notificationRoutePrefix ?? (($isPortalUser ?? false) ? 'portal.notifications' : 'notifications');
+    @endphp
     <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -15,7 +18,7 @@
                     Unread: {{ $bellCount }}
                 </span>
                 @if($databaseUnreadCount > 0)
-                    <form method="POST" action="{{ route('notifications.read-all') }}">
+                    <form method="POST" action="{{ route($notificationRoutePrefix . '.read-all') }}">
                         @csrf
                         <button type="submit" class="inline-flex items-center rounded-2xl border border-[#25333E]/20 bg-[#25333E]/5 px-4 py-2 text-sm font-semibold text-[#25333E] transition hover:bg-[#25333E] hover:text-white">
                             Mark All Read
@@ -60,7 +63,7 @@
                         <p class="mt-1 text-sm text-slate-600">{{ $item['message'] }}</p>
                         <p class="mt-1 text-xs text-slate-400">{{ $item['created_at']?->diffForHumans() }}</p>
                     </div>
-                    <a href="{{ route('notifications.open', $item['id']) }}" class="inline-flex items-center rounded-xl border border-[#25333E]/20 px-3 py-1.5 text-sm font-semibold text-[#25333E] transition hover:bg-[#25333E] hover:text-white">
+                    <a href="{{ route($notificationRoutePrefix . '.open', $item['id']) }}" class="inline-flex items-center rounded-xl border border-[#25333E]/20 px-3 py-1.5 text-sm font-semibold text-[#25333E] transition hover:bg-[#25333E] hover:text-white">
                         Open
                     </a>
                 </div>

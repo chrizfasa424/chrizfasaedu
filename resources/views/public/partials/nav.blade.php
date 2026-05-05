@@ -22,7 +22,6 @@
     $navFacilities    = $publicPage['facilities']   ?? [];
     $navAbout         = $publicPage['about']        ?? [];
     $navStudentLife   = $publicPage['student_life'] ?? [];
-    $navParents       = $publicPage['parents']      ?? [];
 
     $navFirstLink = function (string $sectionId, array $items) {
         $first = collect($items)->first();
@@ -39,7 +38,6 @@
         ['label' => trim((string)($publicPage['facilities_label']   ?? 'Facilities')),  'id' => 'facilities',   'link' => $navFirstLink('facilities',   $navFacilities)  ?? route('public.home'), 'items' => collect($navFacilities)->filter()->values()->all()],
         ['label' => trim((string)($publicPage['about_label']        ?? 'About Us')),    'id' => 'about',        'link' => $navFirstLink('about',        $navAbout)       ?? route('public.home'), 'items' => collect($navAbout)->pluck('title')->filter()->values()->all()],
         ['label' => trim((string)($publicPage['student_life_label'] ?? 'Student Life')),'id' => 'student-life', 'link' => $navFirstLink('student-life', $navStudentLife) ?? route('public.home'), 'items' => collect($navStudentLife)->pluck('title')->filter()->values()->all()],
-        ['label' => trim((string)($publicPage['parents_label']      ?? 'Parents')),     'id' => 'parents',      'link' => $navFirstLink('parents',      $navParents)     ?? route('public.home'), 'items' => collect($navParents)->pluck('title')->filter()->values()->all()],
         ['label' => trim((string)($publicPage['contact_label']      ?? 'Contact')),     'id' => 'contact',      'link' => route('public.contact'),                                                'items' => []],
     ];
 @endphp

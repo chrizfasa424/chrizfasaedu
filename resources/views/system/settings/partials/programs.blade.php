@@ -9,13 +9,9 @@
         </div>
         <div class="lg:col-span-2">
             <label class="mb-2 block text-sm font-semibold text-slate-700">Programs Intro</label>
-            <textarea name="programs_intro" rows="4" class="js-ck-editor w-full rounded-2xl border-slate-300">{{ old('programs_intro', $publicPage['programs_intro'] ?? '') }}</textarea>
+            <textarea name="programs_intro" rows="4" class="w-full rounded-2xl border-slate-300">{{ old('programs_intro', strip_tags((string) ($publicPage['programs_intro'] ?? ''))) }}</textarea>
         </div>
-        <div class="lg:col-span-2">
-            <label class="mb-2 block text-sm font-semibold text-slate-700">Programs Items</label>
-            <textarea name="program_items_text" rows="12" class="w-full rounded-2xl border-slate-300">{{ old('program_items_text', $programItemsText) }}</textarea>
-            <p class="mt-2 text-xs text-slate-500">Use one line per item in the format: Title | Description</p>
-        </div>
+        <input type="hidden" name="program_items_text" value="{{ old('program_items_text', $programItemsText) }}">
     </div>
 
     <button type="submit" class="inline-flex items-center rounded-2xl bg-[#25333E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#DFE753] hover:text-[#25333E]">Save Programs Page</button>

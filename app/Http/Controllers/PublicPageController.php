@@ -74,6 +74,7 @@ class PublicPageController extends Controller
         $catalog = $this->buildMenuCatalog($publicPage);
         $schoolName = $school?->name ?? 'ChrizFasa Academy';
         $contactItems = $catalog['contact']['items'] ?? [];
+        $mapEmbedUrl = $this->resolveMapEmbedUrl($publicPage, $school);
 
         return view('public.contact', [
             'school' => $school,
@@ -81,6 +82,7 @@ class PublicPageController extends Controller
             'publicPage' => $publicPage,
             'menuCatalog' => $catalog,
             'contactItems' => $contactItems,
+            'mapEmbedUrl' => $mapEmbedUrl,
         ]);
     }
 
@@ -495,5 +497,76 @@ class PublicPageController extends Controller
         }
 
         return $catalog;
+    }
+
+    private function resolveMapEmbedUrl(array $publicPage, ?School $school): ?string
+    {
+        $raw = trim((string) ($publicPage['map_embed_url'] ?? ''));
+
+        if ($raw === '') {
+            $address = trim((string) ($school?->address ?? ''));
+            if ($address !== '') {
+                return 'https://www.google.com/maps?q=' . rawurlencode($address) . '&output=embed';
+            }
+            return null;
+        }
+
+        if (!filter_var($raw, FILTER_VALIDATE_URL)) {
+            $extracted = $this->extractEmbedSrc($raw);
+            if ($extracted === null || !filter_var($extracted, FILTER_VALIDATE_URL)) {
+                return null;
+            }
+            $raw = $extracted;
+        }
+
+        $normalizedRaw = strtolower($raw);
+        if (str_contains($normalizedRaw, '/maps/embed') || str_contains($normalizedRaw, 'output=embed')) {
+            return $raw;
+        }
+
+        $parsed = parse_url($raw);
+        $host = strtolower((string) ($parsed['host'] ?? ''));
+
+        if ($host === '') {
+            return $raw;
+        }
+
+        $isGoogleMapsHost = str_contains($host, 'google.') || str_contains($host, 'maps.app.goo.gl');
+        if (!$isGoogleMapsHost) {
+            return $raw;
+        }
+
+        parse_str((string) ($parsed['query'] ?? ''), $queryParams);
+        $query = trim((string) ($queryParams['q'] ?? $queryParams['query'] ?? ''));
+
+        if ($query === '') {
+            $path = trim((string) ($parsed['path'] ?? ''), '/');
+            if ($path !== '') {
+                $segments = array_values(array_filter(explode('/', $path), fn ($seg) => $seg !== ''));
+                $last = urldecode((string) end($segments));
+                if ($last !== '' && !in_array(strtolower($last), ['maps', 'place', 'dir'], true)) {
+                    $query = str_replace('+', ' ', $last);
+                }
+            }
+        }
+
+        if ($query === '') {
+            return $raw;
+        }
+
+        return 'https://www.google.com/maps?q=' . rawurlencode($query) . '&output=embed';
+    }
+
+    private function extractEmbedSrc(string $raw): ?string
+    {
+        if (preg_match('/\bsrc\s*=\s*([\"\'])(.*?)\1/i', $raw, $matches) === 1) {
+            return html_entity_decode(trim($matches[2]), ENT_QUOTES | ENT_HTML5);
+        }
+
+        if (preg_match('/\bsrc\s*=\s*([^\"\'>\s]+)/i', $raw, $matches) === 1) {
+            return html_entity_decode(trim($matches[1]), ENT_QUOTES | ENT_HTML5);
+        }
+
+        return null;
     }
 }

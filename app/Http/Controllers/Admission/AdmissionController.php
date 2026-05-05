@@ -21,6 +21,8 @@ use App\Support\NigeriaData;
 use App\Support\PublicPageContent;
 use App\Support\SchoolContext;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -125,27 +127,48 @@ class AdmissionController extends Controller
         });
 
         // Attempt confirmation email — force success even if email fails
+        $emailNotificationsEnabled = $this->emailNotificationsEnabled($school);
+        if ($emailNotificationsEnabled) {
+            try {
+                $this->configureSmtpForSchool($school);
+            } catch (\Throwable $exception) {
+                Log::warning('Admission SMTP configuration could not be applied; falling back to default mailer.', [
+                    'school_id' => $school?->id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
         $emailSent = false;
-        try {
-            Mail::to($admission->parent_email)->send(new AdmissionReceived($admission, $school));
-            $emailSent = true;
-        } catch (\Throwable $e) {
-            Log::warning('Admission confirmation email failed', [
+        if ($emailNotificationsEnabled) {
+            try {
+                Mail::to($admission->parent_email)->send(new AdmissionReceived($admission, $school));
+                $emailSent = true;
+            } catch (\Throwable $e) {
+                Log::warning('Admission confirmation email failed', [
+                    'admission_id' => $admission->id,
+                    'error'        => $e->getMessage(),
+                ]);
+            }
+        } else {
+            Log::info('Admission confirmation email skipped because email notifications are disabled.', [
                 'admission_id' => $admission->id,
-                'error'        => $e->getMessage(),
+                'school_id' => $school?->id,
             ]);
         }
 
-        try {
-            $adminRecipients = $this->resolveAdmissionAdminRecipients($school);
-            if (!empty($adminRecipients)) {
-                Mail::to($adminRecipients)->send(new AdmissionSubmittedAdmin($admission, $school));
+        if ($emailNotificationsEnabled) {
+            try {
+                $adminRecipients = $this->resolveAdmissionAdminRecipients($school);
+                if (!empty($adminRecipients)) {
+                    Mail::to($adminRecipients)->send(new AdmissionSubmittedAdmin($admission, $school));
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Admission admin notification email failed', [
+                    'admission_id' => $admission->id,
+                    'error'        => $e->getMessage(),
+                ]);
             }
-        } catch (\Throwable $e) {
-            Log::warning('Admission admin notification email failed', [
-                'admission_id' => $admission->id,
-                'error'        => $e->getMessage(),
-            ]);
         }
 
         return redirect()->route('admission.success')
@@ -269,14 +292,26 @@ class AdmissionController extends Controller
             in_array($validated['status'], ['approved', 'rejected']) &&
             $previousStatus !== $validated['status']
         ) {
-            try {
-                $school = auth()->user()?->school;
-                Mail::to($admission->parent_email)->send(new AdmissionStatusChanged($admission, $school));
-            } catch (\Throwable $e) {
-                Log::warning('Admission status email failed', [
-                    'admission_id' => $admission->id,
-                    'error'        => $e->getMessage(),
-                ]);
+            $school = auth()->user()?->school ?? $admission->school;
+            if ($this->emailNotificationsEnabled($school)) {
+                try {
+                    $this->configureSmtpForSchool($school);
+                } catch (\Throwable $exception) {
+                    Log::warning('Admission review SMTP configuration could not be applied; falling back to default mailer.', [
+                        'admission_id' => $admission->id,
+                        'school_id' => $school?->id,
+                        'error' => $exception->getMessage(),
+                    ]);
+                }
+
+                try {
+                    Mail::to($admission->parent_email)->send(new AdmissionStatusChanged($admission, $school));
+                } catch (\Throwable $e) {
+                    Log::warning('Admission status email failed', [
+                        'admission_id' => $admission->id,
+                        'error'        => $e->getMessage(),
+                    ]);
+                }
             }
         }
 
@@ -412,13 +447,30 @@ class AdmissionController extends Controller
         $mailTo    = $candidateEmails->all();
         $sentTo    = implode(', ', $mailTo);
         $emailSent = false;
-        try {
-            Mail::to($mailTo)->send(new StudentEnrolled($admission, $school, $loginEmail, $plainPassword, $loginUrl));
-            $emailSent = true;
-        } catch (\Throwable $e) {
-            Log::warning('Student enrolment email failed', [
+        if ($this->emailNotificationsEnabled($school)) {
+            try {
+                $this->configureSmtpForSchool($school);
+            } catch (\Throwable $exception) {
+                Log::warning('Enrolment SMTP configuration could not be applied; falling back to default mailer.', [
+                    'admission_id' => $admission->id,
+                    'school_id' => $school?->id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+
+            try {
+                Mail::to($mailTo)->send(new StudentEnrolled($admission, $school, $loginEmail, $plainPassword, $loginUrl));
+                $emailSent = true;
+            } catch (\Throwable $e) {
+                Log::warning('Student enrolment email failed', [
+                    'admission_id' => $admission->id,
+                    'error'        => $e->getMessage(),
+                ]);
+            }
+        } else {
+            Log::info('Student enrolment email skipped because email notifications are disabled.', [
                 'admission_id' => $admission->id,
-                'error'        => $e->getMessage(),
+                'school_id' => $school?->id,
             ]);
         }
 
@@ -542,6 +594,53 @@ class AdmissionController extends Controller
         }));
 
         return array_values(array_unique($recipients));
+    }
+
+    private function emailNotificationsEnabled(?School $school): bool
+    {
+        return (bool) data_get($school?->settings, 'email_notifications_enabled', false);
+    }
+
+    private function configureSmtpForSchool(?School $school): void
+    {
+        $smtp = (array) data_get($school?->settings, 'smtp', []);
+        if (!($smtp['enabled'] ?? false)) {
+            return;
+        }
+
+        $host = trim((string) ($smtp['host'] ?? ''));
+        $port = (int) ($smtp['port'] ?? 0);
+        $fromAddress = trim((string) ($smtp['from_address'] ?? ''));
+        $encryption = trim((string) ($smtp['encryption'] ?? 'tls'));
+
+        if ($host === '' || $port < 1 || $fromAddress === '') {
+            throw new \RuntimeException('SMTP host, port, or from address is missing.');
+        }
+
+        $normalizedEncryption = $encryption === 'none' ? null : $encryption;
+        $smtpPassword = trim((string) ($smtp['password'] ?? ''));
+
+        if ($smtpPassword !== '') {
+            try {
+                $smtpPassword = Crypt::decryptString($smtpPassword);
+            } catch (\Throwable $exception) {
+                // Backward compatibility for previously stored plain text SMTP passwords.
+            }
+        }
+
+        Config::set('mail.default', 'smtp');
+        Config::set('mail.mailers.smtp', [
+            'transport' => 'smtp',
+            'host' => $host,
+            'port' => $port,
+            'encryption' => $normalizedEncryption,
+            'username' => trim((string) ($smtp['username'] ?? '')) ?: null,
+            'password' => $smtpPassword ?: null,
+            'timeout' => null,
+            'local_domain' => env('MAIL_EHLO_DOMAIN'),
+        ]);
+        Config::set('mail.from.address', $fromAddress);
+        Config::set('mail.from.name', trim((string) ($smtp['from_name'] ?? '')) ?: ($school?->name ?? config('app.name', 'School')));
     }
 
     private function resolvePublicSchool(Request $request): ?School

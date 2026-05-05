@@ -100,8 +100,9 @@
         }
     </style>
 </head>
-<body style="min-height:100vh;color:{{ $muted }};">
+<body class="site-body" style="min-height:100vh;color:{{ $muted }};">
 @include('public.partials.page-loader', ['school' => $school, 'primary' => $primary])
+<div class="site-bg min-h-screen">
 @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
 <div class="max-w-6xl mx-auto px-4 py-10">
@@ -486,6 +487,7 @@
 </div>
 
 @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
+</div>
 
 <script>
 const lgaMap = @json($states);
