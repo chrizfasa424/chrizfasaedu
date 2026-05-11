@@ -26,8 +26,10 @@
     @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('public.partials.nav-styles')
+    @include('public.partials.premium-body-styles')
     @php
         $tailwindThemeVars = \App\Support\ThemePalette::tailwindCssVars($theme);
     @endphp
@@ -434,6 +436,8 @@
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
+        @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme, 'activeSection' => 'contact'])
+        @if(false)
         <header class="sticky top-0 z-50" style="background-color: {{ $headerBgColor }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
@@ -536,13 +540,14 @@
                 </div>
             </aside>
         </header>
+        @endif
 
         <main class="relative z-0 bg-pattern-grid">
             @php
                 $contactHeroImage = trim((string) ($publicPage['contact_hero_image'] ?? ''));
             @endphp
             {{-- ── Full-width hero ────────────────────────────────── --}}
-            <div class="relative w-full overflow-hidden" style="min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div class="relative w-full overflow-hidden" style="min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;" data-reveal>
                 @if($contactHeroImage !== '')
                     <img src="{{ asset('storage/' . ltrim($contactHeroImage, '/')) }}"
                         alt="{{ $contactPageHeading !== '' ? $contactPageHeading : 'Contact Us' }}"
@@ -561,7 +566,7 @@
                         </span>
                     @endif
                     @if($contactPageHeading !== '')
-                        <h1 class="mt-5 font-display font-bold leading-tight text-white"
+                        <h1 class="public-premium-title mt-5 font-display font-bold leading-tight text-white"
                             style="font-size:clamp(2rem,5vw,3.5rem);text-shadow:0 2px 20px rgba(0,0,0,0.4);max-width:44rem;">
                             {{ $contactPageHeading }}
                         </h1>
@@ -575,10 +580,10 @@
                 </div>
             </div>
 
-            <section class="contact-vibrant mx-auto w-full max-w-7xl px-6 pb-14 pt-10 lg:px-8">
-                <div class="contact-vibrant-shell rounded-3xl border p-4 shadow-soft backdrop-blur-sm md:p-6">
+            <section class="contact-vibrant mx-auto w-full max-w-7xl px-6 pb-14 pt-10 lg:px-8" data-reveal>
+                <div class="contact-vibrant-shell rounded-3xl border p-4 shadow-soft backdrop-blur-sm md:p-6" data-reveal="up">
                     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        <div class="contact-vibrant-panel contact-vibrant-panel--info rounded-2xl border p-6">
+                        <div class="contact-vibrant-panel contact-vibrant-panel--info rounded-2xl border p-6" data-reveal="left">
                             <div class="border-b border-slate-200 pb-4">
                                 <h2 class="font-display text-2xl font-semibold text-slate-900">Contact Information</h2>
                                 <p class="mt-2 text-sm text-slate-500">Reach our team through the channels below.</p>
@@ -646,7 +651,7 @@
 
                         </div>
 
-                        <div class="contact-vibrant-panel contact-vibrant-panel--map flex flex-col rounded-2xl border p-5 shadow-soft">
+                        <div class="contact-vibrant-panel contact-vibrant-panel--map flex flex-col rounded-2xl border p-5 shadow-soft" data-reveal="right">
                             <h2 class="font-display text-2xl font-semibold text-slate-900">School Map</h2>
                             <p class="mt-2 text-sm text-slate-500">Locate us quickly and plan your visit with ease.</p>
                             @if(!empty($mapEmbedUrl))
@@ -672,7 +677,9 @@
         </main>
         @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
     </div>
+    @include('public.partials.premium-body-scripts')
 
+    @if(false)
     <script>
         (function () {
             const menus = Array.from(document.querySelectorAll('[data-menu]'));
@@ -878,6 +885,7 @@
             });
         })();
     </script>
+    @endif
 </body>
 </html>
 

@@ -45,6 +45,6 @@ class HeroSlide extends Model
 
     public function getImageUrlAttribute(): string
     {
-        return asset('storage/' . ltrim((string) $this->image_path, '/'));
+        return \App\Support\MediaAsset::url((string) $this->image_path) ?? '';
     }
 }

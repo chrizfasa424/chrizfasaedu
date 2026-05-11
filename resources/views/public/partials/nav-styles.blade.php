@@ -1,7 +1,11 @@
-{{-- Public nav CSS - include in <head> before Tailwind --}}
+{{-- Shared public-site nav styles --}}
 <style>
     :root {
-        --theme-focus: rgba(15, 118, 110, 0.25);
+        --theme-focus: rgba(13, 148, 136, 0.24);
+    }
+
+    html {
+        scroll-behavior: smooth;
     }
 
     body {
@@ -13,10 +17,10 @@
         position: relative;
         isolation: isolate;
         background:
-            radial-gradient(circle at 12% 0%, rgba(223, 231, 83, 0.30), transparent 34rem),
-            radial-gradient(circle at 90% 0%, rgba(45, 29, 92, 0.34), transparent 34rem),
-            radial-gradient(circle at 88% 100%, rgba(15, 23, 42, 0.26), transparent 36rem),
-            linear-gradient(180deg, rgba(225, 238, 255, 0.92) 0%, rgba(204, 224, 250, 0.86) 54%, rgba(192, 214, 245, 0.90) 100%);
+            radial-gradient(circle at 10% -8%, rgba(245, 188, 63, 0.22), transparent 34rem),
+            radial-gradient(circle at 90% 4%, rgba(20, 184, 166, 0.2), transparent 34rem),
+            radial-gradient(circle at 84% 100%, rgba(14, 116, 144, 0.14), transparent 38rem),
+            linear-gradient(180deg, rgba(252, 253, 250, 0.96) 0%, rgba(244, 249, 245, 0.92) 56%, rgba(238, 245, 239, 0.95) 100%);
     }
 
     .bg-pattern-grid::before {
@@ -26,8 +30,8 @@
         pointer-events: none;
         z-index: 0;
         background:
-            radial-gradient(circle at 8% 24%, rgba(16, 185, 129, 0.24), transparent 24rem),
-            radial-gradient(circle at 92% 78%, rgba(59, 130, 246, 0.22), transparent 22rem);
+            radial-gradient(circle at 10% 24%, rgba(13, 148, 136, 0.18), transparent 24rem),
+            radial-gradient(circle at 90% 76%, rgba(251, 191, 36, 0.14), transparent 24rem);
     }
 
     .bg-pattern-grid > * {
@@ -45,23 +49,37 @@
         text-justify: auto;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-            scroll-behavior: auto !important;
-        }
+    .public-site-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 18px 34px -30px rgba(15, 23, 42, 0.42);
+        backdrop-filter: saturate(140%) blur(12px);
+        -webkit-backdrop-filter: saturate(140%) blur(12px);
+    }
+
+    .public-header-shell {
+        position: relative;
+    }
+
+    .public-header-shell::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        pointer-events: none;
     }
 
     .theme-nav-link {
-        color: #334155;
+        color: #1e293b !important;
+        border-radius: 0.75rem;
     }
 
     .public-desktop-nav {
         display: none;
+        background-color: rgba(255, 255, 255, 0.94) !important;
+        color: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.62);
+        box-shadow: 0 16px 30px -28px rgba(15, 23, 42, 0.46);
     }
 
     @media (min-width: 1024px) {
@@ -70,40 +88,22 @@
         }
     }
 
-    @keyframes fx-menu-hover-blink {
-        0%, 49% {
-            box-shadow: none;
-        }
-        50%, 100% {
-            box-shadow: 0 0 0 1px color-mix(in srgb, var(--submenu-secondary, #DFE753) 78%, transparent),
-                        0 0 15px color-mix(in srgb, var(--submenu-secondary, #DFE753) 40%, transparent);
-        }
-    }
-
     .theme-nav-link:hover,
     .theme-nav-link:focus-visible {
-        background-color: var(--submenu-secondary, #DFE753) !important;
+        background-color: color-mix(in srgb, var(--submenu-secondary, #f4c857) 80%, white) !important;
         color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-nav-link-active {
-        background-color: var(--submenu-primary, #25333E) !important;
+        background-color: color-mix(in srgb, var(--submenu-primary, #115e59) 92%, black 8%) !important;
         color: #ffffff !important;
-    }
-
-    .theme-nav-link:hover,
-    .theme-nav-link:focus-visible,
-    .theme-submenu-link:hover,
-    .theme-submenu-link:focus-visible,
-    .theme-mobile-submenu-link:hover,
-    .theme-mobile-submenu-link:focus-visible {
-        animation: fx-menu-hover-blink 0.14s steps(2, end) infinite;
+        box-shadow: 0 10px 20px -16px rgba(15, 23, 42, 0.72);
     }
 
     .theme-header-action-outline {
         border-color: rgba(255, 255, 255, 0.55);
         color: #ffffff;
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(10px);
     }
 
     .theme-header-action-outline:hover,
@@ -116,7 +116,7 @@
     .theme-header-action-solid {
         background-color: #ffffff;
         color: var(--submenu-primary, #25333E);
-        box-shadow: 0 14px 34px -20px rgba(15, 23, 42, 0.45);
+        box-shadow: 0 12px 26px -20px rgba(15, 23, 42, 0.42);
     }
 
     .theme-header-action-solid:hover,
@@ -149,44 +149,55 @@
     }
 
     .theme-submenu-panel {
-        background-color: var(--submenu-primary, #25333E);
+        background-color: color-mix(in srgb, var(--submenu-primary, #115e59) 88%, #0b1320 12%);
         border-color: var(--submenu-primary, #25333E);
-        box-shadow: 0 20px 40px -28px rgba(15, 23, 42, 0.45);
+        box-shadow: 0 24px 42px -30px rgba(15, 23, 42, 0.58);
     }
 
     .theme-submenu-heading {
         color: rgba(255, 255, 255, 0.72);
-        opacity: 0.78;
+        opacity: 0.8;
     }
 
     .theme-submenu-link {
         color: #ffffff;
+        border-radius: 0.6rem;
     }
 
     .theme-submenu-link:hover,
     .theme-submenu-link:focus-visible {
-        background-color: var(--submenu-secondary, #DFE753) !important;
+        background-color: color-mix(in srgb, var(--submenu-secondary, #f4c857) 84%, white) !important;
         color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-submenu-link-active {
-        background-color: var(--submenu-primary, #25333E) !important;
-        color: #ffffff !important;
+        background-color: color-mix(in srgb, var(--submenu-secondary, #f4c857) 84%, white) !important;
+        color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-mobile-submenu-link {
         color: var(--submenu-primary);
+        border-radius: 0.6rem;
     }
 
     .theme-mobile-submenu-link:hover,
     .theme-mobile-submenu-link:focus-visible {
-        background-color: var(--submenu-secondary, #DFE753) !important;
+        background-color: color-mix(in srgb, var(--submenu-secondary, #f4c857) 84%, white) !important;
         color: var(--submenu-hover-text, #25333E) !important;
     }
 
     .theme-mobile-submenu-link-active {
         background-color: var(--submenu-primary, #25333E) !important;
         color: #ffffff !important;
+    }
+
+    .theme-nav-link:hover,
+    .theme-nav-link:focus-visible,
+    .theme-submenu-link:hover,
+    .theme-submenu-link:focus-visible,
+    .theme-mobile-submenu-link:hover,
+    .theme-mobile-submenu-link:focus-visible {
+        animation: none !important;
     }
 
     a:focus-visible,
@@ -198,5 +209,19 @@
 
     [x-cloak] {
         display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 </style>

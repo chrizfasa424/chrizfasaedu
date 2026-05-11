@@ -2,6 +2,48 @@
 @section('title', 'Staff')
 @section('header', 'Staff')
 
+@push('styles')
+<style>
+    .staff-grid-shell {
+        border-color: rgba(30, 64, 175, 0.2);
+        box-shadow: 0 18px 36px -28px rgba(15, 23, 42, 0.5);
+    }
+
+    .staff-grid-table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .staff-grid-table thead th {
+        border-bottom: 1px solid #93c5fd;
+        border-right: 1px solid #dbeafe;
+        background: linear-gradient(180deg, #eff6ff 0%, #e0ecff 100%);
+        color: #1e3a8a;
+    }
+
+    .staff-grid-table thead th:last-child {
+        border-right: none;
+    }
+
+    .staff-grid-table tbody td {
+        border-bottom: 1px solid #dbeafe;
+        border-right: 1px solid #e2e8f0;
+    }
+
+    .staff-grid-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .staff-grid-table tbody tr:nth-child(even) td {
+        background: #f8fbff;
+    }
+
+    .staff-grid-table tbody tr:hover td {
+        background: #ecfeff;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="space-y-6">
 
@@ -55,9 +97,9 @@
     </div>
     @endif
 
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <div class="staff-grid-shell rounded-2xl border bg-white shadow-sm overflow-hidden">
+        <table class="staff-grid-table min-w-full text-sm">
+            <thead class="text-xs font-semibold uppercase tracking-wide">
                 <tr>
                     <th class="px-5 py-3 text-left w-10">
                         <input id="select-all-staff" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
@@ -71,9 +113,9 @@
                     <th class="px-5 py-3 text-left">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
+            <tbody>
                 @forelse($staff as $member)
-                <tr class="hover:bg-slate-50">
+                <tr>
                     <td class="px-5 py-3">
                         <input type="checkbox"
                                class="staff-checkbox h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"

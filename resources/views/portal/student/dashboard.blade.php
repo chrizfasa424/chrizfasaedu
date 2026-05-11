@@ -63,6 +63,28 @@
     $currencyPrefix = preg_match('/^[A-Za-z]{3}$/', $currencySymbol)
         ? strtoupper($currencySymbol) . ' '
         : $currencySymbol;
+    $portalAuthUser = auth('portal')->user();
+    $webAuthUser = auth()->user();
+    $studentHeroPhotoPath = trim((string) ($student->photo ?: ($portalAuthUser ? $portalAuthUser->avatar : ($webAuthUser ? $webAuthUser->avatar : ''))));
+    $studentHeroPhotoSrc = null;
+
+    if ($studentHeroPhotoPath !== '') {
+        if (\Illuminate\Support\Str::startsWith($studentHeroPhotoPath, ['http://', 'https://'])) {
+            $studentHeroPhotoSrc = $studentHeroPhotoPath;
+        } else {
+            $normalizedStudentHeroPhotoPath = str_replace('\\', '/', ltrim($studentHeroPhotoPath, '/'));
+            if (\Illuminate\Support\Str::startsWith($normalizedStudentHeroPhotoPath, 'storage/')) {
+                $normalizedStudentHeroPhotoPath = \Illuminate\Support\Str::after($normalizedStudentHeroPhotoPath, 'storage/');
+            }
+
+            $normalizedStudentHeroPhotoPath = ltrim($normalizedStudentHeroPhotoPath, '/');
+            if ($normalizedStudentHeroPhotoPath !== '') {
+                $studentHeroPhotoSrc = file_exists(public_path('storage/' . $normalizedStudentHeroPhotoPath))
+                    ? asset('storage/' . $normalizedStudentHeroPhotoPath)
+                    : url('/media/public/' . implode('/', array_map('rawurlencode', explode('/', $normalizedStudentHeroPhotoPath))));
+            }
+        }
+    }
 @endphp
 
 @section('content')
@@ -118,8 +140,8 @@
 
         <div class="relative z-10 flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8 lg:p-10">
             <div class="flex items-center gap-5">
-                @if($student->photo)
-                    <img src="{{ asset('storage/' . ltrim($student->photo, '/')) }}"
+                @if($studentHeroPhotoSrc)
+                    <img src="{{ $studentHeroPhotoSrc }}"
                          alt="{{ $student->full_name }}"
                          class="h-20 w-20 rounded-2xl border-2 border-white/20 object-cover shadow-xl">
                 @else

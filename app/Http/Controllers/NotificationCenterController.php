@@ -15,9 +15,8 @@ class NotificationCenterController extends Controller
         $user = $this->currentUser();
         abort_unless($user, 403, 'Unauthorized.');
 
-        $roleValue = (string) ($user->role?->value ?? $user->role ?? '');
-        $canManageResultFeedbackInbox = ($user->isSuperAdmin() || $user->isSchoolAdmin() || $user->isTeacher())
-            || in_array($roleValue, ['principal', 'vice_principal'], true);
+        $canManageResultFeedbackInbox = $user->canManageResultFeedbackInbox();
+        $bellBreakdown = $user->notificationBellBreakdown();
 
         $quickLinks = [];
 
@@ -75,7 +74,7 @@ class NotificationCenterController extends Controller
             }
         }
 
-        $bellCount = (int) collect($quickLinks)->sum('count');
+        $bellCount = $user->notificationBellCount();
 
         $recentNotifications = $user->notifications()
             ->latest()
@@ -95,10 +94,11 @@ class NotificationCenterController extends Controller
         return view('notifications.index', [
             'quickLinks' => $quickLinks,
             'bellCount' => $bellCount,
+            'bellBreakdown' => $bellBreakdown,
             'recentNotifications' => $recentNotifications,
             'databaseUnreadCount' => $user->unreadNotifications()->count(),
             'isPortalUser' => ($user->isStudent() || $user->isParent()),
-            'notificationRoutePrefix' => $this->notificationRoutePrefix($user),
+            'notificationRoutePrefix' => $user->notificationRoutePrefix(),
         ]);
     }
 
@@ -125,7 +125,7 @@ class NotificationCenterController extends Controller
 
         $user->unreadNotifications()->update(['read_at' => now()]);
 
-        $routeName = $this->notificationRoutePrefix($user) . '.index';
+        $routeName = $user->notificationRoutePrefix() . '.index';
 
         return redirect()
             ->route($routeName)
@@ -139,20 +139,6 @@ class NotificationCenterController extends Controller
         }
 
         return auth()->user() ?? auth('portal')->user();
-    }
-
-    private function notificationRoutePrefix($user): string
-    {
-        if ($user->isStudent() || $user->isParent()) {
-            return 'portal.notifications';
-        }
-
-        $roleValue = (string) ($user->role?->value ?? $user->role ?? '');
-        if (in_array($roleValue, ['teacher', 'staff', 'accountant', 'librarian', 'driver', 'nurse'], true)) {
-            return 'staff.notifications';
-        }
-
-        return 'notifications';
     }
 
     private function notificationTitle(string $type): string

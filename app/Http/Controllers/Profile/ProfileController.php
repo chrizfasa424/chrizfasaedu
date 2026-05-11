@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
@@ -116,11 +119,9 @@ class ProfileController extends Controller
 
         // Delete old photo
         $old = $profile?->photo ?? $user->avatar;
-        if ($old && Storage::disk('public')->exists($old)) {
-            Storage::disk('public')->delete($old);
-        }
+        $this->deleteProfilePhotoFile($old);
 
-        $path = $request->file('photo')->store('avatars', 'public');
+        $path = $this->storeProfilePhoto($request->file('photo'));
 
         // Store on profile if it has one, otherwise on the user avatar field
         if ($profile && in_array('photo', $profile->getFillable())) {
@@ -139,9 +140,7 @@ class ProfileController extends Controller
         $profile = $this->resolveProfile($user);
 
         $photo = $profile?->photo ?? $user->avatar;
-        if ($photo && Storage::disk('public')->exists($photo)) {
-            Storage::disk('public')->delete($photo);
-        }
+        $this->deleteProfilePhotoFile($photo);
 
         if ($profile && in_array('photo', $profile->getFillable())) {
             $profile->update(['photo' => null]);
@@ -150,6 +149,56 @@ class ProfileController extends Controller
         }
 
         return back()->with('success', 'Profile photo removed.');
+    }
+
+    private function storeProfilePhoto(UploadedFile $file): string
+    {
+        try {
+            return $file->store('avatars', 'public');
+        } catch (\Throwable $primaryException) {
+            try {
+                // Production-safe fallback when the configured disk is unavailable or not writable.
+                $fallbackDirectory = public_path('storage/avatars');
+                if (!is_dir($fallbackDirectory)) {
+                    @mkdir($fallbackDirectory, 0755, true);
+                }
+
+                $extension = strtolower((string) ($file->guessExtension() ?: $file->extension() ?: 'jpg'));
+                $filename = Str::uuid()->toString() . '.' . $extension;
+                $file->move($fallbackDirectory, $filename);
+
+                return 'avatars/' . $filename;
+            } catch (\Throwable $fallbackException) {
+                report($primaryException);
+                report($fallbackException);
+
+                throw ValidationException::withMessages([
+                    'photo' => 'Photo upload failed on the server. Please check write permissions for storage and try again.',
+                ]);
+            }
+        }
+    }
+
+    private function deleteProfilePhotoFile(?string $path): void
+    {
+        $normalizedPath = trim((string) $path);
+        if ($normalizedPath === '') {
+            return;
+        }
+
+        $normalizedPath = str_replace('\\', '/', ltrim($normalizedPath, '/'));
+        if (Str::startsWith($normalizedPath, 'storage/')) {
+            $normalizedPath = Str::after($normalizedPath, 'storage/');
+        }
+
+        if (Storage::disk('public')->exists($normalizedPath)) {
+            Storage::disk('public')->delete($normalizedPath);
+        }
+
+        $publicStorageFile = public_path('storage/' . $normalizedPath);
+        if (is_file($publicStorageFile)) {
+            @unlink($publicStorageFile);
+        }
     }
 
     // ── Resolve extended profile ───────────────────────────

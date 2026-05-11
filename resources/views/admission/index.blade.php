@@ -3,6 +3,48 @@
 @section('title', 'Admissions')
 @section('header', 'Admission Applications')
 
+@push('styles')
+<style>
+    .admission-grid-shell {
+        border-color: rgba(30, 64, 175, 0.2);
+        box-shadow: 0 18px 36px -28px rgba(15, 23, 42, 0.5);
+    }
+
+    .admission-grid-table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .admission-grid-table thead th {
+        border-bottom: 1px solid #93c5fd;
+        border-right: 1px solid #dbeafe;
+        background: linear-gradient(180deg, #eff6ff 0%, #e0ecff 100%);
+        color: #1e3a8a;
+    }
+
+    .admission-grid-table thead th:last-child {
+        border-right: none;
+    }
+
+    .admission-grid-table tbody td {
+        border-bottom: 1px solid #dbeafe;
+        border-right: 1px solid #e2e8f0;
+    }
+
+    .admission-grid-table tbody td:last-child {
+        border-right: none;
+    }
+
+    .admission-grid-table tbody tr:nth-child(even) td {
+        background: #f8fbff;
+    }
+
+    .admission-grid-table tbody tr:hover td {
+        background: #ecfeff;
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     $statusConfig = [
@@ -88,26 +130,26 @@
 </div>
 
 {{-- Table --}}
-<div class="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
-    <table class="w-full text-sm">
+<div class="admission-grid-shell rounded-2xl border bg-white shadow-sm overflow-hidden">
+    <table class="admission-grid-table w-full text-sm">
         <thead>
-            <tr class="border-b border-slate-100 bg-slate-50">
-                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">App. No.</th>
-                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Student</th>
-                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 hidden md:table-cell">Class Applied</th>
-                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 hidden lg:table-cell">Parent / Phone</th>
-                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 hidden sm:table-cell">Date</th>
-                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Status</th>
+            <tr>
+                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider">App. No.</th>
+                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider">Student</th>
+                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider hidden md:table-cell">Class Applied</th>
+                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider hidden lg:table-cell">Parent / Phone</th>
+                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider hidden sm:table-cell">Date</th>
+                <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider">Status</th>
                 <th class="px-5 py-3.5"></th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-slate-50">
+        <tbody>
             @forelse($admissions as $admission)
             @php
                 $sv  = $admission->status->value;
                 $cfg = $statusConfig[$sv] ?? ['bg' => '#f1f5f9', 'text' => '#475569', 'dot' => '#94a3b8', 'label' => ucfirst($sv)];
             @endphp
-            <tr class="group hover:bg-slate-50/70 transition-colors">
+            <tr class="group transition-colors">
                 <td class="px-5 py-4">
                     <span class="font-mono text-xs font-semibold text-slate-500">{{ $admission->application_number }}</span>
                 </td>

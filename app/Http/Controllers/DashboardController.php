@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\Admission;
 use App\Models\Result;
 use App\Models\SchoolClass;
+use App\Models\StudentResultFeedback;
 use App\Models\Timetable;
 use App\Support\PublicPageContent;
 use Illuminate\Http\Request;
@@ -26,6 +27,11 @@ class DashboardController extends Controller
                 ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
                 ->active()
                 ->count(),
+            'students_with_unpaid_fees' => Student::query()
+                ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
+                ->active()
+                ->whereHas('invoices', fn ($query) => $query->where('balance', '>', 0))
+                ->count(),
             'total_staff' => Staff::query()
                 ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
                 ->active()
@@ -33,6 +39,11 @@ class DashboardController extends Controller
             'pending_admissions' => Admission::query()
                 ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
                 ->pending()
+                ->count(),
+            'open_student_queries' => StudentResultFeedback::query()
+                ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
+                ->where('feedback_type', 'query')
+                ->where('status', 'open')
                 ->count(),
             'outstanding_fees' => Invoice::query()
                 ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
@@ -53,15 +64,15 @@ class DashboardController extends Controller
         $recentAdmissions = Admission::query()
             ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
             ->latest()
-            ->take(5)
-            ->get();
+            ->paginate(5, ['*'], 'admissions_page')
+            ->withQueryString();
 
         $recentPayments = \App\Models\Payment::with('student')
             ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))
             ->whereIn('status', ['approved', 'confirmed'])
             ->latest()
-            ->take(10)
-            ->get();
+            ->paginate(5, ['*'], 'payments_page')
+            ->withQueryString();
 
         $classDistribution = SchoolClass::query()
             ->when($schoolId, fn ($query) => $query->where('school_id', $schoolId))

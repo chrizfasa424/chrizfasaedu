@@ -41,7 +41,7 @@
     $school = $invoice->school;
     $student = $invoice->student;
     $status = strtolower((string) ($invoice->status?->value ?? $invoice->status));
-    $logoPath = $school?->logo ? public_path('storage/' . ltrim($school->logo, '/')) : null;
+    $logoPath = $school?->logo ? \App\Support\MediaAsset::publicPath($school->logo) : null;
 @endphp
 <div class="wrap">
     <div class="actions">

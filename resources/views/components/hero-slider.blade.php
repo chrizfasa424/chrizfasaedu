@@ -288,6 +288,53 @@
             top: 120%;
         }
 
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            background: rgba(255, 255, 255, 0.14);
+            padding: 0.45rem 0.9rem;
+            font-family: "Space Grotesk", "Outfit", sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(7px);
+        }
+
+        .hero-badge::before {
+            content: "";
+            width: 0.48rem;
+            height: 0.48rem;
+            border-radius: 9999px;
+            background: var(--hero-secondary, #DFE753);
+            box-shadow: 0 0 0 4px rgba(223, 231, 83, 0.18);
+        }
+
+        .hero-title-type {
+            font-family: "Fraunces", "Outfit", serif;
+            font-variation-settings: "SOFT" 60, "WONK" 0;
+            letter-spacing: -0.02em;
+            line-height: 0.95;
+        }
+
+        .hero-copy-type {
+            max-width: 46ch;
+            font-family: "Space Grotesk", "Manrope", sans-serif;
+            letter-spacing: 0.01em;
+        }
+
+        .hero-metric-item {
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(150deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+            padding: 0.82rem 0.9rem;
+            backdrop-filter: blur(8px);
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .hero-gloss-btn::after {
                 transition: none;
@@ -298,7 +345,7 @@
 
 @if($slides->isNotEmpty())
 <section
-    class="hero-fullbleed relative isolate overflow-hidden bg-slate-950"
+    class="hero-fullbleed relative isolate overflow-hidden bg-teal-950"
     style="--hero-primary: {{ $heroPrimary }}; --hero-secondary: {{ $heroSecondary }}; --hero-text-on-primary: {{ $heroTextOnPrimary }}; --hero-text-on-secondary: {{ $heroTextOnSecondary }}; --hero-surface: {{ $heroSurface }}; --hero-heading: {{ $heroHeading }}; --hero-body: {{ $heroBody }};"
     x-data="{
         active: 0,
@@ -332,7 +379,7 @@
                     @if(filled(data_get($slide, 'image_url')) && !data_get($slide, 'is_placeholder_visual'))
                         <img src="{{ data_get($slide, 'image_url') }}" alt="{{ data_get($slide, 'title') }}" class="h-full w-full object-cover object-center">
                     @else
-                        <div class="absolute inset-0 bg-[linear-gradient(135deg,#1f2a44_0%,#25333E_42%,#355AA0_100%)]"></div>
+                        <div class="absolute inset-0 bg-[linear-gradient(135deg,#0f172a_0%,#0f766e_48%,#0ea5e9_100%)]"></div>
                         <div class="absolute inset-0 flex items-center justify-center px-6">
                             <div class="hero-glass-panel relative max-w-xl rounded-3xl p-6 text-white">
                                 <p class="text-sm font-semibold uppercase text-white/80">Hero Slides</p>
@@ -344,9 +391,9 @@
             </template>
         @endforeach
 
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-950/88 via-slate-950/48 to-slate-950/12"></div>
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/72 via-transparent to-slate-950/18"></div>
-        <div class="pointer-events-none absolute inset-0 opacity-35" style="background-image: linear-gradient(rgba(255,255,255,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px); background-size: 42px 42px;"></div>
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-950/82 via-slate-950/42 to-slate-950/10"></div>
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/66 via-transparent to-slate-950/14"></div>
+        <div class="pointer-events-none absolute inset-0 opacity-28" style="background-image: linear-gradient(rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 46px 46px;"></div>
 
         <div class="relative z-10 mx-auto flex min-h-[680px] w-full max-w-7xl items-end px-4 py-14 sm:min-h-[720px] sm:px-6 sm:py-16 lg:min-h-[760px] lg:px-8 lg:py-20">
             @foreach ($slides as $index => $slide)
@@ -354,15 +401,21 @@
                     <div
                         x-cloak
                         x-transition:enter="transition ease-out duration-500 delay-100"
-                        x-transition:enter-start="opacity-0 translate-y-4"
-                        x-transition:enter-end="opacity-100 translate-y-0"
-                        class="w-full max-w-5xl text-white"
-                    >
-                        <h1 class="max-w-4xl font-[Georgia,serif] text-4xl font-semibold leading-none text-white drop-shadow-[0_5px_22px_rgba(2,6,23,0.76)] sm:text-5xl lg:text-7xl">
+                    x-transition:enter-start="opacity-0 translate-y-4"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    class="w-full max-w-5xl text-white"
+                >
+                        @if(filled(data_get($slide, 'badge_text')))
+                            <p class="hero-badge">
+                                {{ data_get($slide, 'badge_text') }}
+                            </p>
+                        @endif
+
+                        <h1 class="hero-title-type mt-4 max-w-4xl text-4xl font-semibold text-white drop-shadow-[0_5px_22px_rgba(2,6,23,0.76)] sm:text-5xl lg:text-7xl">
                             {{ data_get($slide, 'title') }}
                         </h1>
 
-                        <p class="mt-5 max-w-2xl text-base leading-relaxed text-white drop-shadow-[0_2px_12px_rgba(2,6,23,0.82)] sm:text-lg lg:text-xl">
+                        <p class="hero-copy-type mt-5 text-base leading-relaxed text-white drop-shadow-[0_2px_12px_rgba(2,6,23,0.82)] sm:text-lg lg:text-xl">
                             {{ data_get($slide, 'subtitle') }}
                         </p>
 
@@ -383,7 +436,7 @@
                         @if($metrics->isNotEmpty())
                             <div class="mt-8 grid max-w-3xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
                                 @foreach($metrics as $metric)
-                                    <div>
+                                    <div class="hero-metric-item">
                                         <p class="text-3xl font-black leading-none text-white drop-shadow-[0_3px_14px_rgba(2,6,23,0.85)] sm:text-4xl">{{ data_get($metric, 'value') }}</p>
                                         <p class="mt-1 text-sm font-medium text-white/86 drop-shadow-[0_2px_10px_rgba(2,6,23,0.82)]">{{ data_get($metric, 'label') }}</p>
                                     </div>

@@ -25,8 +25,9 @@
     @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('public.partials.nav-styles')
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @php
         $theme = \App\Support\ThemePalette::fromPublicPage($publicPage);
@@ -40,32 +41,6 @@
     body {
         text-align: justify;
         text-justify: inter-word;
-    }
-
-    .bg-pattern-grid {
-        position: relative;
-        isolation: isolate;
-        background:
-            radial-gradient(circle at 12% 0%, rgba(223, 231, 83, 0.30), transparent 34rem),
-            radial-gradient(circle at 90% 0%, rgba(45, 29, 92, 0.34), transparent 34rem),
-            radial-gradient(circle at 88% 100%, rgba(15, 23, 42, 0.26), transparent 36rem),
-            linear-gradient(180deg, rgba(225, 238, 255, 0.92) 0%, rgba(204, 224, 250, 0.86) 54%, rgba(192, 214, 245, 0.90) 100%);
-    }
-
-    .bg-pattern-grid::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background:
-            radial-gradient(circle at 8% 24%, rgba(16, 185, 129, 0.24), transparent 24rem),
-            radial-gradient(circle at 92% 78%, rgba(59, 130, 246, 0.22), transparent 22rem);
-    }
-
-    .bg-pattern-grid > * {
-        position: relative;
-        z-index: 1;
     }
 
     h1,
@@ -789,85 +764,159 @@
 
     .teacher-marquee-window {
         overflow: hidden;
-        background: var(--submenu-secondary, #DFE753) !important;
-    }
-
-    @keyframes teacher-marquee-scroll {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(-50%);
-        }
+        background: transparent !important;
     }
 
     .teacher-marquee-track {
+        --teacher-marquee-gap: 1.35rem;
+        --teacher-marquee-card-width: 255px;
+        display: grid;
+        grid-template-columns: repeat(var(--teacher-columns, 4), minmax(220px, 280px));
+        gap: 1.35rem;
+        width: 100%;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .teacher-marquee-track.is-static {
+        animation: none;
+    }
+
+    .teacher-marquee-track.is-scrolling {
         display: flex;
-        align-items: center;
-        gap: 1.25rem;
         width: max-content;
-        padding: 1rem 1.1rem;
+        gap: 0;
         animation: teacher-marquee-scroll 34s linear infinite;
         will-change: transform;
     }
 
-    .teacher-marquee-track:hover {
+    .teacher-marquee-track.is-scrolling:hover {
         animation-play-state: paused;
     }
 
-    .teacher-marquee-track.is-static {
-        width: 100%;
-        justify-content: center;
-        animation: none;
+    .teacher-marquee-track.is-scrolling .teacher-marquee-card {
+        flex: 0 0 var(--teacher-marquee-card-width);
+        width: var(--teacher-marquee-card-width);
+        margin-right: var(--teacher-marquee-gap);
+    }
+
+    @keyframes teacher-marquee-scroll {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(-50%);
+        }
     }
 
     .teacher-marquee-card {
-        display: flex;
-        min-width: 260px;
-        align-items: center;
-        gap: 0.8rem;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.6);
+        display: block;
+        min-width: 220px;
+        max-width: 280px;
+        overflow: hidden;
+        border-radius: 1.2rem;
+        background: rgba(255, 255, 255, 0.96);
         border: 1px solid rgba(37, 51, 62, 0.14);
-        padding: 0.55rem 0.8rem;
+        padding: 0;
+        margin-inline: auto;
+    }
+
+    .teacher-marquee-media {
+        position: relative;
+        overflow: hidden;
+        width: 200px;
+        height: 200px;
+        margin: 0.95rem auto 0.2rem;
+        border-radius: 1rem;
+        background: linear-gradient(135deg, #dfe7f5, #e4edf9);
+    }
+
+    .teacher-marquee-media img {
+        display: block;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        object-position: center top;
+        transform-origin: top center;
+        transition: transform 0.33s ease;
+    }
+
+    .teacher-marquee-media-fallback {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #25333E, #36516b);
+        color: #f8fafc;
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+    }
+
+    .teacher-marquee-hover {
+        position: absolute;
+        left: 50%;
+        bottom: 0.95rem;
+        transform: translate(-50%, 14px);
+        border-radius: 999px;
+        background: rgba(37, 51, 62, 0.92);
+        color: #ffffff;
+        padding: 0.42rem 0.75rem;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        opacity: 0;
+        transition: opacity 0.26s ease, transform 0.26s ease;
+        pointer-events: none;
     }
 
     .teacher-marquee-avatar {
-        display: flex;
-        height: 3.3rem;
-        width: 3.3rem;
-        flex-shrink: 0;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #25333E, #4c3892);
-        color: #f8fafc;
-        font-weight: 800;
-        letter-spacing: 0.08em;
+        display: none;
     }
 
     .teacher-marquee-meta {
         min-width: 0;
+        padding: 1rem 1rem 1.1rem;
+        text-align: center;
     }
 
     .teacher-marquee-name {
         color: var(--submenu-hover-text, #25333E) !important;
-        font-size: 0.98rem;
+        font-size: 1.06rem;
         font-weight: 800;
         letter-spacing: 0.02em;
-        white-space: nowrap;
     }
 
     .teacher-marquee-role {
-        color: rgba(37, 51, 62, 0.78) !important;
-        font-size: 0.78rem;
-        white-space: nowrap;
+        color: var(--submenu-primary, #25333E) !important;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-top: 0.35rem;
+        line-height: 1.45;
+    }
+
+    .teacher-marquee-card:hover .teacher-marquee-hover {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    .teacher-marquee-card:hover .teacher-marquee-media img {
+        transform: scale(1.05);
     }
 
     @media (max-width: 767px) {
-        .teacher-marquee-card {
-            min-width: 220px;
+        .teacher-marquee-track.is-static {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .teacher-marquee-track.is-scrolling {
+            --teacher-marquee-card-width: 220px;
+        }
+
+        .teacher-marquee-name {
+            font-size: 1rem;
         }
     }
 
@@ -988,6 +1037,182 @@
     .why-enhance-card-body .rich-text-content * {
         color: rgba(255, 255, 255, 0.94) !important;
     }
+
+    :root {
+        --fx-ease-premium: cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .section-kicker-unified {
+        font-family: "Space Grotesk", "Outfit", sans-serif;
+        letter-spacing: 0.22em;
+    }
+
+    .section-heading-unified {
+        font-family: "Fraunces", "Outfit", serif;
+        font-variation-settings: "SOFT" 60, "WONK" 0;
+        letter-spacing: -0.02em;
+        line-height: 1.04;
+    }
+
+    [data-reveal] {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+        transition: opacity 0.7s var(--fx-ease-premium), transform 0.7s var(--fx-ease-premium);
+        will-change: opacity, transform;
+    }
+
+    [data-reveal="left"] {
+        transform: translate3d(-22px, 0, 0);
+    }
+
+    [data-reveal="right"] {
+        transform: translate3d(22px, 0, 0);
+    }
+
+    [data-reveal].is-visible {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+
+    .why-enhance-section {
+        background:
+            radial-gradient(circle at 8% 10%, rgba(245, 158, 11, 0.16), transparent 40%),
+            radial-gradient(circle at 95% 88%, rgba(13, 148, 136, 0.14), transparent 38%),
+            linear-gradient(180deg, #fbfdf9 0%, #f2f8f4 100%);
+    }
+
+    .why-enhance-shell {
+        border: 1px solid rgba(148, 163, 184, 0.26);
+        border-radius: 2rem;
+        box-shadow: 0 30px 70px -45px rgba(15, 23, 42, 0.52);
+    }
+
+    .why-enhance-card {
+        min-height: 14.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        transition: transform 0.3s var(--fx-ease-premium), box-shadow 0.3s var(--fx-ease-premium);
+    }
+
+    .why-enhance-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 26px 56px -34px rgba(15, 23, 42, 0.6);
+    }
+
+    .why-enhance-card-body h3 {
+        font-family: "Fraunces", "Outfit", serif;
+        font-size: 1.35rem;
+    }
+
+    #academics {
+        background:
+            radial-gradient(circle at 92% 6%, rgba(245, 158, 11, 0.2), transparent 34%),
+            radial-gradient(circle at 6% 90%, rgba(13, 148, 136, 0.16), transparent 38%),
+            linear-gradient(180deg, #eef9f6 0%, #e8f5f1 100%) !important;
+    }
+
+    #academics > .relative.mx-auto > .rounded-3xl {
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.9));
+        box-shadow: 0 28px 60px -40px rgba(15, 23, 42, 0.45);
+    }
+
+    .academics-heading {
+        font-family: "Fraunces", "Outfit", serif;
+        font-variation-settings: "SOFT" 60, "WONK" 0;
+    }
+
+    .academics-primary-card {
+        border: 1px solid rgba(148, 163, 184, 0.28) !important;
+        border-radius: 1.2rem !important;
+        transition: transform 0.28s var(--fx-ease-premium), box-shadow 0.28s var(--fx-ease-premium), background-color 0.28s var(--fx-ease-premium);
+    }
+
+    .academics-primary-card:hover,
+    .academics-primary-card:focus-within {
+        transform: translateY(-5px);
+        box-shadow: 0 22px 44px -30px rgba(15, 23, 42, 0.42);
+    }
+
+    #student-life {
+        background:
+            radial-gradient(circle at 12% 0%, rgba(245, 158, 11, 0.14), transparent 36%),
+            linear-gradient(180deg, #fbfdf9 0%, #f2f8f4 100%);
+    }
+
+    .student-life-fx-card {
+        border: 1px solid rgba(148, 163, 184, 0.24) !important;
+        border-radius: 1.15rem !important;
+        box-shadow: 0 18px 38px -30px rgba(15, 23, 42, 0.48);
+        transition: transform 0.28s var(--fx-ease-premium), box-shadow 0.28s var(--fx-ease-premium), background-color 0.28s var(--fx-ease-premium);
+    }
+
+    .student-life-fx-card:hover,
+    .student-life-fx-card:focus-within {
+        transform: translateY(-6px);
+        box-shadow: 0 25px 44px -34px rgba(15, 23, 42, 0.54);
+    }
+
+    .testimonials-shell {
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        box-shadow: 0 30px 70px -46px rgba(15, 23, 42, 0.5);
+    }
+
+    .testimonials-section {
+        background:
+            radial-gradient(circle at 8% 12%, rgba(245, 158, 11, 0.16), transparent 42%),
+            radial-gradient(circle at 92% 86%, rgba(20, 184, 166, 0.14), transparent 46%),
+            linear-gradient(180deg, #f8fcf9 0%, #eef6f1 100%) !important;
+    }
+
+    .testimonials-stage {
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background: linear-gradient(165deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.62));
+        backdrop-filter: blur(6px);
+    }
+
+    .testimonials-card {
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        box-shadow: 0 24px 44px -34px rgba(15, 23, 42, 0.42);
+        transition: transform 0.28s var(--fx-ease-premium), box-shadow 0.28s var(--fx-ease-premium);
+    }
+
+    .testimonials-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 30px 54px -36px rgba(15, 23, 42, 0.5);
+    }
+
+    .teacher-marquee-shell {
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        box-shadow: 0 24px 56px -38px rgba(15, 23, 42, 0.4);
+    }
+
+    .teacher-marquee-section {
+        background:
+            radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 35%),
+            radial-gradient(circle at bottom left, rgba(13, 148, 136, 0.09), transparent 44%),
+            linear-gradient(180deg, #f9fcfa 0%, #eff7f2 100%) !important;
+    }
+
+    .teacher-marquee-card {
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        box-shadow: 0 16px 30px -24px rgba(15, 23, 42, 0.38);
+        transition: transform 0.24s var(--fx-ease-premium), box-shadow 0.24s var(--fx-ease-premium);
+    }
+
+    .teacher-marquee-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 22px 38px -28px rgba(15, 23, 42, 0.46);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        [data-reveal],
+        [data-reveal="left"],
+        [data-reveal="right"] {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+    }
 </style>
 </head>
 <?php
@@ -996,8 +1221,7 @@
     $whyChooseUs = $publicPage['why_choose_us'] ?? [];
     $whyChooseUsLabel = trim((string) ($publicPage['why_choose_us_label'] ?? 'Why Choose Us'));
     $whyChooseUsIntro = trim((string) ($publicPage['why_choose_us_intro'] ?? ''));
-    $teachersMarqueeLabel = trim((string) ($publicPage['teachers_marquee_label'] ?? 'Our Teachers'));
-    $teachersMarqueeHeading = trim((string) ($publicPage['teachers_marquee_heading'] ?? 'Meet Our Teaching Team'));
+    $teachersMarqueeHeading = trim((string) ($publicPage['teachers_marquee_heading'] ?? 'Our Qualified Teachers'));
     $teachersMarqueeIntro = trim((string) ($publicPage['teachers_marquee_intro'] ?? 'Experienced teachers guiding learners with care, discipline, and excellence.'));
     $programsLabel = trim((string) ($publicPage['programs_label'] ?? 'Programs'));
     $admissionsLabel = trim((string) ($publicPage['admissions_label'] ?? 'Admissions'));
@@ -1144,9 +1368,14 @@
         ->take(6)
         ->values();
 
-    $teachersMarqueeLoopItems = $teachersMarqueeItems->count() > 1
-        ? $teachersMarqueeItems->concat($teachersMarqueeItems)->values()
-        : $teachersMarqueeItems;
+    if ($teachersMarqueeItems->isEmpty()) {
+        $teachersMarqueeItems = collect([
+            ['image' => '', 'name' => 'Rosy Janner', 'role' => 'Senior Finance Lecturer'],
+            ['image' => '', 'name' => 'Mike Hussy', 'role' => 'Senior Finance Lecturer'],
+            ['image' => '', 'name' => 'Daziy Millar', 'role' => 'Senior Finance Lecturer'],
+            ['image' => '', 'name' => 'Kazi Fahim', 'role' => 'Senior Finance Lecturer'],
+        ]);
+    }
 
     $aboutBanners = collect($publicPage['about_banners'] ?? [])
         ->map(function ($item) {
@@ -1377,115 +1606,14 @@
     <div class="site-bg relative min-h-screen overflow-x-hidden">
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
+        @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme, 'activeSection' => 'home'])
 
-        <header class="sticky top-0 z-50" style="background-color: {{ $headerBgColor ?? ($theme['header'] ?? '#25333E') }};">
-            <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
-                <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
-                    @if($school?->logo)
-                        <img src="{{ asset('storage/' . ltrim($school->logo, '/')) }}" alt="{{ $schoolName }} Logo" style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;object-fit:cover;border:1px solid rgba(255,255,255,0.2);background:#fff;">
-                    @else
-                        <div style="height:2.75rem;width:2.75rem;min-width:2.75rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;letter-spacing:0.1em;color:#fff;">
-                            {{ \Illuminate\Support\Str::upper(collect(preg_split('/\s+/', trim($schoolName)))->filter()->take(2)->map(fn($w) => \Illuminate\Support\Str::substr($w,0,1))->implode('')) }}
-                        </div>
-                    @endif
-                </a>
-                <nav class="hidden items-center justify-center gap-1 rounded-2xl bg-white/95 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm xl:flex" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
-                    @foreach($menuSections as $section)
-                        @php
-                            $alignClass = ($loop->last || $loop->iteration >= count($menuSections) - 1) ? 'right-0' : 'left-0';
-                        @endphp
-                        <div class="relative shrink-0" data-menu="{{ $section['id'] }}">
-                            @if(!empty($section['items']))
-                                <button type="button" data-menu-toggle aria-expanded="false" aria-controls="submenu-{{ $section['id'] }}" class="theme-nav-link inline-flex cursor-pointer items-center whitespace-nowrap rounded-xl px-3.5 py-2 text-[15px] font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
-                                    {{ $section['label'] }}
-                                </button>
-                                <div id="submenu-{{ $section['id'] }}" data-menu-panel class="absolute {{ $alignClass }} top-full z-50 hidden w-[22rem] max-w-[calc(100vw-2rem)] pt-3">
-                                    <div
-                                        class="theme-submenu-panel rounded-2xl p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur"
-                                        style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};"
-                                    >
-                                        <p class="theme-submenu-heading px-3 pb-1 text-xs font-bold uppercase tracking-[0.16em]">{{ $section['label'] }}</p>
-                                        <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-submenu-link block rounded-lg px-3 py-2 text-sm font-semibold transition duration-200">
-                                            {{ $section['label'] }} {{ $menuOverviewSuffix !== '' ? $menuOverviewSuffix : 'Overview' }}
-                                        </a>
-                                        @foreach($section['items'] as $menuItem)
-                                            <a href="{{ route('public.submenu', ['section' => $section['id'], 'slug' => \Illuminate\Support\Str::slug($menuItem)]) }}" class="theme-submenu-link block rounded-lg px-3 py-2 text-sm font-medium transition duration-200">
-                                                {{ $menuItem }}
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @else
-                                <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-nav-link inline-flex items-center whitespace-nowrap rounded-xl px-3.5 py-2 text-[15px] font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
-                                    {{ $section['label'] }}
-                                </a>
-                            @endif
-                        </div>
-                    @endforeach
-                </nav>
-                <div class="flex items-center justify-end gap-2 sm:gap-3" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
-                    <a href="{{ route('admission.apply') }}" class="theme-header-action-outline hidden items-center whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 sm:inline-flex">{{ $headerApplyText !== '' ? $headerApplyText : 'Apply' }}</a>
-                    <a href="{{ route('portal.login') }}" class="theme-header-action-solid inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition duration-200 hover:-translate-y-0.5">{{ $headerPortalLoginText !== '' ? $headerPortalLoginText : 'Portal Login' }}</a>
-                    <button type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="mobile-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/40 text-white transition duration-200 hover:bg-white/10 xl:hidden">
-                        <svg data-mobile-menu-open-icon class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                        <svg data-mobile-menu-close-icon class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <div data-mobile-menu-backdrop class="pointer-events-none fixed inset-0 z-40 bg-slate-950/40 opacity-0 transition duration-300 xl:hidden"></div>
-
-            <aside id="mobile-menu" data-mobile-menu class="pointer-events-none fixed inset-y-0 right-0 z-50 w-full max-w-sm translate-x-full overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition duration-300 xl:hidden">
-                <div class="sticky top-0 flex items-center justify-between bg-white/95 px-5 py-4 backdrop-blur">
-                    <p class="font-display text-lg font-semibold text-slate-900">{{ $mobileMenuTitle !== '' ? $mobileMenuTitle : 'Menu' }}</p>
-                    <button type="button" data-mobile-menu-close class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition duration-200 hover:bg-slate-100">
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="px-5 py-5">
-                    <div class="mb-4 flex flex-col gap-2" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
-                        <a href="{{ route('admission.apply') }}" class="theme-mobile-action-outline inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition duration-200">{{ $mobileApplyText !== '' ? $mobileApplyText : 'Apply Now' }}</a>
-                        <a href="{{ route('portal.login') }}" class="theme-mobile-action-solid inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200">{{ $mobilePortalLoginText !== '' ? $mobilePortalLoginText : 'Portal Login' }}</a>
-                    </div>
-
-                    <div class="space-y-2" style="--submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
-                        @foreach($menuSections as $section)
-                            <div class="rounded-xl bg-white shadow-sm">
-                                @if(!empty($section['items']))
-                                    <button type="button" data-mobile-submenu-toggle data-target="mobile-submenu-{{ $section['id'] }}" aria-expanded="false" class="theme-nav-link flex w-full items-center justify-between px-4 py-3.5 text-left text-sm font-semibold transition duration-200">
-                                        <span>{{ $section['label'] }}</span>
-                                        <span data-mobile-submenu-indicator class="text-lg font-medium leading-none text-slate-500">+</span>
-                                    </button>
-                                    <div id="mobile-submenu-{{ $section['id'] }}" data-mobile-submenu-panel class="hidden px-4 pb-4" style="--submenu-primary: {{ $submenuPrimaryColor ?? ($theme['primary']['500'] ?? '#25333E') }}; --submenu-secondary: {{ $submenuSecondaryColor ?? ($theme['secondary']['500'] ?? '#DFE753') }}; --submenu-hover-text: {{ $submenuHoverTextColor ?? ($theme['primary_text_on_secondary'] ?? '#25333E') }};">
-                                        <div class="space-y-1 border-l border-slate-200 pl-4">
-                                            <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-mobile-submenu-link block rounded-lg px-3 py-2 text-sm font-semibold transition duration-200">{{ $section['label'] }} {{ $menuOverviewSuffix !== '' ? $menuOverviewSuffix : 'Overview' }}</a>
-                                            @foreach($section['items'] as $menuItem)
-                                                <a href="{{ route('public.submenu', ['section' => $section['id'], 'slug' => \Illuminate\Support\Str::slug($menuItem)]) }}" class="theme-mobile-submenu-link block rounded-lg px-3 py-2 text-sm transition duration-200">{{ $menuItem }}</a>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @else
-                                    <a href="{{ $section['link'] ?? ('#' . $section['id']) }}" class="theme-nav-link block px-4 py-3.5 text-sm font-semibold transition duration-200">{{ $section['label'] }}</a>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </aside>
-        </header>
-
-        <main class="relative z-0 bg-pattern-grid">
+<main class="relative z-0 bg-pattern-grid">
             <x-hero-slider :school="$school" :public-page="$publicPage" />
 
-            <section class="why-enhance-section py-14">
+            <section class="why-enhance-section py-14" data-reveal>
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="why-enhance-shell p-5 lg:p-7">
+                    <div class="why-enhance-shell p-5 lg:p-7" data-reveal="up">
                         <div class="relative z-10 mb-6">
                             <p class="why-enhance-kicker text-base">{{ $whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us' }}</p>
                             <h2 class="mt-2 font-display text-3xl font-extrabold text-slate-900 sm:text-4xl">What Sets Us Apart</h2>
@@ -1493,13 +1621,13 @@
                         </div>
 
                         <div class="relative z-10 grid gap-6 lg:grid-cols-12">
-                            <div class="lg:col-span-5">
+                            <div class="lg:col-span-5" data-reveal="left">
                                 @if($whyChooseUsIntro !== '')
                                     <div class="why-enhance-intro rich-text-content text-sm">{!! \App\Support\RichText::render($whyChooseUsIntro) !!}</div>
                                 @endif
                             </div>
 
-                            <div class="lg:col-span-7">
+                            <div class="lg:col-span-7" data-reveal="right">
                                 <div class="grid gap-4 sm:grid-cols-2">
                         @foreach($whyChooseUsBanners as $item)
                             @php
@@ -1510,7 +1638,7 @@
                                     ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/' . ltrim($imagePath, '/')))
                                     : null;
                             @endphp
-                            <article id="why-choose-us-{{ $bannerId }}" class="why-enhance-card group relative">
+                            <article id="why-choose-us-{{ $bannerId }}" class="why-enhance-card group relative" data-reveal>
                                 @if($hasImage)
                                     <img src="{{ $imageUrl }}" alt="{{ $item['title'] ?: (($whyChooseUsLabel !== '' ? $whyChooseUsLabel : 'Why Choose Us') . ' Banner') }}" class="absolute inset-0 h-full w-full object-cover">
                                 @else
@@ -1535,14 +1663,14 @@
 
             <div id="admissions" class="sr-only" aria-hidden="true"></div>
 
-            <section id="academics" class="relative overflow-hidden bg-[#eef6ff] py-10">
+            <section id="academics" class="relative overflow-hidden bg-[#eef6ff] py-10" data-reveal>
                 <div class="pointer-events-none absolute inset-0 opacity-60" style="background-image: linear-gradient(rgba(45, 29, 92, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 29, 92, 0.08) 1px, transparent 1px); background-size: 34px 34px;"></div>
                 <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.68),_transparent_38%)]"></div>
                 <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.4),_transparent_34%)]"></div>
                 <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <div class="rounded-3xl bg-white p-5 shadow-sm lg:p-6">
+                    <div class="rounded-3xl bg-white p-5 shadow-sm lg:p-6" data-reveal="up">
                         <div class="grid gap-4 lg:grid-cols-12 lg:items-stretch">
-                            <div class="lg:col-span-6">
+                            <div class="lg:col-span-6" data-reveal="left">
                                 <p class="text-base font-bold uppercase tracking-[0.24em] text-blue-700">
                                         {{ $academicsLabel !== '' ? $academicsLabel : 'Academic Excellence' }}
                                 </p>
@@ -1559,7 +1687,7 @@
                                 </div>
                             </div>
 
-                            <div class="lg:col-span-6">
+                            <div class="lg:col-span-6" data-reveal="right">
                                 <div class="grid h-full grid-cols-2 gap-4">
                                     @for($i = 0; $i < 2; $i++)
                                         @php $visual = $academicsVisuals->get($i); @endphp
@@ -1584,7 +1712,7 @@
 
             <div id="about" class="sr-only" aria-hidden="true"></div>
 
-            <section id="student-life" class="bg-slate-50 py-16">
+            <section id="student-life" class="bg-slate-50 py-16" data-reveal>
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="mb-10 mx-auto max-w-3xl text-center">
                         <p class="section-kicker-unified">{{ $studentLifeLabel !== '' ? $studentLifeLabel : 'Student Life' }}</p>
@@ -1592,7 +1720,7 @@
                     </div>
                     <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         @foreach($studentLifeItems as $item)
-                            <div id="student-life-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('student-life-'.$loop->index)) }}" class="student-life-fx-card rounded-2xl bg-white p-5 shadow-sm">
+                            <div id="student-life-{{ \Illuminate\Support\Str::slug($item['title'] ?? ('student-life-'.$loop->index)) }}" class="student-life-fx-card rounded-2xl bg-white p-5 shadow-sm" data-reveal>
                                 <h3 class="student-life-fx-title text-lg font-semibold text-slate-900">{{ $item['title'] ?? '' }}</h3>
                                 <div class="student-life-fx-text rich-text-content mt-2 text-sm text-slate-600">{!! \App\Support\RichText::render($item['description'] ?? '') !!}</div>
                             </div>
@@ -1601,9 +1729,9 @@
                 </div>
             </section>
 
-            <section id="parents" class="testimonials-section py-14 sm:py-16">
+            <section id="parents" class="testimonials-section py-14 sm:py-16" data-reveal>
                 <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-                    <div id="testimonials" class="testimonials-shell rounded-[2rem] p-5 sm:p-7 lg:p-8">
+                    <div id="testimonials" class="testimonials-shell rounded-[2rem] p-5 sm:p-7 lg:p-8" data-reveal="up">
                         @php
                             $testimonialsCount = $testimonials->count();
                             $testimonialsAverage = $testimonialsCount > 0
@@ -1659,7 +1787,7 @@
                                                 ) ?: '?';
                                                 $tStars = max(1, min(5, (int) $testimonial->rating));
                                             @endphp
-                                            <article class="w-full shrink-0 p-4 sm:p-6">
+                                            <article class="w-full shrink-0 p-4 sm:p-6" data-reveal>
                                                 <div class="testimonials-card h-full rounded-2xl p-5 sm:p-6">
                                                     <div class="mb-4 flex items-center gap-1">
                                                         @for($s = 1; $s <= 5; $s++)
@@ -1716,273 +1844,124 @@
                 </div>
             </section>
 
-            @if($teachersMarqueeItems->isNotEmpty())
-                <section class="teacher-marquee-section py-10">
-                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div class="teacher-marquee-shell rounded-3xl p-5 lg:p-6">
-                            <div class="mb-4 text-center">
-                                <p class="section-kicker-unified">{{ $teachersMarqueeLabel !== '' ? $teachersMarqueeLabel : 'Our Teachers' }}</p>
-                                <h2 class="section-heading-unified mt-2">
-                                    {{ $teachersMarqueeHeading !== '' ? $teachersMarqueeHeading : 'Meet Our Teaching Team' }}
-                                </h2>
-                                @if($teachersMarqueeIntro !== '')
-                                    <p class="mx-auto mt-2 max-w-3xl text-center text-sm leading-relaxed text-slate-600 sm:text-base">{{ $teachersMarqueeIntro }}</p>
-                                @endif
-                            </div>
+            <section class="teacher-marquee-section py-10" data-reveal>
+                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div class="teacher-marquee-shell rounded-3xl p-5 lg:p-6" data-reveal="up">
+                        <div class="mb-5 text-center">
+                            <h2 class="section-heading-unified">
+                                {{ $teachersMarqueeHeading !== '' ? $teachersMarqueeHeading : 'Our Qualified Teachers' }}
+                            </h2>
+                            @if($teachersMarqueeIntro !== '')
+                                <p class="mx-auto mt-2 max-w-3xl text-center text-sm leading-relaxed text-slate-600 sm:text-base">{{ $teachersMarqueeIntro }}</p>
+                            @endif
+                        </div>
 
-                            <div class="teacher-marquee-window rounded-2xl">
-                                <div class="teacher-marquee-track {{ $teachersMarqueeItems->count() > 1 ? '' : 'is-static' }}">
-                                    @foreach($teachersMarqueeLoopItems as $item)
-                                        @php
-                                            $name = trim((string) ($item['name'] ?? ''));
-                                            $role = trim((string) ($item['role'] ?? ''));
-                                            $imagePath = trim((string) ($item['image'] ?? ''));
-                                            $hasImage = $imagePath !== '';
-                                            $imageUrl = $hasImage
-                                                ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/' . ltrim($imagePath, '/')))
-                                                : null;
-                                            $initials = \Illuminate\Support\Str::upper(
-                                                collect(preg_split('/\s+/', $name !== '' ? $name : 'Teacher'))
-                                                    ->filter()
-                                                    ->take(2)
-                                                    ->map(fn ($word) => \Illuminate\Support\Str::substr($word, 0, 1))
-                                                    ->implode('')
-                                            );
-                                        @endphp
-                                        <article class="teacher-marquee-card">
-                                            <div class="teacher-marquee-avatar">
-                                                @if($hasImage)
-                                                    <img src="{{ $imageUrl }}" alt="{{ $name !== '' ? $name : 'Teacher profile' }}" class="h-full w-full object-cover">
-                                                @else
+                        @php
+                            $teacherMarqueeOriginalCount = $teachersMarqueeItems->count();
+                            $teacherMarqueeShouldScroll = $teacherMarqueeOriginalCount > 4;
+                            $teacherMarqueeColumns = max(1, min(4, $teacherMarqueeOriginalCount));
+                            $teacherMarqueeRenderItems = $teacherMarqueeShouldScroll
+                                ? $teachersMarqueeItems->concat($teachersMarqueeItems)->values()
+                                : $teachersMarqueeItems;
+                        @endphp
+
+                        <div class="teacher-marquee-window rounded-2xl">
+                            <div
+                                class="teacher-marquee-track {{ $teacherMarqueeShouldScroll ? 'is-scrolling' : 'is-static' }}"
+                                style="--teacher-columns: {{ $teacherMarqueeColumns }};"
+                            >
+                                @foreach($teacherMarqueeRenderItems as $item)
+                                    @php
+                                        $isCloneCard = $teacherMarqueeShouldScroll && $loop->index >= $teacherMarqueeOriginalCount;
+                                    @endphp
+                                    @php
+                                        $name = trim((string) ($item['name'] ?? ''));
+                                        $role = trim((string) ($item['role'] ?? ''));
+                                        $imagePath = trim((string) ($item['image'] ?? ''));
+                                        $hasImage = $imagePath !== '';
+                                        $normalizedImagePath = str_replace('\\', '/', ltrim($imagePath, '/'));
+                                        if (\Illuminate\Support\Str::startsWith($normalizedImagePath, 'storage/')) {
+                                            $normalizedImagePath = \Illuminate\Support\Str::after($normalizedImagePath, 'storage/');
+                                        }
+                                        $imageUrl = null;
+                                        if ($hasImage) {
+                                            if (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])) {
+                                                $imageUrl = $imagePath;
+                                            } elseif ($normalizedImagePath !== '') {
+                                                $imageUrl = \App\Support\MediaAsset::url($normalizedImagePath);
+                                            }
+                                        }
+                                        $initials = \Illuminate\Support\Str::upper(
+                                            collect(preg_split('/\s+/', $name !== '' ? $name : 'Teacher'))
+                                                ->filter()
+                                                ->take(2)
+                                                ->map(fn ($word) => \Illuminate\Support\Str::substr($word, 0, 1))
+                                                ->implode('')
+                                        );
+                                    @endphp
+                                    <article class="teacher-marquee-card" data-reveal @if($isCloneCard) aria-hidden="true" @endif>
+                                        <div class="teacher-marquee-media">
+                                            @if($imageUrl)
+                                                <img src="{{ $imageUrl }}" alt="{{ $name !== '' ? $name : 'Teacher profile' }}">
+                                            @else
+                                                <div class="teacher-marquee-media-fallback">
                                                     <span>{{ $initials !== '' ? $initials : 'T' }}</span>
-                                                @endif
-                                            </div>
-                                            <div class="teacher-marquee-meta">
-                                                <p class="teacher-marquee-name">{{ $name !== '' ? $name : 'Teacher' }}</p>
-                                                @if($role !== '')
-                                                    <p class="teacher-marquee-role">{{ $role }}</p>
-                                                @endif
-                                            </div>
-                                        </article>
-                                    @endforeach
-                                </div>
+                                                </div>
+                                            @endif
+                                            <div class="teacher-marquee-hover">Profile Preview</div>
+                                        </div>
+                                        <div class="teacher-marquee-meta">
+                                            <p class="teacher-marquee-name">{{ $name !== '' ? $name : 'Teacher' }}</p>
+                                            @if($role !== '')
+                                                <p class="teacher-marquee-role">{{ $role }}</p>
+                                            @endif
+                                        </div>
+                                    </article>
+                                @endforeach
                             </div>
                         </div>
                     </div>
-                </section>
-            @endif
+                </div>
+            </section>
         </main>
 
         @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
     </div>
+<script>
+    (function () {
+        const revealItems = Array.from(document.querySelectorAll('[data-reveal]'));
+        if (!revealItems.length) {
+            return;
+        }
 
-    <script>
-        (function () {
-            const menus = Array.from(document.querySelectorAll('[data-menu]'));
-            const mobileMenuToggle = document.querySelector('[data-mobile-menu-toggle]');
-            const mobileMenuOpenIcon = document.querySelector('[data-mobile-menu-open-icon]');
-            const mobileMenuCloseIcon = document.querySelector('[data-mobile-menu-close-icon]');
-            const mobileMenu = document.querySelector('[data-mobile-menu]');
-            const mobileMenuBackdrop = document.querySelector('[data-mobile-menu-backdrop]');
-            const mobileMenuCloseButton = document.querySelector('[data-mobile-menu-close]');
-            const mobileSubmenuToggles = Array.from(document.querySelectorAll('[data-mobile-submenu-toggle]'));
-            let desktopCloseTimeout = null;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            revealItems.forEach((item) => item.classList.add('is-visible'));
+            return;
+        }
 
-            const isDesktopMenu = () => window.innerWidth >= 1280;
-
-            const closeAll = (exceptId = null) => {
-                menus.forEach((menu) => {
-                    const menuId = menu.getAttribute('data-menu');
-                    const toggle = menu.querySelector('[data-menu-toggle]');
-                    const panel = menu.querySelector('[data-menu-panel]');
-
-                    if (!toggle || !panel) {
-                        return;
-                    }
-
-                    const shouldOpen = exceptId !== null && menuId === exceptId;
-                    panel.classList.toggle('hidden', !shouldOpen);
-                    toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-                    toggle.classList.toggle('bg-slate-100', shouldOpen);
-                    toggle.classList.toggle('text-brand-700', shouldOpen);
-                });
-            };
-
-            const queueDesktopClose = (delay = 90) => {
-                clearTimeout(desktopCloseTimeout);
-                desktopCloseTimeout = window.setTimeout(() => {
-                    closeAll();
-                }, delay);
-            };
-
-            if (menus.length) {
-                menus.forEach((menu) => {
-                    const menuId = menu.getAttribute('data-menu');
-                    const toggle = menu.querySelector('[data-menu-toggle]');
-                    const panel = menu.querySelector('[data-menu-panel]');
-
-                    if (!toggle || !panel) {
-                        return;
-                    }
-
-                    toggle.addEventListener('click', function (event) {
-                        event.preventDefault();
-                        const expanded = toggle.getAttribute('aria-expanded') === 'true';
-                        closeAll(expanded ? null : menuId);
-                    });
-
-                    menu.addEventListener('mouseenter', function () {
-                        if (!isDesktopMenu()) {
-                            return;
-                        }
-                        clearTimeout(desktopCloseTimeout);
-                        closeAll(menuId);
-                    });
-
-                    menu.addEventListener('mouseleave', function () {
-                        if (!isDesktopMenu()) {
-                            return;
-                        }
-                        queueDesktopClose();
-                    });
-
-                    menu.addEventListener('focusin', function () {
-                        if (!isDesktopMenu()) {
-                            return;
-                        }
-                        clearTimeout(desktopCloseTimeout);
-                        closeAll(menuId);
-                    });
-
-                    menu.addEventListener('focusout', function (event) {
-                        if (!isDesktopMenu()) {
-                            return;
-                        }
-                        const nextElement = event.relatedTarget;
-                        if (!nextElement || !menu.contains(nextElement)) {
-                            queueDesktopClose(70);
-                        }
-                    });
-
-                    panel.querySelectorAll('a').forEach((link) => {
-                        link.addEventListener('click', function () {
-                            closeAll();
-                        });
-                    });
-                });
-            }
-
-            const closeMobileSubmenus = (exceptTarget = null) => {
-                mobileSubmenuToggles.forEach((toggle) => {
-                    const targetId = toggle.getAttribute('data-target');
-                    const panel = targetId ? document.getElementById(targetId) : null;
-                    const indicator = toggle.querySelector('[data-mobile-submenu-indicator]');
-                    const open = exceptTarget !== null && targetId === exceptTarget;
-
-                    if (!panel) {
-                        return;
-                    }
-
-                    panel.classList.toggle('hidden', !open);
-                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                    toggle.classList.toggle('text-brand-700', open);
-                    if (indicator) {
-                        indicator.textContent = open ? '-' : '+';
-                        indicator.classList.toggle('text-brand-700', open);
-                    }
-                });
-            };
-
-            const setMobileMenuState = (open) => {
-                if (!mobileMenu || !mobileMenuToggle || !mobileMenuBackdrop) {
+        const observer = new IntersectionObserver((entries, io) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) {
                     return;
                 }
 
-                mobileMenu.classList.toggle('translate-x-full', !open);
-                mobileMenu.classList.toggle('pointer-events-none', !open);
-                mobileMenuBackdrop.classList.toggle('opacity-0', !open);
-                mobileMenuBackdrop.classList.toggle('pointer-events-none', !open);
-                mobileMenuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                document.body.classList.toggle('overflow-hidden', open);
-
-                if (mobileMenuOpenIcon && mobileMenuCloseIcon) {
-                    mobileMenuOpenIcon.classList.toggle('hidden', open);
-                    mobileMenuCloseIcon.classList.toggle('hidden', !open);
-                }
-
-                if (!open) {
-                    closeMobileSubmenus();
-                }
-            };
-
-            const closeMobileMenu = () => setMobileMenuState(false);
-
-            if (mobileMenu && mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function () {
-                    const expanded = mobileMenuToggle.getAttribute('aria-expanded') === 'true';
-                    setMobileMenuState(!expanded);
-                });
-            }
-
-            if (mobileMenuCloseButton) {
-                mobileMenuCloseButton.addEventListener('click', function () {
-                    closeMobileMenu();
-                });
-            }
-
-            if (mobileMenuBackdrop) {
-                mobileMenuBackdrop.addEventListener('click', function () {
-                    closeMobileMenu();
-                });
-            }
-
-            mobileSubmenuToggles.forEach((toggle) => {
-                toggle.addEventListener('click', function () {
-                    const targetId = toggle.getAttribute('data-target');
-                    if (!targetId) {
-                        return;
-                    }
-                    const expanded = toggle.getAttribute('aria-expanded') === 'true';
-                    closeMobileSubmenus(expanded ? null : targetId);
-                });
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
             });
+        }, {
+            root: null,
+            rootMargin: '0px 0px -8% 0px',
+            threshold: 0.14,
+        });
 
-            if (mobileMenu) {
-                mobileMenu.querySelectorAll('a').forEach((link) => {
-                    link.addEventListener('click', function () {
-                        closeMobileMenu();
-                    });
-                });
-            }
-
-            document.addEventListener('click', function (event) {
-                if (!event.target.closest('[data-menu]')) {
-                    closeAll();
-                }
-                if (mobileMenu && !event.target.closest('[data-mobile-menu]') && !event.target.closest('[data-mobile-menu-toggle]') && !event.target.closest('[data-mobile-menu-backdrop]')) {
-                    closeMobileMenu();
-                }
-            });
-
-            document.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape') {
-                    closeAll();
-                    closeMobileMenu();
-                }
-            });
-
-            window.addEventListener('resize', function () {
-                if (window.innerWidth >= 1280) {
-                    closeMobileMenu();
-                }
-                if (!isDesktopMenu()) {
-                    closeAll();
-                }
-            });
-        })();
-    </script>
-
-    @if($testimonials->count() > 1)
+        revealItems.forEach((item, index) => {
+            item.style.transitionDelay = `${Math.min(index * 30, 240)}ms`;
+            observer.observe(item);
+        });
+    })();
+</script>
+@if($testimonials->count() > 1)
     <script>
         (function () {
             const slider = document.querySelector('[data-testimonial-slider]');
@@ -2061,6 +2040,7 @@
     @endif
 </body>
 </html>
+
 
 
 

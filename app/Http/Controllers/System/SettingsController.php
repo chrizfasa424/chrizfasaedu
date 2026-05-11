@@ -1043,8 +1043,8 @@ class SettingsController extends Controller
         $publicPage['contact_intro'] = $validated['contact_intro'] ?? '';
         $publicPage['why_choose_us_label'] = $validated['why_choose_us_label'] ?? 'Why Choose Us';
         $publicPage['why_choose_us_intro'] = $validated['why_choose_us_intro'] ?? '';
-        $publicPage['teachers_marquee_label'] = $validated['teachers_marquee_label'] ?? 'Our Teachers';
-        $publicPage['teachers_marquee_heading'] = $validated['teachers_marquee_heading'] ?? 'Meet Our Teaching Team';
+        $publicPage['teachers_marquee_label'] = $validated['teachers_marquee_label'] ?? 'Our Qualified Teachers';
+        $publicPage['teachers_marquee_heading'] = $validated['teachers_marquee_heading'] ?? 'Our Qualified Teachers';
         $publicPage['teachers_marquee_intro'] = $validated['teachers_marquee_intro'] ?? 'Experienced teachers guiding learners with care, discipline, and excellence.';
         $publicPage['programs_label'] = $validated['programs_label'] ?? 'Programs';
         $publicPage['admissions_label'] = $validated['admissions_label'] ?? 'Admissions';
@@ -1665,8 +1665,8 @@ class SettingsController extends Controller
             'contact_intro' => $publicPage['contact_intro'] ?? '',
             'why_choose_us_label' => $publicPage['why_choose_us_label'] ?? 'Why Choose Us',
             'why_choose_us_intro' => $publicPage['why_choose_us_intro'] ?? '',
-            'teachers_marquee_label' => $publicPage['teachers_marquee_label'] ?? 'Our Teachers',
-            'teachers_marquee_heading' => $publicPage['teachers_marquee_heading'] ?? 'Meet Our Teaching Team',
+            'teachers_marquee_label' => $publicPage['teachers_marquee_label'] ?? 'Our Qualified Teachers',
+            'teachers_marquee_heading' => $publicPage['teachers_marquee_heading'] ?? 'Our Qualified Teachers',
             'teachers_marquee_intro' => $publicPage['teachers_marquee_intro'] ?? 'Experienced teachers guiding learners with care, discipline, and excellence.',
             'programs_label' => $publicPage['programs_label'] ?? 'Programs',
             'admissions_label' => $publicPage['admissions_label'] ?? 'Admissions',

@@ -33,6 +33,7 @@ use App\Http\Controllers\MultiSchool\TenantController;
 use App\Http\Controllers\NotificationCenterController;
 use App\Http\Controllers\PublicPageController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,46 @@ Route::get('/privacy-policy', [PublicPageController::class, 'privacyPage'])->nam
 Route::get('/cookies-policy', [PublicPageController::class, 'cookiesPage'])->name('public.cookies');
 Route::get('/robots.txt', [PublicPageController::class, 'robots'])->name('public.robots');
 Route::get('/sitemap.xml', [PublicPageController::class, 'sitemap'])->name('public.sitemap');
+Route::get('/storage/{path}', function (string $path) {
+    $normalizedPath = \App\Support\MediaAsset::normalize($path);
+
+    if ($normalizedPath === '' || str_contains($normalizedPath, '..')) {
+        abort(404);
+    }
+
+    if (!preg_match('/^[A-Za-z0-9_\-\/\.]+$/', $normalizedPath)) {
+        abort(404);
+    }
+
+    $disk = Storage::disk('public');
+    if (!$disk->exists($normalizedPath)) {
+        abort(404);
+    }
+
+    return response()->file($disk->path($normalizedPath), [
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
+})->where('path', '.*')->name('media.storage-fallback');
+Route::get('/media/public/{path}', function (string $path) {
+    $normalizedPath = \App\Support\MediaAsset::normalize($path);
+
+    if ($normalizedPath === '' || str_contains($normalizedPath, '..')) {
+        abort(404);
+    }
+
+    if (!preg_match('/^[A-Za-z0-9_\-\/\.]+$/', $normalizedPath)) {
+        abort(404);
+    }
+
+    $disk = Storage::disk('public');
+    if (!$disk->exists($normalizedPath)) {
+        abort(404);
+    }
+
+    return response()->file($disk->path($normalizedPath), [
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
+})->where('path', '.*')->name('media.public');
 Route::post('/contact', [PublicPageController::class, 'submitContact'])
     ->middleware('throttle:5,1')
     ->name('public.contact.submit');

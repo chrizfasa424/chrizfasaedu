@@ -43,10 +43,12 @@
     @if($school?->logo)
         @php
             $logo = ($asPdf ?? false)
-                ? public_path('storage/' . ltrim($school->logo, '/'))
-                : asset('storage/' . ltrim($school->logo, '/'));
+                ? \App\Support\MediaAsset::publicPath($school->logo)
+                : \App\Support\MediaAsset::url($school->logo);
         @endphp
-        <img src="{{ $logo }}" alt="School Logo" class="logo">
+        @if($logo)
+            <img src="{{ $logo }}" alt="School Logo" class="logo">
+        @endif
     @endif
     <div class="school-name">{{ $school?->name }}</div>
     <div class="school-address">

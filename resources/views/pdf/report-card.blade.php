@@ -74,8 +74,11 @@
 
     {{-- Header --}}
     <div class="header">
-        @if($school->logo)
-        <img src="{{ public_path('storage/' . ltrim($school->logo, '/')) }}" alt="">
+        @php
+            $reportCardLogoPath = $school?->logo ? \App\Support\MediaAsset::publicPath($school->logo) : null;
+        @endphp
+        @if($reportCardLogoPath)
+        <img src="{{ $reportCardLogoPath }}" alt="">
         @endif
         <h1>{{ $school->name }}</h1>
         <div class="address">

@@ -31,7 +31,7 @@
         $school = $payment->school;
         $student = $payment->student;
         $invoice = $payment->invoice;
-        $logoPath = $school?->logo ? public_path('storage/' . ltrim($school->logo, '/')) : null;
+        $logoPath = $school?->logo ? \App\Support\MediaAsset::publicPath($school->logo) : null;
         $signaturePath = $signature?->signature_path ? storage_path('app/' . ltrim($signature->signature_path, '/')) : null;
         $signatureRoleLabel = $signature?->signature_role_label ?? 'Bursar';
     @endphp

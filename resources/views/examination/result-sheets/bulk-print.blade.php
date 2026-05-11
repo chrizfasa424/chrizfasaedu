@@ -29,8 +29,11 @@
 @foreach($sheets as $sheet)
     <div class="sheet">
         <div class="header">
-            @if($school?->logo)
-                <img src="{{ public_path('storage/' . ltrim($school->logo, '/')) }}" class="logo" alt="Logo">
+            @php
+                $bulkResultLogoPath = $school?->logo ? \App\Support\MediaAsset::publicPath($school->logo) : null;
+            @endphp
+            @if($bulkResultLogoPath)
+                <img src="{{ $bulkResultLogoPath }}" class="logo" alt="Logo">
             @endif
             <div class="school">{{ $school?->name }}</div>
             <div class="meta">{{ implode(', ', array_filter([$school?->address, $school?->city, $school?->state])) }}</div>

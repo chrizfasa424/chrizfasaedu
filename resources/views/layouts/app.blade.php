@@ -777,14 +777,28 @@
                                     default => $currentUser->staffProfile,
                                 };
                                 $topbarPhotoPath = trim((string) ($topbarProfile?->photo ?? $currentUser->avatar ?? ''));
-                                $topbarPhotoSrc = $topbarPhotoPath !== '' ? asset('storage/' . ltrim($topbarPhotoPath, '/')) : null;
+                                $topbarPhotoSrc = null;
+                                if ($topbarPhotoPath !== '') {
+                                    $topbarPhotoPath = str_replace('\\', '/', ltrim($topbarPhotoPath, '/'));
+                                    if (\Illuminate\Support\Str::startsWith($topbarPhotoPath, ['http://', 'https://'])) {
+                                        $topbarPhotoSrc = $topbarPhotoPath;
+                                    } else {
+                                        if (\Illuminate\Support\Str::startsWith($topbarPhotoPath, 'storage/')) {
+                                            $topbarPhotoPath = \Illuminate\Support\Str::after($topbarPhotoPath, 'storage/');
+                                        }
+                                        $topbarPhotoPath = ltrim($topbarPhotoPath, '/');
+                                        if ($topbarPhotoPath !== '') {
+                                            $topbarPhotoSrc = file_exists(public_path('storage/' . $topbarPhotoPath))
+                                                ? asset('storage/' . $topbarPhotoPath)
+                                                : url('/media/public/' . implode('/', array_map('rawurlencode', explode('/', $topbarPhotoPath))));
+                                        }
+                                    }
+                                }
                                 $topbarInitials = \Illuminate\Support\Str::upper(
                                     \Illuminate\Support\Str::substr((string) $currentUser->first_name, 0, 1) .
                                     \Illuminate\Support\Str::substr((string) $currentUser->last_name, 0, 1)
                                 ) ?: 'U';
-                                $currentRoleValue = (string) ($currentUser->role?->value ?? $currentUser->role ?? '');
-                                $staffFacingRoles = ['teacher', 'staff', 'accountant', 'librarian', 'driver', 'nurse'];
-                                $isStaffFacingUser = in_array($currentRoleValue, $staffFacingRoles, true);
+                                $notificationRoutePrefix = $currentUser->notificationRoutePrefix();
                                 $roleValue = (string) ($currentUser->role?->value ?? $currentUser->role ?? '');
                                 $announcementGateEligible = in_array($roleValue, [
                                     'student',
@@ -798,9 +812,7 @@
                                     'driver',
                                     'nurse',
                                 ], true);
-                                $announcementGateRoutePrefix = ($currentUser->isStudent() || $currentUser->isParent())
-                                    ? 'portal.notifications'
-                                    : ($isStaffFacingUser ? 'staff.notifications' : 'notifications');
+                                $announcementGateRoutePrefix = $notificationRoutePrefix;
                                 $unreadAnnouncementNotifications = $announcementGateEligible
                                     ? $currentUser->unreadNotifications()
                                         ->where('type', \App\Notifications\AnnouncementPublishedNotification::class)
@@ -825,30 +837,8 @@
                                 </div>
                             </a>
                             @php
-                                $bellCount = 0;
-                                $bellRoute = ($currentUser->isStudent() || $currentUser->isParent())
-                                    ? route('portal.notifications.index')
-                                    : ($isStaffFacingUser ? route('staff.notifications.index') : route('notifications.index'));
-                                $canManageResultFeedbackInbox = ($actsAsSchoolAdmin || $currentUser->isTeacher())
-                                    || in_array((string) ($currentUser->role?->value ?? ''), ['principal', 'vice_principal'], true);
-                                if ($currentUser->isStudent()) {
-                                    $unreadMessages = $currentUser->unreadMessagesCount();
-                                    $unreadFeedbackResponses = $currentUser->unreadResultFeedbackResponsesCount();
-                                    $unreadDatabaseNotifications = $currentUser->unreadNotifications()->count();
-
-                                    $bellCount = $unreadMessages + $unreadFeedbackResponses + $unreadDatabaseNotifications;
-                                } elseif ($currentUser->isParent()) {
-                                    $bellCount = $currentUser->unreadMessagesCount() + $currentUser->unreadNotifications()->count();
-                                } else {
-                                    $unreadReplies = $currentUser->unreadAdminRepliesCount();
-                                    $unreadDatabaseNotifications = $currentUser->unreadNotifications()->count();
-
-                                    $bellCount = $unreadReplies + $unreadDatabaseNotifications;
-
-                                    if ($canManageResultFeedbackInbox) {
-                                        $bellCount += $currentUser->openResultFeedbackCount();
-                                    }
-                                }
+                                $bellCount = $currentUser->notificationBellCount();
+                                $bellRoute = route($notificationRoutePrefix . '.index');
                             @endphp
                             <a href="{{ $bellRoute }}" class="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#25333E]/10 bg-white/90 text-[#25333E] shadow-[0_8px_20px_-14px_rgba(45,29,92,0.5)] ring-1 ring-white/70 transition hover:-translate-y-0.5 hover:border-[#25333E]/30 hover:bg-white hover:shadow-[0_14px_26px_-14px_rgba(45,29,92,0.55)]">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75v-.7V9a6 6 0 1 0-12 0v.05c0 .232 0 .465-.001.697a8.967 8.967 0 0 1-2.311 6.025 23.848 23.848 0 0 0 5.454 1.31m5.715 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>

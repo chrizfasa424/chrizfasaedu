@@ -38,19 +38,20 @@
     @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('public.partials.nav-styles')
+    @include('public.partials.premium-body-styles')
 </head>
 <body class="site-body text-muted antialiased" style="background-color: {{ $siteBackground }}; color: {{ $bodyColor }}; --submenu-primary: {{ $theme['primary']['500'] ?? '#25333E' }}; --submenu-secondary: {{ $theme['secondary']['500'] ?? '#DFE753' }}; --submenu-hover-text: {{ $theme['primary_text_on_secondary'] ?? '#25333E' }}; {{ $tailwindThemeVars }};">
     <div class="site-bg min-h-screen">
         @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme])
 
         <main class="bg-pattern-grid">
-            <section class="bg-gradient-to-br from-slate-50 to-white">
-                <div class="mx-auto max-w-5xl px-6 py-14 lg:px-8 lg:py-16">
-                    <p class="text-sm font-bold uppercase tracking-[0.2em] text-brand-700">Legal</p>
-                    <h1 class="mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">{{ $privacyTitle }}</h1>
+            <section class="legal-hero-shell bg-gradient-to-br from-slate-50 to-white" data-reveal>
+                <div class="mx-auto max-w-5xl px-6 py-14 lg:px-8 lg:py-16" data-reveal="up">
+                    <p class="public-premium-kicker text-sm font-bold uppercase tracking-[0.2em] text-brand-700">Legal</p>
+                    <h1 class="public-premium-title mt-3 font-display text-4xl font-semibold text-ink sm:text-5xl">{{ $privacyTitle }}</h1>
                     @if($privacyIntro !== '')
                         <div class="policy-rich-text mt-4 max-w-3xl text-base leading-relaxed text-muted sm:text-lg">{!! \App\Support\RichText::render($privacyIntro) !!}</div>
                     @endif
@@ -58,8 +59,8 @@
                 </div>
             </section>
 
-            <section class="mx-auto max-w-5xl px-6 py-10 lg:px-8">
-                <div class="rounded-3xl bg-white p-6 shadow-sm sm:p-8" style="background-color: {{ $surfaceColor }};">
+            <section class="mx-auto max-w-5xl px-6 py-10 lg:px-8" data-reveal>
+                <div class="legal-content-card rounded-3xl bg-white p-6 shadow-sm sm:p-8" style="background-color: {{ $surfaceColor }};" data-reveal="up">
                     <div class="policy-rich-text text-base leading-relaxed text-muted">{!! \App\Support\RichText::render($privacyContent) !!}</div>
                 </div>
             </section>
@@ -67,6 +68,7 @@
 
         @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
     </div>
+    @include('public.partials.premium-body-scripts')
     <style>
         .policy-rich-text p + p,
         .policy-rich-text h2,

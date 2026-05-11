@@ -187,4 +187,71 @@ class User extends Authenticatable
             ->where('status', 'open')
             ->count();
     }
+
+    public function canManageResultFeedbackInbox(): bool
+    {
+        if (!$this->school_id) {
+            return false;
+        }
+
+        return in_array((string) ($this->role?->value ?? ''), [
+            UserRole::SUPER_ADMIN->value,
+            UserRole::SCHOOL_ADMIN->value,
+            UserRole::PRINCIPAL->value,
+            UserRole::VICE_PRINCIPAL->value,
+            UserRole::TEACHER->value,
+        ], true);
+    }
+
+    public function notificationRoutePrefix(): string
+    {
+        if ($this->isStudent() || $this->isParent()) {
+            return 'portal.notifications';
+        }
+
+        $roleValue = (string) ($this->role?->value ?? $this->role ?? '');
+        if (in_array($roleValue, ['teacher', 'staff', 'accountant', 'librarian', 'driver', 'nurse'], true)) {
+            return 'staff.notifications';
+        }
+
+        return 'notifications';
+    }
+
+    public function notificationBellBreakdown(): array
+    {
+        $unreadMessages = $this->unreadMessagesCount();
+        $unreadFeedbackResponses = $this->unreadResultFeedbackResponsesCount();
+        $unreadDatabaseNotifications = $this->unreadNotifications()->count();
+        $unreadAdminReplies = $this->unreadAdminRepliesCount();
+        $openResultFeedback = $this->canManageResultFeedbackInbox()
+            ? $this->openResultFeedbackCount()
+            : 0;
+
+        return [
+            'unread_messages' => (int) $unreadMessages,
+            'unread_feedback_responses' => (int) $unreadFeedbackResponses,
+            'unread_database_notifications' => (int) $unreadDatabaseNotifications,
+            'unread_admin_replies' => (int) $unreadAdminReplies,
+            'open_result_feedback' => (int) $openResultFeedback,
+        ];
+    }
+
+    public function notificationBellCount(): int
+    {
+        $parts = $this->notificationBellBreakdown();
+
+        if ($this->isStudent()) {
+            return $parts['unread_messages']
+                + $parts['unread_feedback_responses']
+                + $parts['unread_database_notifications'];
+        }
+
+        if ($this->isParent()) {
+            return $parts['unread_messages'] + $parts['unread_database_notifications'];
+        }
+
+        return $parts['unread_admin_replies']
+            + $parts['unread_database_notifications']
+            + $parts['open_result_feedback'];
+    }
 }

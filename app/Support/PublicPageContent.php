@@ -207,8 +207,8 @@ HTML;
             ],
             'why_choose_us_label' => 'Why Choose Us',
             'why_choose_us_intro' => '',
-            'teachers_marquee_label' => 'Our Teachers',
-            'teachers_marquee_heading' => 'Meet Our Teaching Team',
+            'teachers_marquee_label' => 'Our Qualified Teachers',
+            'teachers_marquee_heading' => 'Our Qualified Teachers',
             'teachers_marquee_intro' => 'Experienced teachers guiding learners with care, discipline, and excellence.',
             'why_choose_us_banners' => [
                 ['image' => null, 'title' => 'Structured Curriculum', 'description' => 'Structured curriculum aligned with national and international benchmarks.'],

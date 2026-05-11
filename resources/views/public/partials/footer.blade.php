@@ -68,7 +68,7 @@
                         @endphp
                         <li>
                             @if($url !== '')
-                                <a href="{{ $url }}" @if($isExternal) target="_blank" rel="noopener" @endif class="transition" style="--footer-hover: {{ $footerHoverColor }};" onmouseover="this.style.color='{{ $footerHoverColor }}'" onmouseout="this.style.color=''">{{ $link['title'] }}</a>
+                                <a href="{{ $url }}" @if($isExternal) target="_blank" rel="noopener" @endif class="footer-link transition" style="--footer-hover: {{ $footerHoverColor }};">{{ $link['title'] }}</a>
                             @else
                                 <span>{{ $link['title'] }}</span>
                             @endif
@@ -87,7 +87,7 @@
                         @endphp
                         <li>
                             @if($url !== '')
-                                <a href="{{ $url }}" @if($isExternal) target="_blank" rel="noopener" @endif class="transition" style="--footer-hover: {{ $footerHoverColor }};" onmouseover="this.style.color='{{ $footerHoverColor }}'" onmouseout="this.style.color=''">{{ $resource['title'] }}</a>
+                                <a href="{{ $url }}" @if($isExternal) target="_blank" rel="noopener" @endif class="footer-link transition" style="--footer-hover: {{ $footerHoverColor }};">{{ $resource['title'] }}</a>
                             @else
                                 <span>{{ $resource['title'] }}</span>
                             @endif
@@ -118,7 +118,7 @@
                                 $label = trim((string) ($social['title'] ?? 'Social link'));
                             @endphp
                             @if($url !== '')
-                                <a href="{{ $url }}" target="_blank" rel="noopener" aria-label="{{ $label }}" title="{{ $label }}" class="inline-flex h-11 w-11 items-center justify-center rounded-full border transition" style="border-color: rgba(255,255,255,0.2); color: #FFFFFF;" onmouseover="this.style.borderColor='{{ $footerHoverColor }}'; this.style.color='{{ $footerHoverColor }}'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.color='#FFFFFF'">
+                                <a href="{{ $url }}" target="_blank" rel="noopener" aria-label="{{ $label }}" title="{{ $label }}" class="footer-social-link inline-flex h-11 w-11 items-center justify-center rounded-full border transition" style="--footer-hover: {{ $footerHoverColor }};">
                                     <span class="h-5 w-5">{!! $socialIcon($label) !!}</span>
                                     <span class="sr-only">{{ $label }}</span>
                                 </a>
@@ -146,6 +146,34 @@
         </div>
     </div>
     <style>
+        .footer-link {
+            color: inherit;
+            text-decoration-color: transparent;
+            text-underline-offset: 0.18em;
+            transition: color 0.2s ease, text-decoration-color 0.2s ease;
+        }
+
+        .footer-link:hover,
+        .footer-link:focus-visible {
+            color: var(--footer-hover, #ffffff);
+            text-decoration: underline;
+            text-decoration-color: var(--footer-hover, #ffffff);
+        }
+
+        .footer-social-link {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .footer-social-link:hover,
+        .footer-social-link:focus-visible {
+            border-color: var(--footer-hover, #ffffff);
+            color: var(--footer-hover, #ffffff);
+            background-color: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
         .footer-rich-text p + p,
         .footer-rich-text ul + p,
         .footer-rich-text ol + p,

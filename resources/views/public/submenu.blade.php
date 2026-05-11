@@ -29,8 +29,10 @@
     @endif
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('public.partials.nav-styles')
+    @include('public.partials.premium-body-styles')
     @php
         $tailwindThemeVars = \App\Support\ThemePalette::tailwindCssVars($theme);
     @endphp
@@ -526,6 +528,8 @@
         <div class="pointer-events-none absolute -top-20 -left-28 h-80 w-80 rounded-full bg-brand-100 blur-3xl"></div>
         <div class="pointer-events-none absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-100 blur-3xl"></div>
 
+        @include('public.partials.nav', ['school' => $school, 'publicPage' => $publicPage, 'theme' => $theme, 'activeSection' => $sectionKey])
+        @if(false)
         <header class="sticky top-0 z-50" style="background-color: {{ $headerBgColor }};">
             <div class="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex shrink-0 items-center transition duration-200 hover:opacity-90">
@@ -628,10 +632,11 @@
                 </div>
             </aside>
         </header>
+        @endif
 
         <main class="relative z-0 bg-pattern-grid">
             {{-- Full-width hero section --}}
-            <div class="relative w-full overflow-hidden" style="min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div class="relative w-full overflow-hidden" style="min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;" data-reveal>
                 @if(!empty($item['image']))
                     <img src="{{ asset('storage/' . ltrim($item['image'], '/')) }}" alt="{{ $item['title'] }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">
                     <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.62) 100%);"></div>
@@ -641,11 +646,11 @@
                 @endif
                 <div class="relative px-6 pb-14 pt-28 lg:px-8 lg:pb-16 lg:pt-32" style="max-width:80rem;margin:0 auto;width:100%;">
                     <span class="inline-flex rounded-full px-4 py-1 text-xs font-bold uppercase tracking-[0.18em]" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#ffffff;">{{ $sectionLabel }}</span>
-                    <h1 class="mt-5 font-display font-bold leading-tight text-white" style="font-size:clamp(2rem,5vw,3.5rem);text-shadow:0 2px 16px rgba(0,0,0,0.45);max-width:42rem;">{{ $item['title'] }}</h1>
+                    <h1 class="public-premium-title mt-5 font-display font-bold leading-tight text-white" style="font-size:clamp(2rem,5vw,3.5rem);text-shadow:0 2px 16px rgba(0,0,0,0.45);max-width:42rem;">{{ $item['title'] }}</h1>
                 </div>
             </div>
 
-            <section class="mx-auto max-w-7xl px-5 pb-16 pt-10 lg:px-8">
+            <section class="mx-auto max-w-7xl px-5 pb-16 pt-10 lg:px-8" data-reveal>
                 <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] xl:gap-8">
 
                 @if($sectionKey === 'admissions' && $item['slug'] === 'faqs')
@@ -843,7 +848,7 @@
                     $plainDescription = trim(strip_tags((string) \App\Support\RichText::render($displayDescription)));
                     $readingMinutes = max(1, (int) ceil(str_word_count($plainDescription) / 170));
                 @endphp
-                <div class="relative overflow-hidden rounded-[2rem] bg-white/95 p-6 shadow-[0_24px_50px_-38px_rgba(15,23,42,0.5)] lg:p-8">
+                <div class="submenu-main-card relative overflow-hidden rounded-[2rem] bg-white/95 p-6 shadow-[0_24px_50px_-38px_rgba(15,23,42,0.5)] lg:p-8" data-reveal="left">
                     <div class="pointer-events-none absolute -right-14 -top-14 h-44 w-44 rounded-full bg-brand-100/70 blur-3xl"></div>
                     <div class="pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-secondary-100/70 blur-3xl"></div>
 
@@ -949,7 +954,7 @@
                 </div>
                 @endif
 
-                    <aside class="self-start overflow-hidden rounded-[1.75rem] border bg-white shadow-[0_24px_50px_-40px_rgba(15,23,42,0.55)] lg:sticky lg:top-28" style="border-color:#22323C;">
+                    <aside class="submenu-aside self-start overflow-hidden rounded-[1.75rem] border bg-white shadow-[0_24px_50px_-40px_rgba(15,23,42,0.55)] lg:sticky lg:top-28" style="border-color:#22323C;" data-reveal="right">
                         <div class="px-5 py-4" style="background-color: var(--submenu-secondary, #DFE753); color: var(--submenu-hover-text, #25333E);">
                             <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--submenu-hover-text, #25333E); opacity: 0.82;">{{ $sectionLabel }}</p>
                             <h2 class="mt-1 font-display text-2xl font-semibold">{{ $submenuMoreInPrefix !== '' ? $submenuMoreInPrefix : 'More In' }} {{ $sectionLabel }}</h2>
@@ -982,7 +987,9 @@
         </main>
         @include('public.partials.footer', ['school' => $school, 'publicPage' => $publicPage])
     </div>
+    @include('public.partials.premium-body-scripts')
 
+    @if(false)
     <script>
         (function () {
             const menus = Array.from(document.querySelectorAll('[data-menu]'));
@@ -1188,6 +1195,7 @@
             });
         })();
     </script>
+    @endif
 
     {{-- FAQ interactive JS (only needed when the FAQ section is rendered) --}}
     @if($sectionKey === 'admissions' && $item['slug'] === 'faqs')

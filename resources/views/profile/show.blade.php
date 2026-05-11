@@ -6,12 +6,17 @@
 @php
     $isPortal  = auth('portal')->check();
     $photoSrc  = null;
+    $resolvedProfilePhotoPath = '';
 
     // Resolve photo: check profile first, then user avatar
     if ($profile && !empty($profile->photo)) {
-        $photoSrc = asset('storage/' . $profile->photo);
+        $resolvedProfilePhotoPath = trim((string) $profile->photo);
     } elseif (!empty($user->avatar)) {
-        $photoSrc = asset('storage/' . $user->avatar);
+        $resolvedProfilePhotoPath = trim((string) $user->avatar);
+    }
+
+    if ($resolvedProfilePhotoPath !== '') {
+        $photoSrc = \App\Support\MediaAsset::url($resolvedProfilePhotoPath);
     }
 
     $initials = strtoupper(substr($user->first_name, 0, 1) . substr($user->last_name, 0, 1));
