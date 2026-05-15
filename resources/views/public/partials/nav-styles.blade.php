@@ -191,6 +191,28 @@
         color: #ffffff !important;
     }
 
+    /* Mobile drawer hardening: keep content visible even when utility classes are stale/colliding */
+    #public-mobile-menu {
+        display: flex;
+        flex-direction: column;
+        max-height: 100dvh;
+        transform: translateX(100%);
+        visibility: hidden;
+    }
+
+    #public-mobile-menu[data-open="true"] {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    #public-mobile-menu [data-mobile-menu-body] {
+        display: block;
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        background: #ffffff;
+    }
+
     .theme-nav-link:hover,
     .theme-nav-link:focus-visible,
     .theme-submenu-link:hover,

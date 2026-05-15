@@ -15834,3 +15834,13 @@ Stack trace:
 #13 C:/wamp64/www/chrizfasaedu/artisan(9): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
 #14 {main}
 "} 
+[2026-05-15 06:59:22] production.ERROR: There are no commands defined in the "ems" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"ems\" namespace. at C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(743): Symfony/Component/Console/Application->findNamespace('ems')
+#1 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('ems:attendance-...')
+#2 C:/wamp64/www/chrizfasaedu/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 C:/wamp64/www/chrizfasaedu/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#5 C:/wamp64/www/chrizfasaedu/artisan(9): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#6 {main}
+"} 

@@ -8,6 +8,7 @@
 /yarn-error.log
 /.phpunit.result.cache
 /.idea/
+/.qodo/
 /.vscode/
 /.fleet/
 /.DS_Store

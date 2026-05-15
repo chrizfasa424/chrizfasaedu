@@ -210,7 +210,7 @@
                 </svg>
             </button>
         </div>
-        <div class="px-5 py-5">
+        <div class="px-5 py-5" data-mobile-menu-body>
             <div class="mb-4 flex flex-col gap-2">
                 <a href="{{ route('admission.apply') }}"
                    class="theme-mobile-action-outline inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition duration-200">
@@ -273,6 +273,7 @@
         const mobileMenuBackdrop = document.querySelector('[data-mobile-menu-backdrop]');
         const mobileMenuCloseBtn = document.querySelector('[data-mobile-menu-close]');
         const mobileSubToggles = Array.from(document.querySelectorAll('[data-mobile-submenu-toggle]'));
+        const mobileMenuBody = mobileMenu?.querySelector('[data-mobile-menu-body]') ?? null;
         let desktopTimer = null;
 
         const isDesktop = () => window.innerWidth >= 1024;
@@ -365,11 +366,59 @@
             });
         };
 
+        const enforceMobileDrawerStyles = () => {
+            if (!mobileMenu || !mobileMenuBackdrop) {
+                return;
+            }
+
+            const header = mobileMenu.querySelector(':scope > div:first-child');
+            const headerHeight = header ? `${Math.ceil(header.getBoundingClientRect().height || 64)}px` : '64px';
+
+            mobileMenu.style.setProperty('position', 'fixed', 'important');
+            mobileMenu.style.setProperty('top', '0', 'important');
+            mobileMenu.style.setProperty('right', '0', 'important');
+            mobileMenu.style.setProperty('bottom', '0', 'important');
+            mobileMenu.style.setProperty('left', 'auto', 'important');
+            mobileMenu.style.setProperty('width', '100%', 'important');
+            mobileMenu.style.setProperty('max-width', '22rem', 'important');
+            mobileMenu.style.setProperty('height', '100vh', 'important');
+            mobileMenu.style.setProperty('min-height', '100vh', 'important');
+            mobileMenu.style.setProperty('display', 'flex', 'important');
+            mobileMenu.style.setProperty('flex-direction', 'column', 'important');
+            mobileMenu.style.setProperty('background', '#ffffff', 'important');
+            mobileMenu.style.setProperty('z-index', '9999', 'important');
+            mobileMenu.style.setProperty('overflow', 'hidden', 'important');
+
+            mobileMenuBackdrop.style.setProperty('position', 'fixed', 'important');
+            mobileMenuBackdrop.style.setProperty('inset', '0', 'important');
+            mobileMenuBackdrop.style.setProperty('z-index', '9998', 'important');
+
+            if (mobileMenuBody) {
+                // Absolute fill below header avoids collapsed body on stale/colliding utility CSS.
+                mobileMenuBody.style.setProperty('position', 'absolute', 'important');
+                mobileMenuBody.style.setProperty('top', headerHeight, 'important');
+                mobileMenuBody.style.setProperty('left', '0', 'important');
+                mobileMenuBody.style.setProperty('right', '0', 'important');
+                mobileMenuBody.style.setProperty('bottom', '0', 'important');
+                mobileMenuBody.style.setProperty('display', 'block', 'important');
+                mobileMenuBody.style.setProperty('width', '100%', 'important');
+                mobileMenuBody.style.setProperty('height', `calc(100vh - ${headerHeight})`, 'important');
+                mobileMenuBody.style.setProperty('min-height', `calc(100vh - ${headerHeight})`, 'important');
+                mobileMenuBody.style.setProperty('overflow-y', 'auto', 'important');
+                mobileMenuBody.style.setProperty('background', '#ffffff', 'important');
+                mobileMenuBody.style.setProperty('padding-bottom', 'max(1.25rem, env(safe-area-inset-bottom))', 'important');
+            }
+        };
+
         const setMobileMenu = (open) => {
             if (!mobileMenu || !mobileMenuToggle || !mobileMenuBackdrop) {
                 return;
             }
 
+            enforceMobileDrawerStyles();
+            mobileMenu.setAttribute('data-open', open ? 'true' : 'false');
+            mobileMenu.style.transform = open ? 'translateX(0)' : 'translateX(100%)';
+            mobileMenu.style.visibility = open ? 'visible' : 'hidden';
             mobileMenu.classList.toggle('translate-x-full', !open);
             mobileMenu.classList.toggle('pointer-events-none', !open);
             mobileMenuBackdrop.classList.toggle('opacity-0', !open);
@@ -386,6 +435,13 @@
                 closeMobileSubs();
             }
         };
+
+        if (mobileMenu) {
+            enforceMobileDrawerStyles();
+            mobileMenu.setAttribute('data-open', 'false');
+            mobileMenu.style.transform = 'translateX(100%)';
+            mobileMenu.style.visibility = 'hidden';
+        }
 
         mobileMenuToggle?.addEventListener('click', () => setMobileMenu(mobileMenuToggle.getAttribute('aria-expanded') !== 'true'));
         mobileMenuCloseBtn?.addEventListener('click', () => setMobileMenu(false));
@@ -427,6 +483,7 @@
         });
 
         window.addEventListener('resize', () => {
+            enforceMobileDrawerStyles();
             if (window.innerWidth >= 1024) {
                 setMobileMenu(false);
             }
